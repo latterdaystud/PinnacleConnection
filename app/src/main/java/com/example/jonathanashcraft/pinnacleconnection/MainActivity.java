@@ -12,5 +12,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Testing our git repository - Joe
         System.out.println("Hello World");
+        System.out.println("Joseph is our master");
     }
 }
