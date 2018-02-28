@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">PinnacleConnection</string>
+    <string name="title_activity_maintenance_request">maintenance_request</string>
+    <string name="title_home">Calendar</string>
+    <string name="title_dashboard"></string>
+    <string name="title_notifications">Notifications</string>
+
+    <!-- Maintenance Request -->
+    <string name="submit_button">Submit</string>
+    <string name="picture_button">Picture</string>
+    <string name="apartment_number">Apartment</string>
+    <string name="send_maintenance_request_title">Send Maintenance Request</string>
+    <string name="enter_issue_plaintext">Description of Issue</string>
+    <string name="urgent_checkbox">Urgent</string>
+
+    <!-- Theater Request -->
+    <string name="scheduled_times">Scheduled Times</string>
+    <string name="reserve">Reserve Theater</string>
+    <string name="submitted_requests">Submitted Requests</string>
+
 </resources>
