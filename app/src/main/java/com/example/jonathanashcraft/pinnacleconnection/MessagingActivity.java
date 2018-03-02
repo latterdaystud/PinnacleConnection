@@ -24,6 +24,7 @@ public class MessagingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_messaging);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        message = findViewById(R.id.editText);
 
         arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
         listView = (ListView) findViewById(R.id.messageListView);
@@ -44,7 +45,6 @@ public class MessagingActivity extends AppCompatActivity {
 
     }
     public void onSend(View view) {
-        message = findViewById(R.id.editText);
 
         PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString(
                 "Message", message.getText().toString()).apply();
@@ -54,8 +54,13 @@ public class MessagingActivity extends AppCompatActivity {
         message.setText("");
     }
 
-    public final ArrayAdapter<String> getAdapater() {
+    public final ArrayAdapter<String> getAdapter() {
         return arrayAdapter;
     }
+
+    public final EditText getMessage() {
+        return message;
+    }
+    public void setEditText(String value) { message.setText(value);}
 
 }
