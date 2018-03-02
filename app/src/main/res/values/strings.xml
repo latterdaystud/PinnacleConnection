@@ -4,6 +4,10 @@
     <string name="title_home">Calendar</string>
     <string name="title_dashboard"></string>
     <string name="title_notifications">Notifications</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_settings">Settings</string>
 
     <!-- Maintenance Request -->
     <string name="submit_button">Submit</string>
@@ -18,9 +22,8 @@
     <string name="reserve">Reserve Theater</string>
     <string name="submitted_requests">Submitted Requests</string>
 
-    <string name="title_activity_login">Sign in</string>
-
     <!-- Strings related to login -->
+    <string name="title_activity_login">Sign in</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password (optional)</string>
     <string name="action_sign_in">Sign in or register</string>
