@@ -17,6 +17,7 @@ public class MessagingActivity extends AppCompatActivity {
 
     private ArrayAdapter<String> arrayAdapter;
     private ListView listView;
+    private EditText message;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,15 +43,19 @@ public class MessagingActivity extends AppCompatActivity {
         });
 
     }
-    protected void onSend(View view) {
-        EditText editText = findViewById(R.id.editText);
+    public void onSend(View view) {
+        message = findViewById(R.id.editText);
 
         PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString(
-                "Message", editText.getText().toString()).apply();
+                "Message", message.getText().toString()).apply();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String myStrValue = prefs.getString("Message", "myStringToSave");
         arrayAdapter.add(myStrValue);
-        editText.setText("");
+        message.setText("");
+    }
+
+    public final ArrayAdapter<String> getAdapater() {
+        return arrayAdapter;
     }
 
 }
