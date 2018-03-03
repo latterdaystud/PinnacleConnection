@@ -5,5 +5,11 @@ package com.example.jonathanashcraft.pinnacleconnection;
  */
 
 public class MessageSent {
+    private User user;
+    private String message;
+    //private Time time;
+
+
+
 
 }

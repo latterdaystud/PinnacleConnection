@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/msgr2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_margin="10sp"
+        android:maxWidth="320sp"
+        android:background="?android:attr/fastScrollPreviewBackgroundLeft"
+        android:backgroundTint="@android:color/holo_green_light"
+        android:paddingBottom="8dp"
+        android:paddingEnd="10dp"
+        android:paddingStart="20dp"
+        android:paddingTop="8sp"
+        android:shadowColor="@color/colorPrimaryDark"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:text="hello"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textSize="20sp" />
+
+</LinearLayout>
