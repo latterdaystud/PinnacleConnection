@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MessagingActivity extends AppCompatActivity {
 
@@ -44,19 +45,21 @@ public class MessagingActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 onSend(view);
-                Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_SHORT).show();
             }
         });
 
     }
     public void onSend(View view) {
 
+        if(Objects.equals(message.getText().toString(), " ") || Objects.equals(message.getText().toString(), ""))
+            return;
         PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString(
                 "Message", message.getText().toString()).apply();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String myStrValue = prefs.getString("Message", "myStringToSave");
         arrayAdapter.add(myStrValue);
         message.setText("");
+        Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_SHORT).show();
     }
 
     public final CustomMessagingAdapter getAdapter() {
