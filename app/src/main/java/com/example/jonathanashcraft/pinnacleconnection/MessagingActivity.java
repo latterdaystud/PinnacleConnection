@@ -27,6 +27,7 @@ public class MessagingActivity extends AppCompatActivity {
     private ArrayList arrayList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().setBackgroundDrawableResource(R.drawable.anthony1);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messaging);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -43,10 +44,6 @@ public class MessagingActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 onSend(view);
-                /*
-                Snackbar.make(view, "Message Sent", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                        */
                 Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_SHORT).show();
             }
         });
