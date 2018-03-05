@@ -12,7 +12,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         // Testing our git repository - Joe
         System.out.println("Hello World");
         System.out.println("Joseph is our master");

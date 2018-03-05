@@ -19,16 +19,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Objects;
+import android.text.format.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 
 public class MessagingActivity extends AppCompatActivity {
 
     private CustomMessagingAdapter arrayAdapter;
     private ListView listView;
     private EditText message;
-    private ArrayList arrayList;
+    private ArrayList<TextSent> arrayList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getWindow().setBackgroundDrawableResource(R.drawable.anthony1);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messaging);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -58,8 +61,9 @@ public class MessagingActivity extends AppCompatActivity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String myStrValue = prefs.getString("Message", "myStringToSave");
         arrayAdapter.add(myStrValue);
+        arrayAdapter.notifyDataSetChanged();
         message.setText("");
-        Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_SHORT / 3).show();
     }
 
     public final CustomMessagingAdapter getAdapter() {
@@ -73,13 +77,13 @@ public class MessagingActivity extends AppCompatActivity {
 
     public class CustomMessagingAdapter extends BaseAdapter {
 
-        ArrayList myList = new ArrayList();
+        ArrayList<TextSent> myList = new ArrayList();
         LayoutInflater inflater;
         Context context;
 
 
 
-        public CustomMessagingAdapter(Context context, ArrayList myList) {
+        public CustomMessagingAdapter(Context context, ArrayList<TextSent> myList) {
             this.myList = myList;
             this.context = context;
             inflater = LayoutInflater.from(this.context);
@@ -103,24 +107,58 @@ public class MessagingActivity extends AppCompatActivity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup viewGroup) {
-            MessageSent messageSent;
+            TextSent textSent;
             View view;
             TextView textview;
+            TextView textView2;
             if (position % 2 == 1) {
                 view = getLayoutInflater().inflate(R.layout.row, null);
                 textview = view.findViewById(R.id.msgr);
+                textView2 = view.findViewById(R.id.TextView2);
             }
             else {
                 view = getLayoutInflater().inflate(R.layout.row2, null);
                 textview = view.findViewById(R.id.msgr2);
+                textView2 = view.findViewById(R.id.TextView2);
             }
-
-            textview.setText(myList.get(position).toString());
+            textSent = myList.get(position);
+            textView2.setText(textSent.getTime());
+            textview.setText(textSent.getText());
             return view;
         }
 
         public void add(String string) {
-            myList.add(string);
+
+            SimpleDateFormat df = new SimpleDateFormat(" h:mma, EEE, d MMM yyyy");
+            String date = df.format(Calendar.getInstance().getTime());
+            TextSent textSent = new TextSent(string, date);
+            myList.add(textSent);
+
+        }
+    }
+
+    public class TextSent {
+        private String text;
+        private String time;
+        public TextSent(String textGiven, String timeGiven) {
+            text = textGiven;
+            time = timeGiven;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        public void setText(String text) {
+            this.text = text;
+        }
+
+        public String getTime() {
+            return time;
+        }
+
+        public void setTime(String time) {
+            this.time = time;
         }
     }
 
