@@ -1,8 +1,29 @@
 <resources>
     <string name="app_name">PinnacleConnection</string>
-    <string name="title_activity_login">Sign in</string>
+    <string name="title_activity_maintenance_request">maintenance_request</string>
+    <string name="title_home">Calendar</string>
+    <string name="title_dashboard"></string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Maintenance Request -->
+    <string name="submit_button">Submit</string>
+    <string name="picture_button">Picture</string>
+    <string name="apartment_number">Apartment</string>
+    <string name="send_maintenance_request_title">Send Maintenance Request</string>
+    <string name="enter_issue_plaintext">Description of Issue</string>
+    <string name="urgent_checkbox">Urgent</string>
+
+    <!-- Theater Request -->
+    <string name="scheduled_times">Scheduled Times</string>
+    <string name="reserve">Reserve Theater</string>
+    <string name="submitted_requests">Submitted Requests</string>
 
     <!-- Strings related to login -->
+    <string name="title_activity_login">Sign in</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password (optional)</string>
     <string name="action_sign_in">Sign in or register</string>

@@ -68,4 +68,5 @@ public class User {
             isManager = false;
         }
     }
+
 }
