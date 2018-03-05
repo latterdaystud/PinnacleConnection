@@ -108,6 +108,7 @@ public class MessagingActivity extends AppCompatActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup viewGroup) {
             TextSent textSent;
+            String addition;
             View view;
             TextView textview;
             TextView textView2;
@@ -115,21 +116,24 @@ public class MessagingActivity extends AppCompatActivity {
                 view = getLayoutInflater().inflate(R.layout.row, null);
                 textview = view.findViewById(R.id.msgr);
                 textView2 = view.findViewById(R.id.TextView2);
+                addition = "Sent: ";
             }
             else {
                 view = getLayoutInflater().inflate(R.layout.row2, null);
                 textview = view.findViewById(R.id.msgr2);
                 textView2 = view.findViewById(R.id.TextView2);
+                addition = "Received: ";
             }
             textSent = myList.get(position);
-            textView2.setText(textSent.getTime());
+            String time = addition + textSent.getTime();
+            textView2.setText(time);
             textview.setText(textSent.getText());
             return view;
         }
 
         public void add(String string) {
 
-            SimpleDateFormat df = new SimpleDateFormat(" h:mma, EEE, d MMM yyyy");
+            SimpleDateFormat df = new SimpleDateFormat("h:mma, EEE, MMM d");
             String date = df.format(Calendar.getInstance().getTime());
             TextSent textSent = new TextSent(string, date);
             myList.add(textSent);
