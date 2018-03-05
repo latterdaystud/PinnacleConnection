@@ -1,7 +1,15 @@
 package com.example.jonathanashcraft.pinnacleconnection;
 
-import org.junit.Test;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.view.View;
+import android.widget.EditText;
 
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+
+import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.*;
 
 /**
@@ -10,8 +18,6 @@ import static org.junit.Assert.*;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class ExampleUnitTest {
-    @Test
-    public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
-    }
+
+
 }

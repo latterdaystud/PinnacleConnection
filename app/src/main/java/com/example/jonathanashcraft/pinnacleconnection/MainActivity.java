@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -50,6 +51,9 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(this, MessagingActivity.class);
         startActivity(intent);
     }
+    public void loginPressed(View view) {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
 
     @Override
     public void onBackPressed() {
@@ -106,5 +110,6 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+
     }
 }

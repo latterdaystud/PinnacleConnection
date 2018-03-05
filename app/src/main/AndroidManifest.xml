@@ -34,9 +34,10 @@
             android:name=".LoginActivity"
             android:label="@string/title_activity_login" />
         <activity
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
             android:name=".MessagingActivity"
             android:label="@string/title_activity_messaging"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
