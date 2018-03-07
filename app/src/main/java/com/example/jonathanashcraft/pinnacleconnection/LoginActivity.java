@@ -140,9 +140,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // perform the user login attempt.
             showProgress(true);
 
-            // Toast for user expierence
-            Toast.makeText(LoginActivity.this, "Logging in", Toast.LENGTH_SHORT).show();
-
             // The actual authentication with Firebase
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
@@ -169,8 +166,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                                 // Show toast for user expierence
                                 Toast.makeText(LoginActivity.this, "Login Failed!", Toast.LENGTH_LONG).show();
-                            }
 
+                                showProgress(false);
+                            }
                         }
 
 
