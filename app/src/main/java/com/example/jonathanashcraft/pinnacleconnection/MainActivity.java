@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity
     public void loginPressed(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
+    }
 
     @Override
     public void onBackPressed() {
