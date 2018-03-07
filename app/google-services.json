@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "489015114760",
+    "firebase_url": "https://pinnacle-connection.firebaseio.com",
+    "project_id": "pinnacle-connection",
+    "storage_bucket": "pinnacle-connection.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:489015114760:android:652b3f4e37cb0854",
+        "android_client_info": {
+          "package_name": "com.example.jonathanashcraft.pinnacleconnection"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "489015114760-190pt5opevatt5kfgb28p9i385i1sdfd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBypTLEAe3lRT7VVPKnhqdbqyI83y1Ox0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
