@@ -43,8 +43,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 
-import static android.Manifest.permission.READ_CONTACTS;
-import static android.widget.Toast.LENGTH_LONG;
 
 
 /**
@@ -52,37 +50,22 @@ import static android.widget.Toast.LENGTH_LONG;
  */
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
-    /**
-     * Id to identity READ_CONTACTS permission request.
-     */
-    private static final int REQUEST_READ_CONTACTS = 0;
-
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
+    // Firebase Authentication
     private FirebaseAuth mAuth;
 
-    // UI references.
+    // UI references./
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-        populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -107,53 +90,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
 
+        // Get the instance for Firebase
         mAuth = FirebaseAuth.getInstance();
-
     }
-
-    private void populateAutoComplete() {
-        if (!mayRequestContacts()) {
-            return;
-        }
-
-        getLoaderManager().initLoader(0, null, this);
-    }
-
-    private boolean mayRequestContacts() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-        if (checkSelfPermission(READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-        if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(mEmailView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(android.R.string.ok, new View.OnClickListener() {
-                        @Override
-                        @TargetApi(Build.VERSION_CODES.M)
-                        public void onClick(View v) {
-                            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-                        }
-                    });
-        } else {
-            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-        }
-        return false;
-    }
-
-    /**
-     * Callback received when a permissions request has been completed.
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_READ_CONTACTS) {
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                populateAutoComplete();
-            }
-        }
-    }
-
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -201,8 +140,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // perform the user login attempt.
             showProgress(true);
 
-            Log.d(TAG, "Calling signInWithEmailAndPassword");
+            // Toast for user expierence
+            Toast.makeText(LoginActivity.this, "Logging in", Toast.LENGTH_SHORT).show();
 
+            // The actual authentication with Firebase
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -210,17 +151,23 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             Log.d(TAG, "Called onComplete of signIn..");
 
                             if (task.isSuccessful()) {
-                                // If login is sucessful
+                                Log.d(TAG, "We logged in!");
 
-                                Log.d(TAG, "It was sucessfull");
+                                // Show a toast for user feedback
+                                Toast.makeText(LoginActivity.this, "Successful Login",
+                                        Toast.LENGTH_SHORT).show();
 
+                                // Start the messaging activity
                                 Intent intent = new Intent(LoginActivity.this, MessagingActivity.class);
                                 startActivity(intent);
 
+                                // End this activity
                                 finish();
                             } else {
-                                Log.d(TAG, "it failed");
+                                // Log this so we can debug
+                                Log.d(TAG, "Unable to Login");
 
+                                // Show toast for user expierence
                                 Toast.makeText(LoginActivity.this, "Login Failed!", Toast.LENGTH_LONG).show();
                             }
 
@@ -229,7 +176,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                     });
 
-            Log.d(TAG, "attemptLogin is ending");
+            Log.d(TAG, "attemptLogin is ending.");
         }
     }
 
@@ -242,6 +189,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         //TODO: Replace this with your own logic
         return password.length() > 4;
     }
+
+
+    // UNKNOWN IF I NEED ALL OF THIS
 
     /**
      * Shows the progress UI and hides the login form.
@@ -304,24 +254,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             emails.add(cursor.getString(ProfileQuery.ADDRESS));
             cursor.moveToNext();
         }
-
-        addEmailsToAutoComplete(emails);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
 
     }
-
-    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
-        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(LoginActivity.this,
-                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
-
-        mEmailView.setAdapter(adapter);
-    }
-
 
     private interface ProfileQuery {
         String[] PROJECTION = {
