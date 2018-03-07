@@ -17,9 +17,14 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Objects;
 import android.text.format.DateFormat;
+
+import com.google.gson.Gson;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -30,6 +35,13 @@ public class MessagingActivity extends AppCompatActivity {
     private ListView listView;
     private EditText message;
     private ArrayList<TextSent> arrayList;
+
+    //Added this March 7 during class
+    private Gson gson = new Gson();
+    private String jsonMessages;
+    ////////////////////////////////////////////////////////////////
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +63,12 @@ public class MessagingActivity extends AppCompatActivity {
             }
         });
 
+        //Added this March 7 during class
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String myStrValue = prefs.getString("jsonMessages", "myStringToSave");
+        gson.fromJson(myStrValue, (Type) arrayList);
+        //////////////////////////////////////////////////////////////////////////////////////////
+
     }
     public void onSend(View view) {
 
@@ -58,9 +76,17 @@ public class MessagingActivity extends AppCompatActivity {
             return;
         PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString(
                 "Message", message.getText().toString()).apply();
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String myStrValue = prefs.getString("Message", "myStringToSave");
         arrayAdapter.add(myStrValue);
+
+        //Added this March 7 during class
+        jsonMessages = gson.toJson(arrayList);
+        PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString(
+                "jsonMessages", jsonMessages).apply();
+        ////////////////////////////////////////////////////////////////////////////
+
         arrayAdapter.notifyDataSetChanged();
         message.setText("");
         Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_SHORT / 3).show();

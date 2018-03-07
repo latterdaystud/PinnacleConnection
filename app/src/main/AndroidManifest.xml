@@ -27,9 +27,8 @@
         </activity>
         <activity android:name=".TheaterRequestActivity" />
         <activity
-            android:name=".maintenance_request"
+            android:name=".MaintenanceRequest"
             android:label="@string/title_activity_maintenance_request" />
-        <activity android:name=".MaintenanceRequest"></activity>
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login" />
