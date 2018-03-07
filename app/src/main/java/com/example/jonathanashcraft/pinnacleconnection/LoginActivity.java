@@ -37,6 +37,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,13 +67,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private UserLoginTask mAuthTask = null;
+    private FirebaseAuth mAuth;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +106,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        mAuth = FirebaseAuth.getInstance();
+
     }
 
     private void populateAutoComplete() {
@@ -156,9 +161,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
+        final String TAG = "attemptLogin";
 
         // Reset errors.
         mEmailView.setError(null);
@@ -197,8 +200,36 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+
+            Log.d(TAG, "Calling signInWithEmailAndPassword");
+
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            Log.d(TAG, "Called onComplete of signIn..");
+
+                            if (task.isSuccessful()) {
+                                // If login is sucessful
+
+                                Log.d(TAG, "It was sucessfull");
+
+                                Intent intent = new Intent(LoginActivity.this, MessagingActivity.class);
+                                startActivity(intent);
+
+                                finish();
+                            } else {
+                                Log.d(TAG, "it failed");
+
+                                Toast.makeText(LoginActivity.this, "Login Failed!", Toast.LENGTH_LONG).show();
+                            }
+
+                        }
+
+
+                    });
+
+            Log.d(TAG, "attemptLogin is ending");
         }
     }
 
@@ -301,81 +332,4 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         int ADDRESS = 0;
         int IS_PRIMARY = 1;
     }
-
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
-        private final String mEmail;
-        private final String mPassword;
-
-        private final String TAG = "UserLoginTask";
-
-        // For firebase fun!
-        private FirebaseAuth mAuth;
-
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
-
-            // Get the current instance
-            mAuth = FirebaseAuth.getInstance();
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-
-            Log.d(TAG, "Calling mAuth.signIn....");
-
-            mAuth.signInWithEmailAndPassword(mEmail, mPassword)
-                    .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            Log.d(TAG, "Called onComplete of signIn..");
-
-                            if (task.isSuccessful()) {
-                                // If login is sucessful
-
-                                Log.d(TAG, "It was sucessfull");
-
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                startActivity(intent);
-
-                                finish();
-                            } else {
-                                Log.d(TAG, "it failed");
-
-                                Toast.makeText(LoginActivity.this, "Login Failed!", Toast.LENGTH_LONG).show();
-                            }
-                        }
-
-
-                    });
-
-            Log.d(TAG, "do in background is ending");
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
-
-            if (success) {
-                finish();
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
-        }
-    }
 }
-
