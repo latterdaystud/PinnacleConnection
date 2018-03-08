@@ -5,25 +5,21 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
-import android.text.format.DateFormat;
 
 import com.google.gson.Gson;
 
@@ -47,8 +43,11 @@ public class MessagingActivity extends AppCompatActivity {
     private Gson gson = new Gson();
     private String jsonMessages;
 
+    private TextSent[] ts;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         final String TAG = "onCreate";
 
         Log.d(TAG, "Called onCreate");
@@ -58,13 +57,17 @@ public class MessagingActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         message = findViewById(R.id.editText);
 
+
         // Load the existing messages from the sharedPreferences
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String jsonMessagesLoadedFromMyPreferences = prefs.getString("jsonMessages", "myStringToSave");
+        String jsonMessagesLoadedFromMyPreferences = prefs.getString("jsonMessages", "[ ]");
+
+        Log.d(TAG,"The json message is " + jsonMessagesLoadedFromMyPreferences);
 
         // Convert the JSON to an array of TextSents
-        TextSent[] ts = gson.fromJson(jsonMessagesLoadedFromMyPreferences, TextSent[].class);
-
+        if(!jsonMessagesLoadedFromMyPreferences.isEmpty()) {
+            ts = gson.fromJson(jsonMessagesLoadedFromMyPreferences, TextSent[].class);
+        }
         // Slap that ^ array into an ArrayList
         MessagesFromJsonList = new ArrayList<>(Arrays.asList(ts));
 
