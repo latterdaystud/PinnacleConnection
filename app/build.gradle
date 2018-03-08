@@ -20,10 +20,6 @@ android {
     testOptions{
         unitTests.returnDefaultValues = true
     }
-    compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
-    }
 }
 
 dependencies {
@@ -39,7 +35,6 @@ dependencies {
     // required if you want to use Mockito for unit tests
     testCompile 'org.mockito:mockito-core:2.7.22'
     // required if you want to use Mockito for Android tests
-    androidTestCompile 'org.mockito:mockito-android:2.7.22'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
@@ -48,9 +43,24 @@ dependencies {
 
     // Used to enable testing
     testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:1.10.19'
 
+    // Firebase
+    compile 'com.google.firebase:firebase-core:11.4.0'
+
+    // Firebase Authentication
+    compile 'com.google.firebase:firebase-auth:11.4.0'
+    compile 'com.google.android.gms:play-services-auth:11.4.0'
+
+    // Firebase database
+    compile 'com.google.firebase:firebase-database:11.4.0'
+
+    // Gson
+    compile 'com.google.code.gson:gson:2.5'
     // Used to create json objects to save to the shared preferences
     compile 'com.google.code.gson:gson:2.8.1'
 
 }
+
+apply plugin: 'com.google.gms.google-services'
+
+

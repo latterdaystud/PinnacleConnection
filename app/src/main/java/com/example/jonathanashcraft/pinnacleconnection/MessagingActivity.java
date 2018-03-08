@@ -8,6 +8,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 import android.text.format.DateFormat;
 
@@ -31,64 +33,89 @@ import java.util.Calendar;
 
 public class MessagingActivity extends AppCompatActivity {
 
+    // Adapter that handles displaying the information in the list view
     private CustomMessagingAdapter arrayAdapter;
+    // The basic format of the texts
     private ListView listView;
+    // Where to enter the text for the message
     private EditText message;
-    private ArrayList<TextSent> arrayList;
 
-    //Added this March 7 during class
+    // Hold all of the messages in an Array
+    ArrayList<TextSent> MessagesFromJsonList;
+
+    // To use for serializing and deserializing to JSON
     private Gson gson = new Gson();
     private String jsonMessages;
-    ////////////////////////////////////////////////////////////////
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        final String TAG = "onCreate";
+
+        Log.d(TAG, "Called onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messaging);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         message = findViewById(R.id.editText);
-        arrayList = new ArrayList();
 
-        arrayAdapter = new CustomMessagingAdapter(this, arrayList);
+        // Load the existing messages from the sharedPreferences
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String jsonMessagesLoadedFromMyPreferences = prefs.getString("jsonMessages", "myStringToSave");
+
+        // Convert the JSON to an array of TextSents
+        TextSent[] ts = gson.fromJson(jsonMessagesLoadedFromMyPreferences, TextSent[].class);
+
+        // Slap that ^ array into an ArrayList
+        MessagesFromJsonList = new ArrayList<>(Arrays.asList(ts));
+
+        // Print some logs to make sure everything is working correctly
+        Log.d(TAG, "The size of MessagesFromJsonList is " + MessagesFromJsonList.size());
+        Log.d(TAG, "MessagesFromJsonList consists of: " + MessagesFromJsonList);
+
+        // Create the arrayAdapter with the existing ArrayList with the messages preloaded
+        arrayAdapter = new CustomMessagingAdapter(this, MessagesFromJsonList);
         listView = (ListView) findViewById(R.id.messageListView);
         listView.setAdapter(arrayAdapter);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                onSend(view);
-            }
+            public void onClick(View view) { onSend(view); }
         });
-
-        //Added this March 7 during class
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String myStrValue = prefs.getString("jsonMessages", "myStringToSave");
-        gson.fromJson(myStrValue, (Type) arrayList);
-        //////////////////////////////////////////////////////////////////////////////////////////
-
     }
     public void onSend(View view) {
+        // For log messages
+        String TAG = "onSend";
 
+        // See if there is actually text in there, if it's just space, return from the function
         if(Objects.equals(message.getText().toString(), " ") || Objects.equals(message.getText().toString(), ""))
             return;
+
+        // Add the string in the message EditText to the preference manager
         PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString(
                 "Message", message.getText().toString()).apply();
 
+        // Get the string we just saved and add it to the arrayAdapter
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String myStrValue = prefs.getString("Message", "myStringToSave");
         arrayAdapter.add(myStrValue);
 
-        //Added this March 7 during class
-        jsonMessages = gson.toJson(arrayList);
+        Log.d(TAG, "The size of the MessagesFromJsonList is " + MessagesFromJsonList.size());
+
+        // Make the current arrayList to a JSON and put it in the sharedPreferences
+        jsonMessages = gson.toJson(MessagesFromJsonList);
         PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString(
                 "jsonMessages", jsonMessages).apply();
-        ////////////////////////////////////////////////////////////////////////////
 
+        Log.d(TAG, "jsonMessages: " + jsonMessages);
+
+        // Notify the arrayAdapter that changes have been made to the arrayList
         arrayAdapter.notifyDataSetChanged();
+
+        // Reset the EditText where the user typed the message
         message.setText("");
+
+        // Display a toast for user experience
         Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_SHORT / 3).show();
     }
 
@@ -167,6 +194,7 @@ public class MessagingActivity extends AppCompatActivity {
         }
     }
 
+    // A class which holds information pertaining to a text
     public class TextSent {
         private String text;
         private String time;
@@ -189,6 +217,10 @@ public class MessagingActivity extends AppCompatActivity {
 
         public void setTime(String time) {
             this.time = time;
+        }
+
+        public String toString() {
+            return "Text: " + text + " at " + time;
         }
     }
 
