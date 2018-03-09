@@ -32,17 +32,20 @@
     <include
         android:id="@+id/include"
         layout="@layout/content_messaging"
+        android:layout_width="372dp"
         app:layout_anchor="@+id/fab"
         app:layout_anchorGravity="top|right" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="57dp"
+        android:layout_height="52dp"
         android:layout_gravity="right|end"
         android:layout_margin="8sp"
         app:layout_anchor="@+id/include"
         app:layout_anchorGravity="right|bottom"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        app:srcCompat="@android:drawable/ic_dialog_email"
+        tools:layout_editor_absoluteX="319dp"
+        tools:layout_editor_absoluteY="507dp" />
 
 </android.support.design.widget.CoordinatorLayout>

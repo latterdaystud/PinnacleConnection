@@ -4,9 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
 
@@ -14,7 +12,6 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -33,17 +30,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
-
-
 
 /**
  * A login screen that offers login via email/password.
@@ -53,16 +47,22 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     // Firebase Authentication
     private FirebaseAuth mAuth;
 
+    // Firebase database
+    private FirebaseDatabase database;
+
     // UI references./
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private Button mSignInButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        mSignInButton = findViewById(R.id.email_sign_in_button);
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -92,6 +92,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         // Get the instance for Firebase
         mAuth = FirebaseAuth.getInstance();
+
+        // Get the instance for the Firebase database
+        database = FirebaseDatabase.getInstance();
     }
 
     /**
@@ -149,8 +152,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 Log.d(TAG, "We logged in!");
 
                                 // Show a toast for user feedback
-                                Toast.makeText(LoginActivity.this, "Successful Login",
+                                Toast.makeText(LoginActivity.this, "Login Sucessful",
                                         Toast.LENGTH_SHORT).show();
+
+                                DatabaseReference myRef = database.getReference("message");
+
+                                myRef.setValue("Logged in");
 
                                 // Start the messaging activity
                                 Intent intent = new Intent(LoginActivity.this, MessagingActivity.class);
@@ -163,9 +170,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 Log.d(TAG, "Unable to Login");
 
                                 // Show toast for user expierence
-                                Toast.makeText(LoginActivity.this, "Login Failed!", Toast.LENGTH_LONG).show();
+                                Toast.makeText(LoginActivity.this, "Login Failed!",
+                                        Toast.LENGTH_SHORT).show();
 
+                                // Show the menu system again
                                 showProgress(false);
+
+                                // Display an error to the user showing that something didn't go right
+                                mSignInButton.setError("Wrong Email or Password");
                             }
                         }
 
