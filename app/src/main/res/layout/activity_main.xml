@@ -8,54 +8,79 @@ android:layout_height="match_parent"
 android:fitsSystemWindows="true"
 tools:openDrawer="start">
 
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Hello World!"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintLeft_toLeftOf="parent"
-    app:layout_constraintRight_toRightOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:onClick="buttonPressed"
-        android:text="Messaging"
-        app:layout_constraintBottom_toTopOf="@+id/textView"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="256dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:onClick="loginPressed"
+            android:text="Login"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="108dp"
+            android:onClick="buttonPressed"
+            android:text="Messaging"
+            app:layout_constraintBottom_toTopOf="@+id/button2"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.349" />
+
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="64dp"
+            android:onClick="maintanceRequestPressed"
+            android:text="@string/action_button_maintenance_request"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button2" />
+
+        <Button
+            android:id="@+id/button5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="52dp"
+            android:onClick="theaterRequestPressed"
+            android:text="@string/action_button_theater_request"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button3" />
+    </android.support.constraint.ConstraintLayout>
 
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:onClick="loginPressed"
-        android:text="Login"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
-
-
-<include
+    <include
     layout="@layout/app_bar_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent" />
 
-<android.support.design.widget.NavigationView
-    android:id="@+id/nav_view"
-    android:layout_width="wrap_content"
-    android:layout_height="match_parent"
-    android:layout_gravity="start"
-    android:fitsSystemWindows="true"
-    app:headerLayout="@layout/nav_header_main"
-    app:menu="@menu/activity_main_drawer" />
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        android:visibility="visible"
+        app:headerLayout="@layout/nav_header_main"
+        app:menu="@menu/activity_main_drawer" />
 
 </android.support.v4.widget.DrawerLayout>
 

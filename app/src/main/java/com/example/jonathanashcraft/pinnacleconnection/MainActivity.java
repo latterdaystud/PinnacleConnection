@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Welcome Back", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 
                 Intent intent = new Intent(MainActivity.this, MessagingActivity.class);
@@ -44,6 +44,28 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        // Set the items for the Navigation View
+        Menu menu = navigationView.getMenu();
+
+        MenuItem nav_camera = menu.findItem(R.id.nav_camera);
+        nav_camera.setTitle("Maintenance Request");
+
+        MenuItem nav_send = menu.findItem(R.id.nav_send);
+        nav_send.setTitle("Message Manager");
+
+        MenuItem nav_share = menu.findItem(R.id.nav_share);
+        nav_share.setTitle("Request Theater");
+
+        MenuItem nav_gallery = menu.findItem(R.id.nav_gallery);
+        nav_gallery.setTitle("Request Theater");
+        MenuItem nav_manage = menu.findItem(R.id.nav_manage);
+        nav_share.setTitle("Log in");
+
+        // Things to ignore in the navigation bar
+        menu.findItem(R.id.nav_slideshow).setVisible(false);
+        menu.findItem(R.id.nav_manage).setVisible(false);
+
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -53,6 +75,16 @@ public class MainActivity extends AppCompatActivity
     }
     public void loginPressed(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
+
+    public void theaterRequestPressed(View view) {
+        Intent intent = new Intent(this, TheaterRequestActivity.class);
+        startActivity(intent);
+    }
+
+    public void maintanceRequestPressed(View view) {
+        Intent intent = new Intent(this, MaintenanceRequest.class);
         startActivity(intent);
     }
 
@@ -95,17 +127,21 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            // Handle the camera action
+            Intent intent = new Intent(this, MaintenanceRequest.class);
+            startActivity(intent);
         } else if (id == R.id.nav_gallery) {
-
+            Intent intent = new Intent(this, TheaterRequestActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_slideshow) {
-
+            // not using
         } else if (id == R.id.nav_manage) {
-
+            // not using
         } else if (id == R.id.nav_share) {
-
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_send) {
-
+            Intent intent = new Intent(this, MessagingActivity.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

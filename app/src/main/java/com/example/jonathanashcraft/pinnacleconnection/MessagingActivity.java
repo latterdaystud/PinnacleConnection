@@ -100,7 +100,7 @@ public class MessagingActivity extends AppCompatActivity {
 
         // Get the string we just saved and add it to the arrayAdapter
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String myStrValue = prefs.getString("Message", "myStringToSave");
+        String myStrValue = prefs.getString("Message", "[ ]");
         arrayAdapter.add(myStrValue);
 
         Log.d(TAG, "The size of the MessagesFromJsonList is " + MessagesFromJsonList.size());
