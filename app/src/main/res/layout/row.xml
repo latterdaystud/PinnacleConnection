@@ -11,16 +11,16 @@
         android:layout_alignRight="@id/msgr"
         android:layout_alignTop="@id/msgr"
         android:scaleType="fitXY"
-        android:src="@drawable/chat1"/>
+        android:src="@drawable/chat2"/>
 
     <TextView
         android:id="@+id/msgr"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginEnd="10sp"
-        android:layout_marginStart="10sp"
-        android:layout_marginTop="10sp"
+        android:layout_alignEnd="@+id/TextView2"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="right|center_horizontal|end"
+        android:layout_marginTop="12dp"
         android:maxWidth="320sp"
         android:paddingBottom="8sp"
         android:paddingEnd="10sp"
@@ -30,16 +30,17 @@
         android:shadowDx="1"
         android:shadowDy="1"
         android:text="hello"
-        android:textSize="20sp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/TextView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
         android:layout_below="@+id/msgr"
         android:layout_gravity="end"
+        android:layout_marginEnd="12dp"
         android:text="TextView" />
 
 </RelativeLayout>
