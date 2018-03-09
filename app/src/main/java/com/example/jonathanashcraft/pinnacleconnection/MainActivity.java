@@ -34,7 +34,7 @@ import java.util.Calendar;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     // For the list of announcements
-    private MainActivity.CustomAnnouncementsAdapter arrayAdapter;
+    private CustomAnnouncementsAdapter arrayAdapter;
     // The basic format of the texts
     private ListView listView;
     ArrayList<Announcement> MessagesFromJsonList;
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity
         // Set the items for the Navigation View
         Menu menu = navigationView.getMenu();
 
-        MenuItem nav_camera = menu.findItem(R.id.nav_camera);
+        MenuItem nav_camera = menu.findItem(R.id.nav_manage);
         nav_camera.setTitle("Maintenance Request");
 
         MenuItem nav_send = menu.findItem(R.id.nav_send);
@@ -89,7 +89,6 @@ public class MainActivity extends AppCompatActivity
 
         // Things to ignore in the navigation bar
         menu.findItem(R.id.nav_slideshow).setVisible(false);
-        menu.findItem(R.id.nav_manage).setVisible(false);
 
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -105,7 +104,7 @@ public class MainActivity extends AppCompatActivity
         //Log.d(TAG,"The json message is " + jsonMessagesLoadedFromMyPreferences);
 
         // Convert the JSON to an array of TextSents
-        if(!jsonMessagesLoadedFromMyPreferences.isEmpty()) {
+        if (!jsonMessagesLoadedFromMyPreferences.isEmpty()) {
             an = gson.fromJson(jsonMessagesLoadedFromMyPreferences, Announcement[].class);
         }
         // Slap that ^ array into an ArrayList
@@ -120,6 +119,7 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(this, MessagingActivity.class);
         startActivity(intent);
     }
+
     public void loginPressed(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
@@ -178,28 +178,31 @@ public class MainActivity extends AppCompatActivity
 //             android.support.v4.app.FragmentManager manager = getSupportFragmentManager();
 //             manager.beginTransaction().replace(R.id.mainLayout, announcementFragment).commit();
 
-        if (id == R.id.nav_camera) {
-            Intent intent = new Intent(this, MaintenanceRequest.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_gallery) {
-            Intent intent = new Intent(this, TheaterRequestActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_slideshow) {
-            // not using
-        } else if (id == R.id.nav_manage) {
-            // not using
-        } else if (id == R.id.nav_share) {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_send) {
-            Intent intent = new Intent(this, MessagingActivity.class);
-            startActivity(intent);
+            if (id == R.id.nav_gallery) {
+                Intent intent = new Intent(this, MaintenanceRequest.class);
+                startActivity(intent);
+            } else if (id == R.id.nav_gallery) {
+                Intent intent = new Intent(this, TheaterRequestActivity.class);
+                startActivity(intent);
+            } else if (id == R.id.nav_slideshow) {
+                // not using
+            } else if (id == R.id.nav_manage) {
+                // not using
+            } else if (id == R.id.nav_share) {
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+            } else if (id == R.id.nav_send) {
+                Intent intent = new Intent(this, MessagingActivity.class);
+                startActivity(intent);
+            }
+
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+            return true;
+
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-
+        return false;
     }
 
     public class CustomAnnouncementsAdapter extends BaseAdapter {
@@ -207,7 +210,6 @@ public class MainActivity extends AppCompatActivity
         ArrayList<Announcement> myList = new ArrayList();
         LayoutInflater inflater;
         Context context;
-
 
 
         public CustomAnnouncementsAdapter(Context context, ArrayList<Announcement> myList) {
@@ -241,7 +243,7 @@ public class MainActivity extends AppCompatActivity
             TextView Time = view.findViewById(R.id.time);
             TextView Manager = view.findViewById(R.id.manager);
             Title.setText(newAnnouncement.getTitle());
-            Body.setText(newAnnouncement.getAnnouncement());
+            Body.setText(newAnnouncement.getBody());
             Time.setText(newAnnouncement.getTimePeriod());
             Manager.setText(newAnnouncement.getAuthor());
 
