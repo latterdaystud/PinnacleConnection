@@ -1,10 +1,12 @@
 package com.example.jonathanashcraft.pinnacleconnection;
 
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -14,6 +16,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.TextView;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -121,5 +130,57 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
 
+    }
+
+    public class CustomAnnouncementsAdapter extends BaseAdapter {
+
+        ArrayList<Announcement> myList = new ArrayList();
+        LayoutInflater inflater;
+        Context context;
+
+
+
+        public CustomAnnouncementsAdapter(Context context, ArrayList<Announcement> myList) {
+            this.myList = myList;
+            this.context = context;
+            inflater = LayoutInflater.from(this.context);
+
+        }
+
+        @Override
+        public int getCount() {
+            return myList.size();
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return myList.get(i);
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup viewGroup) {
+            View view = getLayoutInflater().inflate(R.layout.announcements_with_image, null);
+            Announcement newAnnouncement = myList.get(position);
+            TextView Title = view.findViewById(R.id.title);
+            TextView Body = view.findViewById(R.id.body);
+            TextView Time = view.findViewById(R.id.time);
+            TextView Manager = view.findViewById(R.id.manager);
+            Title.setText(newAnnouncement.getTitle());
+            Body.setText(newAnnouncement.getAnnouncement());
+            Time.setText(newAnnouncement.getTimePeriod());
+            Manager.setText(newAnnouncement.getAuthor());
+
+            return view;
+        }
+
+        public void add(Announcement newAnnouncement) {
+            myList.add(newAnnouncement);
+
+        }
     }
 }

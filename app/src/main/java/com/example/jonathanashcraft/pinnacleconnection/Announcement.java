@@ -10,6 +10,18 @@ public class Announcement {
     private String Announcement;
     private Date datePosted;
     private String author;
+    private String timePeriod;
+
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    private String title;
 
     // A string representing the file location of the image
     private String imageFileName;
@@ -44,5 +56,13 @@ public class Announcement {
 
     public void setAuthor(String author) {
         this.author = author;
+    }
+
+    public String getTimePeriod() {
+        return timePeriod;
+    }
+
+    public void setTimePeriod(String timePeriod) {
+        this.timePeriod = timePeriod;
     }
 }
