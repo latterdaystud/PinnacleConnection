@@ -1,5 +1,7 @@
 package com.example.jonathanashcraft.pinnacleconnection;
 
+import android.text.Editable;
+
 import java.util.Date;
 
 /**
@@ -7,11 +9,45 @@ import java.util.Date;
  */
 
 public class Announcement {
-    private String Announcement;
+    private String body;
     private Date datePosted;
     private String author;
     private String timePeriod;
+    private String title;
+    private String date;
 
+
+    public Announcement(String title, String timePeriod, String date, String body) {
+
+        this.body = body;
+
+        // Currently null, will add method to give it the current date when the annoucement is created
+        datePosted = null;
+        this.author = null;
+
+        this.timePeriod = timePeriod;
+        this.title = title;
+        this.date = date;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    // A string representing the file location of the image
+    private String imageFileName;
 
     public String getTitle() {
         return title;
@@ -21,25 +57,12 @@ public class Announcement {
         this.title = title;
     }
 
-    private String title;
-
-    // A string representing the file location of the image
-    private String imageFileName;
-
     public String getImageFileName() {
         return imageFileName;
     }
 
     public void setImageFileName(String imageFileName) {
         this.imageFileName = imageFileName;
-    }
-
-    public String getAnnouncement() {
-        return Announcement;
-    }
-
-    public void setAnnouncement(String announcement) {
-        Announcement = announcement;
     }
 
     public Date getDatePosted() {
