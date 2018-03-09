@@ -14,9 +14,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <!-- I believe this is the activity that the app starts with-->
         <activity
             android:name=".MainActivity"
-            android:label="@string/title_activity_main"
+
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,6 +26,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- List of other activity -->
         <activity android:name=".TheaterRequestActivity" />
         <activity
             android:name=".MaintenanceRequest"

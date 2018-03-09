@@ -9,6 +9,10 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_settings">Settings</string>
 
+    <!-- Main Activity (Annoucments page) -->
+    <string name="action_button_maintenance_request">Maintaince Request</string>
+    <string name="action_button_theater_request">Request Theater</string>
+
     <!-- Maintenance Request -->
     <string name="submit_button">Submit</string>
     <string name="picture_button">Picture</string>
