@@ -3,9 +3,12 @@ package com.example.jonathanashcraft.pinnacleconnection;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -18,14 +21,26 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    // For the list of announcements
+    private MainActivity.CustomAnnouncementsAdapter arrayAdapter;
+    // The basic format of the texts
+    private ListView listView;
+    ArrayList<Announcement> MessagesFromJsonList;
+    private Gson gson = new Gson();
+    private String jsonMessages;
+    private Announcement[] an;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +75,23 @@ public class MainActivity extends AppCompatActivity
         AnnouncementFragment announcementFragment = new AnnouncementFragment();
         android.support.v4.app.FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.mainLayout, announcementFragment).commit();
+
+        // Trying to use JSon
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String jsonMessagesLoadedFromMyPreferences = prefs.getString("jsonAnnouncements", "[ ]");
+
+        //Log.d(TAG,"The json message is " + jsonMessagesLoadedFromMyPreferences);
+
+        // Convert the JSON to an array of TextSents
+        if(!jsonMessagesLoadedFromMyPreferences.isEmpty()) {
+            an = gson.fromJson(jsonMessagesLoadedFromMyPreferences, Announcement[].class);
+        }
+        // Slap that ^ array into an ArrayList
+        MessagesFromJsonList = new ArrayList<>(Arrays.asList(an));
+
+        // Instantiation for the list view.
+        arrayAdapter = new CustomAnnouncementsAdapter(this, MessagesFromJsonList);
+        listView = (ListView) findViewById(R.id.announcementsListView);
     }
 
     public void buttonPressed(View view) {
