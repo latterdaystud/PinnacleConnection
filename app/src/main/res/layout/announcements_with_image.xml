@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/textViewTitle"
+        android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -17,27 +17,37 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/textViewBody"
+
+        android:id="@+id/body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textViewTitle"
+        android:layout_below="@+id/title"
         android:layout_centerHorizontal="true"
         android:text="Body" />
 
-    <ImageView
-        android:id="@+id/imageView"
+    <TextView
+        android:id="@+id/time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:maxWidth="150sp"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/textViewTime"
-        app:srcCompat="@drawable/pinnacle_point" />
+        android:layout_below="@+id/body"
+        android:text="TimePeriod" />
 
     <TextView
-        android:id="@+id/textViewTime"
+        android:id="@+id/manager"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/textViewBody"
-        android:text="Date and Time" />
+        android:maxWidth="150sp"
+        android:layout_alignBottom="@+id/time"
+        android:layout_alignParentEnd="true"
+        android:text="Manager" />
 
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/time"
+        android:layout_centerHorizontal="true"
+        app:srcCompat="@drawable/pinnacle_point" />
 </RelativeLayout>

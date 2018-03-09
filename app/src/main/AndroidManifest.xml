@@ -20,12 +20,11 @@
             android:name=".MainActivity"
 
             android:theme="@style/AppTheme.NoActionBar">
-
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <!-- List of other activity -->
@@ -37,10 +36,14 @@
             android:name=".LoginActivity"
             android:label="@string/title_activity_login" />
         <activity
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
             android:name=".MessagingActivity"
             android:label="@string/title_activity_messaging"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
+        <activity
+            android:name=".CreateAnnouncement"
+            android:label="@string/title_activity_create_announcement"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
