@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity
         //This displays the AnnouncementFragment as soon as the app is opened
         AnnouncementFragment announcementFragment = new AnnouncementFragment();
         android.support.v4.app.FragmentManager manager = getSupportFragmentManager();
-        manager.beginTransaction().replace(R.id.mainLayout, announcementFragment).commit();
+        //manager.beginTransaction().replace(R.id.mainLayout, announcementFragment).commit();
 
         // Trying to use JSon
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -113,11 +113,26 @@ public class MainActivity extends AppCompatActivity
         // Instantiation for the list view.
         arrayAdapter = new CustomAnnouncementsAdapter(this, MessagesFromJsonList);
         listView = (ListView) findViewById(R.id.announcementsListView);
+        listView.setAdapter(arrayAdapter);
+
+        // TESTING
+        Announcement new1 = new Announcement();
+        arrayAdapter.add(new1);
+        arrayAdapter.notifyDataSetChanged();
+        Announcement new2 = new Announcement("Second title", "never ever", "today buddy", "Weellllll lets hope this works out.");
+        arrayAdapter.add(new2);
+        arrayAdapter.notifyDataSetChanged();
     }
 
     public void buttonPressed(View view) {
-        Intent intent = new Intent(this, MessagingActivity.class);
-        startActivity(intent);
+        Announcement new1 = new Announcement();
+        arrayAdapter.add(new1);
+        arrayAdapter.notifyDataSetChanged();
+        Announcement new2 = new Announcement("Second title", "Always and forever", "today buddy", "Weellllll lets hope this works out.");
+        arrayAdapter.add(new2);
+        arrayAdapter.notifyDataSetChanged();
+        //Intent intent = new Intent(this, MessagingActivity.class);
+        //startActivity(intent);
     }
 
     public void loginPressed(View view) {
@@ -237,7 +252,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public View getView(int position, View convertView, ViewGroup viewGroup) {
             View view = getLayoutInflater().inflate(R.layout.announcements_with_image, null);
-            Announcement newAnnouncement = myList.get(position);
+            Announcement newAnnouncement = myList.get(getCount() - (position + 1));
             TextView Title = view.findViewById(R.id.title);
             TextView Body = view.findViewById(R.id.body);
             TextView Time = view.findViewById(R.id.time);

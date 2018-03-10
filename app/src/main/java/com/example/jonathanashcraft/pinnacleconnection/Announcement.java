@@ -17,6 +17,18 @@ public class Announcement {
     private String date;
 
 
+    public Announcement() {
+        this.body = "This is the first post and just a test. Do not show up! You will be disappointed";
+
+        // Currently null, will add method to give it the current date when the annoucement is created
+        datePosted = null;
+        this.author = "Joseph Swag";
+
+        this.timePeriod = "10/3/1887";
+        this.title = "First Announcement";
+        this.date = "today";
+    }
+
     public Announcement(String title, String timePeriod, String date, String body) {
 
         this.body = body;
