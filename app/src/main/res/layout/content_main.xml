@@ -25,7 +25,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="buttonPressed"
-            android:text="Button" />
+            android:text="Button"
+            tools:text="Create Announcement" />
 
         <ListView
             android:id="@+id/announcementsListView"

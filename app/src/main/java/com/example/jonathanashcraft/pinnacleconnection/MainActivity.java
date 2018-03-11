@@ -125,15 +125,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void buttonPressed(View view) {
-        Announcement new1 = new Announcement();
-        arrayAdapter.add(new1);
-        arrayAdapter.notifyDataSetChanged();
-        Announcement new2 = new Announcement("Second title", "Always and forever", "today buddy", "Weellllll lets hope this works out.");
-        arrayAdapter.add(new2);
-        arrayAdapter.notifyDataSetChanged();
-        //Intent intent = new Intent(this, MessagingActivity.class);
-        //startActivity(intent);
+//        Announcement new1 = new Announcement();
+//        arrayAdapter.add(new1);
+//        arrayAdapter.notifyDataSetChanged();
+//        Announcement new2 = new Announcement("Second title", "Always and forever", "today buddy", "Weellllll lets hope this works out.");
+//        arrayAdapter.add(new2);
+//        arrayAdapter.notifyDataSetChanged();
+
+       Intent intent = new Intent(this, CreateAnnouncement.class);
+        startActivity(intent);
     }
+
 
     public void loginPressed(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
