@@ -20,10 +20,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
@@ -42,12 +49,29 @@ public class MainActivity extends AppCompatActivity
     private String jsonMessages;
     private Announcement[] an;
 
+
+    private Announcement tempAnnouncement;
+
+    // Firebase database stuff
+    private FirebaseDatabase database;
+    private DatabaseReference databaseRef;
+
+    private ChildEventListener announcementListener;
+    private DatabaseReference AnnouncementRef;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        final String TAG = "onCreate";
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // Firebase
+        database = FirebaseDatabase.getInstance();
+        databaseRef = database.getReference();
+        AnnouncementRef = database.getReference().child("Announcements").child("Announcements");
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -116,13 +140,44 @@ public class MainActivity extends AppCompatActivity
         listView = (ListView) findViewById(R.id.announcementsListView);
         listView.setAdapter(arrayAdapter);
 
-        // TESTING
-        Announcement new1 = new Announcement();
-        arrayAdapter.add(new1);
-        arrayAdapter.notifyDataSetChanged();
-        Announcement new2 = new Announcement("Second title", "never ever", "today buddy", "Weellllll lets hope this works out.");
-        arrayAdapter.add(new2);
-        arrayAdapter.notifyDataSetChanged();
+        // Value event listener to listen for the real time datachanges
+        announcementListener = new ChildEventListener() {
+
+            // Add the child added to a tempAnnouncement
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                tempAnnouncement = dataSnapshot.getValue(Announcement.class);
+                if (tempAnnouncement != null) {
+                    Log.d(TAG, "TempAnnouncements is not equal to null");
+                    arrayAdapter.add(tempAnnouncement);
+                    arrayAdapter.notifyDataSetChanged();
+                }
+
+                Log.d(TAG, "temp Announcement was created and added to the arrayAdapter");
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        AnnouncementRef.addChildEventListener(announcementListener);
     }
 
     public void buttonPressed(View view) {
@@ -256,7 +311,7 @@ public class MainActivity extends AppCompatActivity
             TextView Manager = view.findViewById(R.id.manager);
             Title.setText(newAnnouncement.getTitle());
             Body.setText(newAnnouncement.getBody());
-            Time.setText(newAnnouncement.getTimePeriod());
+            Time.setText(newAnnouncement.getTimeOfAnnouncement());
             Manager.setText(newAnnouncement.getAuthor());
 
             return view;

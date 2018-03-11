@@ -1,7 +1,10 @@
 package com.example.jonathanashcraft.pinnacleconnection;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.text.Editable;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -10,36 +13,31 @@ import java.util.Date;
 
 public class Announcement {
     private String body;
-    private Date datePosted;
+    // For use in the database when an announcement is created
+    private String ID;
     private String author;
-    private String timePeriod;
+    private String timeOfAnnouncement;
     private String title;
     private String date;
 
-
     public Announcement() {
-        this.body = "This is the first post and just a test. Do not show up! You will be disappointed";
-
-        // Currently null, will add method to give it the current date when the annoucement is created
-        datePosted = null;
-        this.author = "Joseph Swag";
-
-        this.timePeriod = "10/3/1887";
-        this.title = "First Announcement";
-        this.date = "today";
+        this.body = "";
+        this.ID = Calendar.getInstance().getTime().toString();
+        this.author = "";
+        this.timeOfAnnouncement = "";
+        this.title = "";
+        this.date = "";
     }
 
-    public Announcement(String title, String timePeriod, String date, String body) {
+    public Announcement(String Title, String Body, String Date, String time, String Author) {
+        this.body = Body;
+        this.author = Author;
+        this.title = Title;
+        this.timeOfAnnouncement = time;
+        this.date = Date;
 
-        this.body = body;
-
-        // Currently null, will add method to give it the current date when the annoucement is created
-        datePosted = null;
-        this.author = null;
-
-        this.timePeriod = timePeriod;
-        this.title = title;
-        this.date = date;
+        // The ID will be the date and time of the announcement being created
+        this.ID = Calendar.getInstance().getTime().toString();
     }
 
     public String getBody() {
@@ -50,39 +48,12 @@ public class Announcement {
         this.body = body;
     }
 
-    public String getDate() {
-        return date;
+    public String getID() {
+        return ID;
     }
 
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    // A string representing the file location of the image
-    private String imageFileName;
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getImageFileName() {
-        return imageFileName;
-    }
-
-    public void setImageFileName(String imageFileName) {
-        this.imageFileName = imageFileName;
-    }
-
-    public Date getDatePosted() {
-        return datePosted;
-    }
-
-    public void setDatePosted(Date datePosted) {
-        this.datePosted = datePosted;
+    public void setID(String ID) {
+        this.ID = ID;
     }
 
     public String getAuthor() {
@@ -93,11 +64,28 @@ public class Announcement {
         this.author = author;
     }
 
-    public String getTimePeriod() {
-        return timePeriod;
+    public String getTimeOfAnnouncement() {
+        return timeOfAnnouncement;
     }
 
-    public void setTimePeriod(String timePeriod) {
-        this.timePeriod = timePeriod;
+    public void setTimeOfAnnouncement(String timeOfAnnouncement) {
+        this.timeOfAnnouncement = timeOfAnnouncement;
     }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
 }
