@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 
+        /*
         // Set the items for the Navigation View
         Menu menu = navigationView.getMenu();
 
@@ -88,7 +89,7 @@ public class MainActivity extends AppCompatActivity
         nav_share.setTitle("Log in");
 
         // Things to ignore in the navigation bar
-        menu.findItem(R.id.nav_slideshow).setVisible(false);
+        menu.findItem(R.id.nav_slideshow).setVisible(false);*/
 
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -188,38 +189,32 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+
+        Log.d("onNavigationItem", "Method Opened!");
+
         int id = item.getItemId();
 
         if (id == R.id.nav_announcements) {
-//             AnnouncementFragment announcementFragment = new AnnouncementFragment();
-//             android.support.v4.app.FragmentManager manager = getSupportFragmentManager();
-//             manager.beginTransaction().replace(R.id.mainLayout, announcementFragment).commit();
 
-            if (id == R.id.nav_gallery) {
-                Intent intent = new Intent(this, MaintenanceRequest.class);
-                startActivity(intent);
-            } else if (id == R.id.nav_gallery) {
-                Intent intent = new Intent(this, TheaterRequestActivity.class);
-                startActivity(intent);
-            } else if (id == R.id.nav_slideshow) {
-                // not using
-            } else if (id == R.id.nav_manage) {
-                // not using
-            } else if (id == R.id.nav_share) {
-                Intent intent = new Intent(this, LoginActivity.class);
-                startActivity(intent);
-            } else if (id == R.id.nav_send) {
-                Intent intent = new Intent(this, MessagingActivity.class);
-                startActivity(intent);
-            }
 
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);
-            return true;
-
+        } else if (id == R.id.nav_theater) {
+            Intent intent = new Intent(this, TheaterRequestActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_maintenance) {
+            Intent intent = new Intent(this, MaintenanceRequest.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_admin) {
+            // not using
+        } else if (id == R.id.nav_login) {
+            loginPressed(this.listView);
+        } else if (id == R.id.nav_message) {
+            Intent intent = new Intent(this, MessagingActivity.class);
+            startActivity(intent);
         }
 
-        return false;
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     public class CustomAnnouncementsAdapter extends BaseAdapter {
