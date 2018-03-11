@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity
         AnnouncementRef.addChildEventListener(announcementListener);
     }
 
-    public void buttonPressed(View view) {
+    public void createAnnouncement(View view) {
 //        Announcement new1 = new Announcement();
 //        arrayAdapter.add(new1);
 //        arrayAdapter.notifyDataSetChanged();
@@ -259,7 +259,7 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(this, MaintenanceRequest.class);
             startActivity(intent);
         } else if (id == R.id.nav_admin) {
-            // not using
+            createAnnouncement(this.listView);
         } else if (id == R.id.nav_login) {
             loginPressed(this.listView);
         } else if (id == R.id.nav_message) {
