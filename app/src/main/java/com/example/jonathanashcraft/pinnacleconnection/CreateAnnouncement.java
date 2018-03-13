@@ -64,5 +64,7 @@ public class CreateAnnouncement extends AppCompatActivity {
         AnnouncementsRef.child("Announcements").child(tempAnnouncement.getID()).setValue(tempAnnouncement);
 
         Log.d(TAG, "Added announcement to database");
+
+
     }
 }

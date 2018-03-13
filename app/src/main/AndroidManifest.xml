@@ -15,10 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <!-- I believe this is the activity that the app starts with-->
+        <!-- I believe this is the activity that the app starts with -->
         <activity
             android:name=".MainActivity"
-
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -43,7 +42,8 @@
         <activity
             android:name=".CreateAnnouncement"
             android:label="@string/title_activity_create_announcement"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".createProfile"></activity>
     </application>
 
 </manifest>
