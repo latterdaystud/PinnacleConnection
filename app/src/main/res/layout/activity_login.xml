@@ -75,7 +75,7 @@
                 android:text="@string/action_sign_in_short" />
 
             <Button
-                android:id="@+id/button4"
+                android:id="@+id/buttonCreateAccount"
                 style="@android:style/Widget.Material.Button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -53,6 +53,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     // UI references./
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
+    private Button mCreateAccount;
     private View mProgressView;
     private View mLoginFormView;
     private Button mSignInButton;
@@ -63,6 +64,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         setContentView(R.layout.activity_login);
 
         mSignInButton = findViewById(R.id.email_sign_in_button);
+        mCreateAccount = findViewById(R.id.buttonCreateAccount);
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -198,6 +200,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         return password.length() > 4;
     }
 
+    void onCreateAccount(View view) {
+      Intent intent = new Intent(getApplicationContext(), createProfile.class);
+      startActivity(intent);
+    }
 
     // UNKNOWN IF I NEED ALL OF THIS
 
