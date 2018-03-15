@@ -313,6 +313,7 @@ public class MainActivity extends AppCompatActivity
             Body.setText(newAnnouncement.getBody());
             Time.setText(newAnnouncement.getTimeOfAnnouncement());
             Manager.setText(newAnnouncement.getAuthor());
+            Log.i("View set", "Values should be set");
 
             return view;
         }
