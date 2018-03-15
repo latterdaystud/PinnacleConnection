@@ -5,43 +5,41 @@ package com.example.jonathanashcraft.pinnacleconnection;
  */
 
 public class User {
-    String username;
-    String password;
-    int apartmentNumber;
+
+    String firstName;
+    String lastName;
+    String apartmentNumber;
     boolean isManager;
-    String managerPassword;
 
-    User(String username, String password, int apt) {
-        this.username = username;
-        this.password = password;
-        apartmentNumber = apt;
-        boolean isManager = false;
-
-        // This can be loaded from the cloud, right now it will be fixed
-        managerPassword = "555";
+    User(String firstName, String lastName, String apt, boolean isManager) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.apartmentNumber = apt;
+        this.isManager = isManager;
     }
 
-    public String getUsername() {
-        return username;
+
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public String getPassword() {
-        return password;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    public int getApartmentNumber() {
+    public String getApartmentNumber() {
         return apartmentNumber;
     }
 
-    public void setApartmentNumber(int apartmentNumber) {
+    public void setApartmentNumber(String apartmentNumber) {
         this.apartmentNumber = apartmentNumber;
     }
 
@@ -52,21 +50,4 @@ public class User {
     public void setManager(boolean manager) {
         isManager = manager;
     }
-
-    public String getManagerPassword() {
-        return managerPassword;
-    }
-
-    public void setManagerPassword(String managerPassword) {
-        this.managerPassword = managerPassword;
-    }
-
-    public void validateManager(String password) {
-        if (managerPassword == password) {
-            isManager = true;
-        } else {
-            isManager = false;
-        }
-    }
-
 }

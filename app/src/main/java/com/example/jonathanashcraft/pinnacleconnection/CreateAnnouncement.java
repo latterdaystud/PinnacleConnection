@@ -10,9 +10,15 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class CreateAnnouncement extends AppCompatActivity {
 
@@ -21,12 +27,24 @@ public class CreateAnnouncement extends AppCompatActivity {
     private EditText date_of_announcement;
     private EditText description_of_announcement;
 
+    FirebaseUser currentUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        String TAG = "onCreate";
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_announcement);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // Get the current user
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (currentUser == null) {
+            Log.d(TAG, "currentUser is equal to null");
+        } else {
+            Log.d(TAG, "currentUser equals something!!");
+        }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -47,6 +65,22 @@ public class CreateAnnouncement extends AppCompatActivity {
     public void onSubmitAnnouncement(View view) {
         String TAG = "onSubmitAnnouncement";
 
+
+        DatabaseReference firstNameRef = FirebaseDatabase.getInstance().getReference(currentUser.getUid());
+
+        firstNameRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User tempUser = dataSnapshot.getValue(User.class);
+                // get this temp user out of the profile and
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         Announcement tempAnnouncement = new Announcement(
                 title_of_announcement.getText().toString(),
                 description_of_announcement.getText().toString(),
@@ -61,8 +95,17 @@ public class CreateAnnouncement extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference AnnouncementsRef = database.getReference("Announcements");
 
-        AnnouncementsRef.child("Announcements").child(tempAnnouncement.getID()).setValue(tempAnnouncement);
+
+        AnnouncementsRef.child(tempAnnouncement.getID()).setValue(tempAnnouncement);
+
 
         Log.d(TAG, "Added announcement to database");
+
+        // Make a toast for user feedback
+        Toast.makeText(CreateAnnouncement.this, "Created Announcement",
+                Toast.LENGTH_SHORT).show();
+
+        finish();
     }
+
 }

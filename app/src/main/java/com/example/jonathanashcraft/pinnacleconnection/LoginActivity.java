@@ -53,6 +53,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     // UI references./
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
+    private Button mCreateAccount;
     private View mProgressView;
     private View mLoginFormView;
     private Button mSignInButton;
@@ -62,7 +63,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        final String TAG = "onCreate";
+
         mSignInButton = findViewById(R.id.email_sign_in_button);
+        mCreateAccount = findViewById(R.id.buttonCreateAccount);
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -95,6 +99,23 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         // Get the instance for the Firebase database
         database = FirebaseDatabase.getInstance();
+
+        if (mAuth.getCurrentUser() != null) {
+            // if the user is equal to something, skip to the main activity
+
+            // Start the main activity
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+
+            Toast.makeText(LoginActivity.this, "You are already logged in",
+                    Toast.LENGTH_SHORT).show();
+
+            // End this activity
+            finish();
+        } else {
+            Log.d(TAG, "The user is not logged in");
+            Log.d(TAG, "currentUser == null");
+        }
     }
 
     /**
@@ -104,6 +125,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     private void attemptLogin() {
         final String TAG = "attemptLogin";
+
+        Toast.makeText(LoginActivity.this, "Signing In...",
+                Toast.LENGTH_SHORT).show();
 
         // Reset errors.
         mEmailView.setError(null);
@@ -155,12 +179,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 Toast.makeText(LoginActivity.this, "Login Sucessful",
                                         Toast.LENGTH_SHORT).show();
 
-                                DatabaseReference myRef = database.getReference("message");
-
-                                myRef.setValue("Logged in");
-
-                                // Start the messaging activity
-                                Intent intent = new Intent(LoginActivity.this, MessagingActivity.class);
+                                // Start the main activity
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(intent);
 
                                 // End this activity
@@ -198,6 +218,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         return password.length() > 4;
     }
 
+    public void onCreateAccount(View view) {
+      Intent intent = new Intent(getApplicationContext(), CreateProfile.class);
+      startActivity(intent);
+    }
 
     // UNKNOWN IF I NEED ALL OF THIS
 
