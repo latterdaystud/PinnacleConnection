@@ -17,7 +17,7 @@
 
         <!-- I believe this is the activity that the app starts with -->
         <activity
-            android:name=".MainActivity"
+            android:name=".LoginActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,20 +30,23 @@
         <activity android:name=".TheaterRequestActivity" />
         <activity
             android:name=".MaintenanceRequest"
-            android:label="@string/title_activity_maintenance_request" />
+            android:label="Problems?" />
         <activity
-            android:name=".LoginActivity"
-            android:label="@string/title_activity_login" />
+            android:name=".MainActivity"
+            android:label="Announcements"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".MessagingActivity"
-            android:label="@string/title_activity_messaging"
+            android:label="Messages"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
             android:name=".CreateAnnouncement"
-            android:label="@string/title_activity_create_announcement"
+            android:label="Create an Announcement"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".createProfile"></activity>
+
+        <activity android:name=".CreateProfile" />
+
     </application>
 
 </manifest>

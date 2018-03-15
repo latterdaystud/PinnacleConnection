@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.jonathanashcraft.pinnacleconnection.createProfile">
+    tools:context="com.example.jonathanashcraft.pinnacleconnection.CreateProfile">
 
     <EditText
         android:id="@+id/editTextFirstName"
@@ -54,7 +54,7 @@
         app:layout_constraintTop_toBottomOf="@+id/editTextFirstName" />
 
     <EditText
-        android:id="@+id/editText5"
+        android:id="@+id/editTextPassword"
         android:layout_width="245dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
@@ -96,7 +96,7 @@
         android:text="Are You A Manager?"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText5" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextPassword" />
 
     <Button
         android:id="@+id/button6"
@@ -105,6 +105,7 @@
         android:layout_marginBottom="28dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="16dp"
+        android:onClick="onButtonCreateProfile"
         android:text="Create Profile"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

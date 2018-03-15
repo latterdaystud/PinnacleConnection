@@ -162,7 +162,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 myRef.setValue("Logged in");
 
                                 // Start the messaging activity
-                                Intent intent = new Intent(LoginActivity.this, MessagingActivity.class);
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(intent);
 
                                 // End this activity
@@ -200,8 +200,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         return password.length() > 4;
     }
 
-    void onCreateAccount(View view) {
-      Intent intent = new Intent(getApplicationContext(), createProfile.class);
+    public void onCreateAccount(View view) {
+      Intent intent = new Intent(getApplicationContext(), CreateProfile.class);
       startActivity(intent);
     }
 

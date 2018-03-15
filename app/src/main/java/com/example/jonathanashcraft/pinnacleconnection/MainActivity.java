@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity
         // Firebase
         database = FirebaseDatabase.getInstance();
         databaseRef = database.getReference();
-        AnnouncementRef = database.getReference().child("Announcements").child("Announcements");
+        AnnouncementRef = database.getReference().child("Announcements");
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -139,6 +139,12 @@ public class MainActivity extends AppCompatActivity
         arrayAdapter = new CustomAnnouncementsAdapter(this, MessagesFromJsonList);
         listView = (ListView) findViewById(R.id.announcementsListView);
         listView.setAdapter(arrayAdapter);
+    }
+
+    protected void onStart() {
+        super.onStart();
+
+        final String TAG = "onStart";
 
         // Value event listener to listen for the real time datachanges
         announcementListener = new ChildEventListener() {
@@ -151,6 +157,8 @@ public class MainActivity extends AppCompatActivity
                     Log.d(TAG, "TempAnnouncements is not equal to null");
                     arrayAdapter.add(tempAnnouncement);
                     arrayAdapter.notifyDataSetChanged();
+                } else {
+                    Log.d(TAG, "TempAnnouncements is equal to null");
                 }
 
                 Log.d(TAG, "temp Announcement was created and added to the arrayAdapter");
@@ -178,6 +186,7 @@ public class MainActivity extends AppCompatActivity
         };
 
         AnnouncementRef.addChildEventListener(announcementListener);
+
     }
 
     public void createAnnouncement(View view) {
@@ -189,7 +198,7 @@ public class MainActivity extends AppCompatActivity
 //        arrayAdapter.notifyDataSetChanged();
 
        Intent intent = new Intent(this, CreateAnnouncement.class);
-        startActivity(intent);
+        startActivityForResult(intent, 1);
     }
 
 
