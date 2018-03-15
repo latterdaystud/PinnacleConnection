@@ -63,6 +63,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        final String TAG = "onCreate";
+
         mSignInButton = findViewById(R.id.email_sign_in_button);
         mCreateAccount = findViewById(R.id.buttonCreateAccount);
 
@@ -97,6 +99,23 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         // Get the instance for the Firebase database
         database = FirebaseDatabase.getInstance();
+
+        if (mAuth.getCurrentUser() != null) {
+            // if the user is equal to something, skip to the main activity
+
+            // Start the main activity
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+
+            Toast.makeText(LoginActivity.this, "You are already logged in",
+                    Toast.LENGTH_SHORT).show();
+
+            // End this activity
+            finish();
+        } else {
+            Log.d(TAG, "The user is not logged in");
+            Log.d(TAG, "currentUser == null");
+        }
     }
 
     /**
@@ -106,6 +125,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     private void attemptLogin() {
         final String TAG = "attemptLogin";
+
+        Toast.makeText(LoginActivity.this, "Signing In...",
+                Toast.LENGTH_SHORT).show();
 
         // Reset errors.
         mEmailView.setError(null);
@@ -157,11 +179,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 Toast.makeText(LoginActivity.this, "Login Sucessful",
                                         Toast.LENGTH_SHORT).show();
 
-                                DatabaseReference myRef = database.getReference("message");
-
-                                myRef.setValue("Logged in");
-
-                                // Start the messaging activity
+                                // Start the main activity
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(intent);
 
