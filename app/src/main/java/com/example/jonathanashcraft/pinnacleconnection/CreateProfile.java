@@ -92,6 +92,8 @@ public class CreateProfile extends AppCompatActivity {
             Toast.makeText(CreateProfile.this, "Created Profile",
                     Toast.LENGTH_SHORT).show();
         }
+
+        finish();
     }
 
 }

@@ -29,9 +29,10 @@ public class CreateAnnouncement extends AppCompatActivity {
 
     FirebaseUser currentUser;
 
+    User TempUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        String TAG = "onCreate";
+        final String TAG = "onCreate";
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_announcement);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -60,36 +61,55 @@ public class CreateAnnouncement extends AppCompatActivity {
         time_of_announcement = findViewById(R.id.announcement_time);
         date_of_announcement = findViewById(R.id.announcement_date);
         description_of_announcement = findViewById(R.id.announcement_description);
+
+        // Variable to hold the information that we get back from the database.
+        TempUser = new User();
+
+        /*
+        Cannot get this running right now, For some reason the database isn't returning the user
+        class at all.
+
+        */
+        // Get a reference and the name of the first name and last name of the user
+        DatabaseReference firstNameRef = FirebaseDatabase.getInstance().getReference("Users");
+
+        firstNameRef.child(currentUser.getUid());
+
+        Log.d(TAG, "Currentuser is " + currentUser.getUid());
+
+        // Database access
+        firstNameRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(TAG, "OS THIS EVEN RUNNNNIN");
+                User user = dataSnapshot.getValue(User.class);
+
+                Log.d(TAG, "User first name = " + user.getFirstName());
+
+                TempUser.setUser(user);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, "The database access was cancelled" + databaseError.toException());
+            }
+        });
+
+
     }
 
     public void onSubmitAnnouncement(View view) {
         String TAG = "onSubmitAnnouncement";
 
+        Log.d(TAG, "The users name is " + TempUser.getFirstName());
 
-        DatabaseReference firstNameRef = FirebaseDatabase.getInstance().getReference(currentUser.getUid());
-
-        firstNameRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                User tempUser = dataSnapshot.getValue(User.class);
-                // get this temp user out of the profile and
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        Announcement tempAnnouncement = new Announcement(
+        final Announcement tempAnnouncement = new Announcement(
                 title_of_announcement.getText().toString(),
                 description_of_announcement.getText().toString(),
                 date_of_announcement.getText().toString(),
                 time_of_announcement.getText().toString(),
-                "Marissa"
+                (TempUser.getFirstName() + " " + TempUser.getLastName())
         );
-
-        // Push to database
 
         // Get the database and the reference
         FirebaseDatabase database = FirebaseDatabase.getInstance();
