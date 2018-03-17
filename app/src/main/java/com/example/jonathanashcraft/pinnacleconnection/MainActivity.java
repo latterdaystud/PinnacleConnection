@@ -24,6 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
 
         // Firebase
         database = FirebaseDatabase.getInstance();
@@ -140,6 +142,10 @@ public class MainActivity extends AppCompatActivity
         arrayAdapter = new CustomAnnouncementsAdapter(this, MessagesFromJsonList);
         listView = (ListView) findViewById(R.id.announcementsListView);
         listView.setAdapter(arrayAdapter);
+        
+        // TODO: This will show null when called, not sure if its because the class is still initalizing
+        Toast.makeText(MainActivity.this, "Welcome " + AndroidUser.getUserFirstName(),
+                Toast.LENGTH_SHORT).show();
     }
 
     protected void onStart() {
@@ -188,6 +194,8 @@ public class MainActivity extends AppCompatActivity
 
         AnnouncementRef.addChildEventListener(announcementListener);
 
+        Toast.makeText(MainActivity.this, "Welcome back " + AndroidUser.getUserFirstName(),
+                Toast.LENGTH_SHORT).show();
     }
 
     public void createAnnouncement(View view) {
