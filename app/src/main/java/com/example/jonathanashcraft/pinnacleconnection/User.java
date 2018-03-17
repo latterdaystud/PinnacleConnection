@@ -19,10 +19,6 @@ public class User {
     }
 
     User() {
-        firstName = "";
-        lastName = "";
-        apartmentNumber = "";
-        isManager = false;
     }
 
     User(User user) {

@@ -2,6 +2,7 @@ package com.example.jonathanashcraft.pinnacleconnection;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -65,23 +66,24 @@ public class CreateAnnouncement extends AppCompatActivity {
         // Variable to hold the information that we get back from the database.
         TempUser = new User();
 
+        Log.d(TAG, "**************************************************************************");
         /*
         Cannot get this running right now, For some reason the database isn't returning the user
         class at all.
 
         */
         // Get a reference and the name of the first name and last name of the user
-        DatabaseReference firstNameRef = FirebaseDatabase.getInstance().getReference("Users");
-
-        firstNameRef.child(currentUser.getUid());
+        DatabaseReference mFirstNameRef = FirebaseDatabase.getInstance().getReference("Users")
+                .child(currentUser.getUid());
 
         Log.d(TAG, "Currentuser is " + currentUser.getUid());
 
         // Database access
-        firstNameRef.addValueEventListener(new ValueEventListener() {
+        mFirstNameRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(TAG, "OS THIS EVEN RUNNNNIN");
+
+                // The user class isn't even getting the information from the database
                 User user = dataSnapshot.getValue(User.class);
 
                 Log.d(TAG, "User first name = " + user.getFirstName());
@@ -94,7 +96,6 @@ public class CreateAnnouncement extends AppCompatActivity {
                 Log.d(TAG, "The database access was cancelled" + databaseError.toException());
             }
         });
-
 
     }
 
