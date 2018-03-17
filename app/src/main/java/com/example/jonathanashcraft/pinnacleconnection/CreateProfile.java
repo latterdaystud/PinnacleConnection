@@ -57,6 +57,19 @@ public class CreateProfile extends AppCompatActivity {
         String Password = mPassword.getText().toString();
         String Email = mEmail.getText().toString();
 
+
+        Log.d(TAG, "Creating profile");
+
+        // Make an entry in the real time database with all the users information
+        final DatabaseReference mUserRef = database.getReference("Users");
+
+        final String FirstName = mFirstName.getText().toString();
+        final String LastName = mLastName.getText().toString();
+        final String apartmentNumber = mAptNumber.getText().toString();
+
+
+        Log.d(TAG, "********************************************************************************");
+        Log.d(TAG, "Is this running?");
         // Create Profile
         mAuth.createUserWithEmailAndPassword(Email, Password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -65,33 +78,30 @@ public class CreateProfile extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "createUserWithEmail: Sucecssful");
                             currentUser = mAuth.getCurrentUser();
+
+                            // Create a temp user to slap into the database
+                            User tempUser = new User(FirstName, LastName, apartmentNumber, false);
+
+                            // Slap into the database
+                            mUserRef.child(currentUser.getUid()).setValue(tempUser);
+
+                            Toast.makeText(CreateProfile.this, "Created Profile",
+                                    Toast.LENGTH_SHORT).show();
+
+                            finish();
                         } else {
                             Log.d(TAG, "createUserWithEmail: Failed", task.getException());
-                            Toast.makeText(CreateProfile.this, "Authenication Failed",
+                            Toast.makeText(CreateProfile.this, "Profile Creation failed, Try again later",
                                     Toast.LENGTH_SHORT).show();
+                            finish();
                         }
                     }
                 }); // end .addOnCompleteListener
 
-        if(currentUser != null) {
-            Log.d(TAG, "Creating profile");
 
-            // Make an entry in the real time database with all the users information
-            DatabaseReference userRef = database.getReference("Users");
+        Log.d(TAG, "Closing the method onButtonCreateProfile()");
 
-            String FirstName = mFirstName.getText().toString();
-            String LastName = mLastName.getText().toString();
-            String apartmentNumber = mAptNumber.getText().toString();
-
-            // Create a temp user to slap into the database
-            User tempUser = new User(FirstName, LastName, apartmentNumber, false);
-
-            // Slap into the database
-            userRef.child(currentUser.getUid()).setValue(tempUser);
-
-            Toast.makeText(CreateProfile.this, "Created Profile",
-                    Toast.LENGTH_SHORT).show();
-        }
+        Toast.makeText(CreateProfile.this, "Creating Profile...",
+                Toast.LENGTH_SHORT).show();
     }
-
 }

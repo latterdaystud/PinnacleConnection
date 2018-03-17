@@ -25,6 +25,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -259,7 +260,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_announcements) {
-
+            FirebaseAuth.getInstance().signOut();
 
         } else if (id == R.id.nav_theater) {
             Intent intent = new Intent(this, TheaterRequestActivity.class);
@@ -270,6 +271,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_admin) {
             createAnnouncement(this.listView);
         } else if (id == R.id.nav_login) {
+            // Sign out
+            FirebaseAuth.getInstance().signOut();
             loginPressed(this.listView);
         } else if (id == R.id.nav_message) {
             Intent intent = new Intent(this, MessagingActivity.class);

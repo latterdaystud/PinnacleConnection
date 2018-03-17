@@ -25,6 +25,23 @@ public class User {
         this.isManager = isManager;
     }
 
+    User() {
+    }
+
+    User(User user) {
+        this.firstName = user.firstName;
+        this.lastName = user.lastName;
+        this.apartmentNumber = user.apartmentNumber;
+        this.isManager = user.isManager;
+    }
+
+    public void setUser(User user) {
+        this.firstName = user.firstName;
+        this.lastName = user.lastName;
+        this.apartmentNumber = user.apartmentNumber;
+        this.isManager = user.isManager;
+    }
+
 
     public String getFirstName() {
         return firstName;

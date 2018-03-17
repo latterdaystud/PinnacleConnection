@@ -47,6 +47,8 @@
     <string name="title_of_annoucements">Title of Announcement</string>
     <string name="time">Time</string>
     <string name="date">Date</string>
+    <string name="time_of_event">Time of Event</string>
+    <string name="date_of_event">Date of Event</string>
     <string name="create_annoucements_body_of_annoucement">Enter the body of the annoucement</string>
 
     <!-- TODO: Remove or change this placeholder text -->
