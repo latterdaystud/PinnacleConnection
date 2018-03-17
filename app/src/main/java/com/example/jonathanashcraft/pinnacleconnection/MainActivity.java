@@ -142,10 +142,10 @@ public class MainActivity extends AppCompatActivity
         arrayAdapter = new CustomAnnouncementsAdapter(this, MessagesFromJsonList);
         listView = (ListView) findViewById(R.id.announcementsListView);
         listView.setAdapter(arrayAdapter);
-        
+
         // TODO: This will show null when called, not sure if its because the class is still initalizing
-        Toast.makeText(MainActivity.this, "Welcome " + AndroidUser.getUserFirstName(),
-                Toast.LENGTH_SHORT).show();
+//        Toast.makeText(MainActivity.this, "Welcome " + AndroidUser.getUserFirstName(),
+//                Toast.LENGTH_SHORT).show();
     }
 
     protected void onStart() {
