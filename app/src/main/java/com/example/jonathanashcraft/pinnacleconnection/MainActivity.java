@@ -20,10 +20,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -139,6 +141,13 @@ public class MainActivity extends AppCompatActivity
         arrayAdapter = new CustomAnnouncementsAdapter(this, MessagesFromJsonList);
         listView = (ListView) findViewById(R.id.announcementsListView);
         listView.setAdapter(arrayAdapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                createAnnouncement(MainActivity.this.listView, true);
+            }
+        });
     }
 
     protected void onStart() {
@@ -189,7 +198,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void createAnnouncement(View view) {
+    public void createAnnouncement(View view, boolean edit) {
 //        Announcement new1 = new Announcement();
 //        arrayAdapter.add(new1);
 //        arrayAdapter.notifyDataSetChanged();
@@ -197,7 +206,7 @@ public class MainActivity extends AppCompatActivity
 //        arrayAdapter.add(new2);
 //        arrayAdapter.notifyDataSetChanged();
 
-       Intent intent = new Intent(this, CreateAnnouncement.class);
+        Intent intent = new Intent(this, CreateAnnouncement.class);
         startActivityForResult(intent, 1);
     }
 
@@ -268,7 +277,7 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(this, MaintenanceRequest.class);
             startActivity(intent);
         } else if (id == R.id.nav_admin) {
-            createAnnouncement(this.listView);
+            createAnnouncement(this.listView, false);
         } else if (id == R.id.nav_login) {
             loginPressed(this.listView);
         } else if (id == R.id.nav_message) {
