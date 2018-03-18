@@ -57,7 +57,6 @@ public class MessagingActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         message = findViewById(R.id.editText);
 
-
         // Load the existing messages from the sharedPreferences
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String jsonMessagesLoadedFromMyPreferences = prefs.getString("jsonMessages", "[ ]");
@@ -169,13 +168,13 @@ public class MessagingActivity extends AppCompatActivity {
             TextView textview;
             TextView textView2;
             if (position % 2 == 1) {
-                view = getLayoutInflater().inflate(R.layout.row, null);
+                view = getLayoutInflater().inflate(R.layout.message_right, null);
                 textview = view.findViewById(R.id.msgr);
                 textView2 = view.findViewById(R.id.TextView2);
                 addition = "Sent: ";
             }
             else {
-                view = getLayoutInflater().inflate(R.layout.row2, null);
+                view = getLayoutInflater().inflate(R.layout.message_left, null);
                 textview = view.findViewById(R.id.msgr2);
                 textView2 = view.findViewById(R.id.TextView2);
                 addition = "Received: ";

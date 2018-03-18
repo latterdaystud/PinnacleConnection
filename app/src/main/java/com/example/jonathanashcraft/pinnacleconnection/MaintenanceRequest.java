@@ -108,7 +108,7 @@ public class MaintenanceRequest extends AppCompatActivity {
                 // Get the cursor
                 Cursor cursor = getContentResolver().query(selectedImage,
                         filePathColumn, null, null, null);
-                // Move to first row
+                // Move to first message_right
                 cursor.moveToFirst();
 
                 int columnIndex = cursor.getColumnIndex(filePathColumn[0]);

@@ -11,13 +11,6 @@ public class User {
     private String apartmentNumber;
     private boolean isManager;
 
-    User() {
-        this.firstName = "";
-        this.lastName = "";
-        this.apartmentNumber = "";
-        this.isManager = false;
-    }
-
     User(String firstName, String lastName, String apt, boolean isManager) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -26,6 +19,10 @@ public class User {
     }
 
     User() {
+        this.firstName = "";
+        this.lastName = "";
+        this.apartmentNumber = "";
+        this.isManager = false;
     }
 
     User(User user) {

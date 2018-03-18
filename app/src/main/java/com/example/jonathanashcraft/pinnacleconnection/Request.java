@@ -5,11 +5,12 @@ package com.example.jonathanashcraft.pinnacleconnection;
  */
 
 public class Request {
-    String description;
-    String title;
-    User user;
+    private String description;
+    private String title;
+    private User user;
+    private String timeSent;
 
-    public void Request(String title, String description, User user) {
+    public Request(String title, String description, User user) {
         this.title = title;
         this.description = description;
         this.user = user;
@@ -19,9 +20,7 @@ public class Request {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public void setDescription(String description) { this.description = description; }
 
     public String getTitle() {
         return title;
@@ -30,5 +29,9 @@ public class Request {
     public void setTitle(String title) {
         this.title = title;
     }
+
+    public String getTimeSent() { return timeSent;}
+
+    public void setTimeSent( String timeSent) { this.timeSent = timeSent; }
 
 }
