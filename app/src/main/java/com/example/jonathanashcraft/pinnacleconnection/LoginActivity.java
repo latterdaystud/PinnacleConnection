@@ -220,7 +220,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     public void onCreateAccount(View view) {
       Intent intent = new Intent(getApplicationContext(), CreateProfile.class);
-      startActivity(intent);
+      startActivityForResult(intent, 1);
     }
 
     // UNKNOWN IF I NEED ALL OF THIS
