@@ -181,15 +181,8 @@ TimePickerDialog.OnTimeSetListener {
     public void onTimeSet(TimePicker timePicker, int i, int i1) {
         Log.d("onTimeSet", "onTimeSet got called son");
 
-        // Logic for converting 24 hour time to 12 hour time
-        String time;
-
-        if(i > 12) {
-            if (i != 12) {
-                i -= 10;
-                time = i + ":" + i1 + " PM";
-            }
-        }
+        // TODO: Implent logic for 24 hour to 12 hour conversion
+        String time = i + ":" + i1;
 
         time_of_announcement.setText(time);
     }
