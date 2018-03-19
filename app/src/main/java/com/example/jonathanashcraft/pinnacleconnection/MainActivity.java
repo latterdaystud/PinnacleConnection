@@ -32,14 +32,16 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 
+/**
+ * This activity is the main activty that holds the announcements. When a user first logs in or the
+ * system recognizes that user has already logged in, the user will be brought to this activity
+ * everytime. From this activity, the user is able to start other activities.
+ */
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     // For the list of announcements
@@ -165,28 +167,27 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+                // What is going to happen if the child changes
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+                // What are we going to do if the child is removed
             }
 
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
+                // What happens if we move the child
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                // What if we cancel... what....
             }
         };
 
         // Attach the childEventListener
         AnnouncementRef.addChildEventListener(announcementListener);
-
 
         // TODO: This will show null when called, not sure if its because the class is still initalizing
 //        Toast.makeText(MainActivity.this, "Welcome " + AndroidUser.getUserFirstName(),
@@ -195,21 +196,14 @@ public class MainActivity extends AppCompatActivity
 
     protected void onStart() {
         super.onStart();
-
         final String TAG = "onStart";
 
+        // TODO: This will show null when called at the very start of the app
         Toast.makeText(MainActivity.this, "Welcome back " + AndroidUser.getUserFirstName(),
                 Toast.LENGTH_SHORT).show();
     }
 
     public void createAnnouncement(View view) {
-//        Announcement new1 = new Announcement();
-//        arrayAdapter.add(new1);
-//        arrayAdapter.notifyDataSetChanged();
-//        Announcement new2 = new Announcement("Second title", "Always and forever", "today buddy", "Weellllll lets hope this works out.");
-//        arrayAdapter.add(new2);
-//        arrayAdapter.notifyDataSetChanged();
-
        Intent intent = new Intent(this, CreateAnnouncement.class);
         startActivityForResult(intent, 1);
     }

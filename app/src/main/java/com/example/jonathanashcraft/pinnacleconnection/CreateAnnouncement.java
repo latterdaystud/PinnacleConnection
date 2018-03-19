@@ -1,5 +1,7 @@
 package com.example.jonathanashcraft.pinnacleconnection;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -10,7 +12,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,7 +25,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class CreateAnnouncement extends AppCompatActivity {
+import java.util.Calendar;
+
+public class CreateAnnouncement extends AppCompatActivity implements DatePickerDialog.OnDateSetListener,
+TimePickerDialog.OnTimeSetListener {
 
     private EditText title_of_announcement;
     private EditText time_of_announcement;
@@ -33,6 +40,8 @@ public class CreateAnnouncement extends AppCompatActivity {
     // TODO: Create dialog fragments for the user and time input so that the user can have visual feedback on what to choose.
 
     User TempUser;
+    DatePickerDialog datePicker5000;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         final String TAG = "onCreate";
@@ -66,6 +75,31 @@ public class CreateAnnouncement extends AppCompatActivity {
         description_of_announcement = findViewById(R.id.announcement_description);
 
 
+        // Create a dialog box
+        Calendar cal = Calendar.getInstance();
+
+        datePicker5000= new DatePickerDialog(CreateAnnouncement.this, CreateAnnouncement.this,
+                cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+
+
+        // The listener to see if date_of_announcement gets clicked
+        date_of_announcement.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick on date_of_announcement called");
+                datePicker5000.show();
+            }
+        });
+
+        final TimePickerDialog timePicker5000 = new TimePickerDialog(CreateAnnouncement.this, CreateAnnouncement.this,
+                cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), false);
+
+        time_of_announcement.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                timePicker5000.show();
+            }
+        });
 //        // Variable to hold the information that we get back from the database.
 //        TempUser = new User();
 //
@@ -132,4 +166,31 @@ public class CreateAnnouncement extends AppCompatActivity {
         finish();
     }
 
+
+
+    @Override
+    public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+        Log.d("onDateSet", "onDateSet got called son");
+        String date = i1 + "/" + i2 + "/" + i;
+
+        // Set the text of the date
+        date_of_announcement.setText(date);
+    }
+
+    @Override
+    public void onTimeSet(TimePicker timePicker, int i, int i1) {
+        Log.d("onTimeSet", "onTimeSet got called son");
+
+        // Logic for converting 24 hour time to 12 hour time
+        String time;
+
+        if(i > 12) {
+            if (i != 12) {
+                i -= 10;
+                time = i + ":" + i1 + " PM";
+            }
+        }
+
+        time_of_announcement.setText(time);
+    }
 }

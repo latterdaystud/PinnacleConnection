@@ -14,6 +14,7 @@ import static android.content.ContentValues.TAG;
 
 /**
  * Class representing the user with their loaded information from the firedatabase
+ *
  */
 
 public class AndroidUser {
