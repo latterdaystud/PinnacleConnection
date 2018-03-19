@@ -30,6 +30,8 @@ public class CreateAnnouncement extends AppCompatActivity {
 
     FirebaseUser currentUser;
 
+    // TODO: Create dialog fragments for the user and time input so that the user can have visual feedback on what to choose.
+
     User TempUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

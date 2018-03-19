@@ -67,6 +67,7 @@ public class CreateProfile extends AppCompatActivity {
         final String LastName = mLastName.getText().toString();
         final String apartmentNumber = mAptNumber.getText().toString();
 
+        // TODO: Create dialog boxes to prompt for a manager password to validate a user as a manager
 
         Log.d(TAG, "********************************************************************************");
         Log.d(TAG, "Is this running?");

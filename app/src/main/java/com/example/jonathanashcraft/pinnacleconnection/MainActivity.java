@@ -138,6 +138,9 @@ public class MainActivity extends AppCompatActivity
         // Slap that ^ array into an ArrayList
         MessagesFromJsonList = new ArrayList<>(Arrays.asList(an));
 
+
+        Log.d(TAG, "onCreate of MainActivity.java called again");
+
         // Instantiation for the list view.
         arrayAdapter = new CustomAnnouncementsAdapter(this, MessagesFromJsonList);
         listView = (ListView) findViewById(R.id.announcementsListView);
@@ -155,8 +158,8 @@ public class MainActivity extends AppCompatActivity
 
         // Value event listener to listen for the real time datachanges
         announcementListener = new ChildEventListener() {
-
             // Add the child added to a tempAnnouncement
+            // TODO: change the onChildAdded so that it will only add new items
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 tempAnnouncement = dataSnapshot.getValue(Announcement.class);
