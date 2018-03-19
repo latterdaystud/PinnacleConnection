@@ -281,7 +281,7 @@ public class MainActivity extends AppCompatActivity
             FirebaseAuth.getInstance().signOut();
             loginPressed(this.listView);
         } else if (id == R.id.nav_message) {
-            Intent intent = new Intent(this, MessagingActivity.class);
+            Intent intent = new Intent(this, ContactList.class);
             startActivity(intent);
         }
 
@@ -331,6 +331,7 @@ public class MainActivity extends AppCompatActivity
             Body.setText(newAnnouncement.getBody());
             Time.setText(newAnnouncement.getTimeOfAnnouncement());
             Manager.setText(newAnnouncement.getAuthor());
+            Log.i("View set", "Values should be set");
 
             return view;
         }

@@ -6,95 +6,95 @@
     android:layout_height="match_parent"
     tools:context="com.example.jonathanashcraft.pinnacleconnection.MaintenanceRequest">
 
-    <Button
-        android:id="@+id/submit_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/submit_button"
-        app:layout_constraintEnd_toEndOf="@+id/editText_issue"
-        app:layout_constraintTop_toBottomOf="@+id/apartment_spinner" />
 
     <TextView
-        android:id="@+id/title_maintenanceRequest"
-        android:layout_width="wrap_content"
+        android:id="@+id/textView5"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="@string/send_maintenance_request_title"
-        app:layout_constraintStart_toStartOf="@+id/textView_currentRequests"
-        app:layout_constraintTop_toBottomOf="@+id/expandableListView" />
+        android:text="Submitted Requests"
+        android:textAlignment="center"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/urgent_checkBox"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
     <EditText
         android:id="@+id/editText_issue"
-        android:layout_width="348dp"
-        android:layout_height="49dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:ems="10"
-        android:hint="@string/enter_issue_plaintext"
-        android:inputType="textMultiLine"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title_maintenanceRequest" />
-
-    <Button
-        android:id="@+id/picture_button"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/picture_button"
-        app:layout_constraintStart_toStartOf="@+id/editText_issue"
+        android:ems="10"
+        android:hint="Description of the issue."
+        android:inputType="textCapSentences|textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/urgent_checkBox" />
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="50sp"
+        android:layout_height="50sp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:adjustViewBounds="true"
+        android:onClick="openGallery"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="@+id/urgent_checkBox"
+        app:layout_constraintEnd_toStartOf="@+id/button2"
+        app:layout_constraintTop_toTopOf="@+id/urgent_checkBox"
+        app:srcCompat="@drawable/ic_menu_gallery" />
 
     <CheckBox
         android:id="@+id/urgent_checkBox"
-        android:layout_width="82dp"
-        android:layout_height="33dp"
+        android:layout_width="76dp"
+        android:layout_height="44dp"
+        android:layout_marginEnd="160dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp"
-        android:text="@string/urgent_checkbox"
-        app:layout_constraintStart_toStartOf="@+id/editText_issue"
-        app:layout_constraintTop_toBottomOf="@+id/editText_issue" />
-
-    <Spinner
-        android:id="@+id/apartment_spinner"
-        android:layout_width="98dp"
-        android:layout_height="28dp"
-        android:layout_marginTop="12dp"
-        app:layout_constraintEnd_toEndOf="@+id/editText_issue"
-        app:layout_constraintTop_toBottomOf="@+id/editText_issue" />
-
-    <TextView
-        android:id="@+id/textView_apartment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/apartment_number"
-        app:layout_constraintEnd_toStartOf="@+id/apartment_spinner"
-        app:layout_constraintTop_toTopOf="@+id/urgent_checkBox" />
-
-    <TextView
-        android:id="@+id/textView_currentRequests"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/submitted_requests"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.1"
+        android:layout_marginTop="408dp"
+        android:text="Urgent"
+        app:layout_constraintEnd_toStartOf="@+id/imageButton"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ExpandableListView
-        android:id="@+id/expandableListView"
-        android:layout_width="368dp"
-        android:layout_height="269dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/textView_currentRequests"
-        tools:layout_editor_absoluteX="8dp" />
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="66dp"
+        android:layout_height="44dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:onClick="submitPressed"
+        android:text="Send"
+        app:layout_constraintBottom_toBottomOf="@+id/urgent_checkBox"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
+    <ImageView
+        android:id="@+id/imageViewer"
+        android:layout_width="40sp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/editText_issue"
+        app:layout_constraintEnd_toStartOf="@+id/imageButton"
+        app:layout_constraintHorizontal_bias="0.884"
+        app:layout_constraintStart_toEndOf="@+id/urgent_checkBox"
+        app:layout_constraintTop_toBottomOf="@+id/listView"
+        app:srcCompat="@drawable/ic_menu_gallery" />
 
 </android.support.constraint.ConstraintLayout>

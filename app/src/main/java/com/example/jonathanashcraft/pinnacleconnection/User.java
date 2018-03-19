@@ -6,10 +6,10 @@ package com.example.jonathanashcraft.pinnacleconnection;
 
 public class User {
 
-    String firstName;
-    String lastName;
-    String apartmentNumber;
-    boolean isManager;
+    private String firstName;
+    private String lastName;
+    private String apartmentNumber;
+    private boolean isManager;
 
     User(String firstName, String lastName, String apt, boolean isManager) {
         this.firstName = firstName;
@@ -19,6 +19,10 @@ public class User {
     }
 
     User() {
+        this.firstName = "";
+        this.lastName = "";
+        this.apartmentNumber = "";
+        this.isManager = false;
     }
 
     User(User user) {
