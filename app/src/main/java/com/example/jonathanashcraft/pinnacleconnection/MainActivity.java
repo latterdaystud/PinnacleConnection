@@ -88,7 +88,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -96,6 +95,9 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+
+        /*********** Not Sure to what extent this is needed *******************/
 
         /*
         // Set the items for the Navigation View
@@ -129,7 +131,7 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String jsonMessagesLoadedFromMyPreferences = prefs.getString("jsonAnnouncements", "[ ]");
 
-        //Log.d(TAG,"The json message is " + jsonMessagesLoadedFromMyPreferences);
+        // TODO: look into jsonMessagesLoadedFromMyPreferences and see if it has to do with announcements, if it does, change the name of the announcements
 
         // Convert the JSON to an array of TextSents
         if (!jsonMessagesLoadedFromMyPreferences.isEmpty()) {
@@ -138,23 +140,10 @@ public class MainActivity extends AppCompatActivity
         // Slap that ^ array into an ArrayList
         MessagesFromJsonList = new ArrayList<>(Arrays.asList(an));
 
-
-        Log.d(TAG, "onCreate of MainActivity.java called again");
-
         // Instantiation for the list view.
         arrayAdapter = new CustomAnnouncementsAdapter(this, MessagesFromJsonList);
         listView = (ListView) findViewById(R.id.announcementsListView);
         listView.setAdapter(arrayAdapter);
-
-        // TODO: This will show null when called, not sure if its because the class is still initalizing
-//        Toast.makeText(MainActivity.this, "Welcome " + AndroidUser.getUserFirstName(),
-//                Toast.LENGTH_SHORT).show();
-    }
-
-    protected void onStart() {
-        super.onStart();
-
-        final String TAG = "onStart";
 
         // Value event listener to listen for the real time datachanges
         announcementListener = new ChildEventListener() {
@@ -195,7 +184,19 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
+        // Attach the childEventListener
         AnnouncementRef.addChildEventListener(announcementListener);
+
+
+        // TODO: This will show null when called, not sure if its because the class is still initalizing
+//        Toast.makeText(MainActivity.this, "Welcome " + AndroidUser.getUserFirstName(),
+//                Toast.LENGTH_SHORT).show();
+    }
+
+    protected void onStart() {
+        super.onStart();
+
+        final String TAG = "onStart";
 
         Toast.makeText(MainActivity.this, "Welcome back " + AndroidUser.getUserFirstName(),
                 Toast.LENGTH_SHORT).show();
