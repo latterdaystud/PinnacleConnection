@@ -24,6 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -31,14 +32,16 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 
+/**
+ * This activity is the main activty that holds the announcements. When a user first logs in or the
+ * system recognizes that user has already logged in, the user will be brought to this activity
+ * everytime. From this activity, the user is able to start other activities.
+ */
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     // For the list of announcements
@@ -96,6 +99,8 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 
 
+        /*********** Not Sure to what extent this is needed *******************/
+
         // Set the items for the Navigation View
         Menu menu = navigationView.getMenu();
 
@@ -130,7 +135,7 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String jsonMessagesLoadedFromMyPreferences = prefs.getString("jsonAnnouncements", "[ ]");
 
-        //Log.d(TAG,"The json message is " + jsonMessagesLoadedFromMyPreferences);
+        // TODO: look into jsonMessagesLoadedFromMyPreferences and see if it has to do with announcements, if it does, change the name of the announcements
 
         // Convert the JSON to an array of TextSents
         if (!jsonMessagesLoadedFromMyPreferences.isEmpty()) {
@@ -143,17 +148,11 @@ public class MainActivity extends AppCompatActivity
         arrayAdapter = new CustomAnnouncementsAdapter(this, MessagesFromJsonList);
         listView = (ListView) findViewById(R.id.announcementsListView);
         listView.setAdapter(arrayAdapter);
-    }
-
-    protected void onStart() {
-        super.onStart();
-
-        final String TAG = "onStart";
 
         // Value event listener to listen for the real time datachanges
         announcementListener = new ChildEventListener() {
-
             // Add the child added to a tempAnnouncement
+            // TODO: change the onChildAdded so that it will only add new items
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 tempAnnouncement = dataSnapshot.getValue(Announcement.class);
@@ -170,27 +169,40 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+                // What is going to happen if the child changes
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+                // What are we going to do if the child is removed
             }
 
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
+                // What happens if we move the child
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                // What if we cancel... what....
             }
         };
 
+        // Attach the childEventListener
         AnnouncementRef.addChildEventListener(announcementListener);
 
+        // TODO: This will show null when called, not sure if its because the class is still initalizing
+//        Toast.makeText(MainActivity.this, "Welcome " + AndroidUser.getUserFirstName(),
+//                Toast.LENGTH_SHORT).show();
+    }
+
+    protected void onStart() {
+        super.onStart();
+        final String TAG = "onStart";
+
+        // TODO: This will show null when called at the very start of the app
+        Toast.makeText(MainActivity.this, "Welcome back " + AndroidUser.getUserFirstName(),
+                Toast.LENGTH_SHORT).show();
     }
 
     public void createAnnouncement(View view) {

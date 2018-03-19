@@ -38,6 +38,9 @@ public class Announcement {
 
         // The ID will be the date and time of the announcement being created
         this.ID = Calendar.getInstance().getTime().toString();
+
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+
     }
 
     public String getBody() {
