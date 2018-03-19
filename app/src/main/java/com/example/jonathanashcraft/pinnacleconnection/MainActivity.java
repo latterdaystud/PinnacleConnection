@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity
                 Snackbar.make(view, "Welcome Back", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 
-                Intent intent = new Intent(MainActivity.this, MessagingActivity.class);
+                Intent intent = new Intent(MainActivity.this, ContactList.class);
                 startActivity(intent);
             }
         });
@@ -95,10 +95,13 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 
-        /*
+
         // Set the items for the Navigation View
         Menu menu = navigationView.getMenu();
 
+
+        //menu.findItem(R.id.nav_admin).setVisible(false);
+/*
         MenuItem nav_camera = menu.findItem(R.id.nav_manage);
         nav_camera.setTitle("Maintenance Request");
 
@@ -275,7 +278,7 @@ public class MainActivity extends AppCompatActivity
             FirebaseAuth.getInstance().signOut();
             loginPressed(this.listView);
         } else if (id == R.id.nav_message) {
-            Intent intent = new Intent(this, ContactList.class);
+            Intent intent = new Intent(this, MessagingActivity.class);
             startActivity(intent);
         }
 
