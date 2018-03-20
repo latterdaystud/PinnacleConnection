@@ -23,6 +23,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Objects;
+
 public class CreateProfile extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
@@ -47,22 +49,11 @@ public class CreateProfile extends AppCompatActivity {
         // Set to false for default
         isUserManager = false;
 
-        FirebaseDatabase.getInstance().getReference("ManagerPassword")
-                .addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                managerPassword = dataSnapshot.getValue(String.class);
-                Log.d(TAG, "Loaded managers password from database");
-                Log.d(TAG, "Managers password is: " + managerPassword);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d(TAG, "Loading managers password failed!");
-                Log.d(TAG, "DatabaseError Message: " + databaseError.getMessage());
-                Log.d(TAG, "DatabaseError Details: " + databaseError.getDetails());
-            }
-        });
+        // TODO: get the manager in a different way from hardcoding it
+        // Was trying to access firebase but realized that the rules for our database in firebase
+        // is that the user needs to be authenticated (in the system) and at this point, when they
+        // are creating a profile, they are not authenticated.
+        managerPassword = "12345";
 
         setContentView(R.layout.activity_create_profile);
 
@@ -129,11 +120,13 @@ public class CreateProfile extends AppCompatActivity {
     private boolean validateManager(String attemptedManagerPassword) {
         final String TAG = "validateManager";
 
-        if(attemptedManagerPassword == managerPassword) {
+        if(Objects.equals(attemptedManagerPassword, managerPassword)) {
             Log.d(TAG, "The attempted password matched the managers password");
             return true;
         } else {
             Log.d(TAG, "The passwords did not match!");
+            Log.d(TAG, "Your password: " + attemptedManagerPassword);
+            Log.d(TAG, "Actual manager password: " + managerPassword);
             return false;
         }
     }
