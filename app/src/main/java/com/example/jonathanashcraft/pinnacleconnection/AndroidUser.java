@@ -60,8 +60,7 @@ public class AndroidUser {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.d(TAG, "Accessing User for " +
-                        FirebaseAuth.getInstance().getCurrentUser().getUid() + " failed.");
+                Log.d(TAG, "Accessing User for failed.");
             }
         });
     }

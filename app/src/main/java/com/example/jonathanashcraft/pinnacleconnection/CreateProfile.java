@@ -1,10 +1,14 @@
 package com.example.jonathanashcraft.pinnacleconnection;
 
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -13,8 +17,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class CreateProfile extends AppCompatActivity {
 
@@ -25,12 +32,38 @@ public class CreateProfile extends AppCompatActivity {
     private EditText mFirstName;
     private EditText mAptNumber;
     private EditText mEmail;
+    private Button bVerifyManager;
+    private String managerPassword;
+    private Boolean isUserManager;
     FirebaseUser currentUser;
     FirebaseDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        final String TAG = "onCreate";
+
         super.onCreate(savedInstanceState);
+
+        // Set to false for default
+        isUserManager = false;
+
+        FirebaseDatabase.getInstance().getReference("ManagerPassword")
+                .addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                managerPassword = dataSnapshot.getValue(String.class);
+                Log.d(TAG, "Loaded managers password from database");
+                Log.d(TAG, "Managers password is: " + managerPassword);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, "Loading managers password failed!");
+                Log.d(TAG, "DatabaseError Message: " + databaseError.getMessage());
+                Log.d(TAG, "DatabaseError Details: " + databaseError.getDetails());
+            }
+        });
+
         setContentView(R.layout.activity_create_profile);
 
         // Get the current instance of the firebase database
@@ -43,6 +76,48 @@ public class CreateProfile extends AppCompatActivity {
         mFirstName = findViewById(R.id.editTextFirstName);
         mAptNumber = findViewById(R.id.editTextAptNumber);
         mEmail = findViewById(R.id.editTextEmail);
+        bVerifyManager = findViewById(R.id.buttonVerifyManager);
+
+        // TODO: Create dialog boxes to prompt for a manager password to validate a user as a manager
+        AlertDialog.Builder builder = new AlertDialog.Builder(CreateProfile.this);
+
+        // Create a view so that the dialog box has an input
+
+        final EditText input = new EditText(this);
+
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        input.setHint("Enter Manager Password");
+
+        // Build the dialog box
+        builder.setTitle("Manager Password")
+                .setView(input)
+                .setPositiveButton("Verify", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if(validateManager(input.getText().toString())) {
+                            isUserManager = true;
+                        } else {
+                            isUserManager = false;
+                        }
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+
+        // Create the dialog box we just set up
+        final AlertDialog managerPasswordDialog = builder.create();
+
+        // Lets add an onClickListener
+        bVerifyManager.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                managerPasswordDialog.show();
+            }
+        });
     }
 
     @Override
@@ -51,12 +126,23 @@ public class CreateProfile extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
     }
 
+    private boolean validateManager(String attemptedManagerPassword) {
+        final String TAG = "validateManager";
+
+        if(attemptedManagerPassword == managerPassword) {
+            Log.d(TAG, "The attempted password matched the managers password");
+            return true;
+        } else {
+            Log.d(TAG, "The passwords did not match!");
+            return false;
+        }
+    }
+
     public void onButtonCreateProfile(View view) {
         final String TAG = "onButtonCreateProfile";
 
         String Password = mPassword.getText().toString();
         String Email = mEmail.getText().toString();
-
 
         Log.d(TAG, "Creating profile");
 
@@ -67,9 +153,7 @@ public class CreateProfile extends AppCompatActivity {
         final String LastName = mLastName.getText().toString();
         final String apartmentNumber = mAptNumber.getText().toString();
 
-        // TODO: Create dialog boxes to prompt for a manager password to validate a user as a manager
-
-        Log.d(TAG, "********************************************************************************");
+        Log.d(TAG, "************************************************************************");
         Log.d(TAG, "Is this running?");
         // Create Profile
         mAuth.createUserWithEmailAndPassword(Email, Password)
@@ -81,7 +165,8 @@ public class CreateProfile extends AppCompatActivity {
                             currentUser = mAuth.getCurrentUser();
 
                             // Create a temp user to slap into the database
-                            User tempUser = new User(FirstName, LastName, apartmentNumber, false);
+                            User tempUser = new User(FirstName, LastName, apartmentNumber,
+                                    isUserManager);
 
                             // Slap into the database
                             mUserRef.child(currentUser.getUid()).setValue(tempUser);
