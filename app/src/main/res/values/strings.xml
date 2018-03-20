@@ -57,7 +57,7 @@
     <string name="announcement_title">Announcement</string>
     <string name="theater_title">Reserve Theater</string>
     <string name="maintenance_title">Request Maintenance</string>
-    <string name="admin_title">Administrator</string>
-    <string name="login_title">Log in</string>
+    <string name="admin_title">Create Announcement</string>
+    <string name="login_title">Sign Out</string>
     <string name="message_title">Message Manager</string>
 </resources>
