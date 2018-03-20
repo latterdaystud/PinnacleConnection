@@ -60,5 +60,4 @@
     <string name="admin_title">Administrator</string>
     <string name="login_title">Log in</string>
     <string name="message_title">Message Manager</string>
-    <string name="title_activity_contact_list">ContactList</string>
 </resources>

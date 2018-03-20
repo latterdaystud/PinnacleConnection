@@ -76,7 +76,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
         // Firebase
         database = FirebaseDatabase.getInstance();
         databaseRef = database.getReference();
@@ -89,10 +88,11 @@ public class MainActivity extends AppCompatActivity
                 Snackbar.make(view, "Welcome Back", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 
-                Intent intent = new Intent(MainActivity.this, MessagingActivity.class);
+                Intent intent = new Intent(MainActivity.this, ContactList.class);
                 startActivity(intent);
             }
         });
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -105,10 +105,12 @@ public class MainActivity extends AppCompatActivity
 
         /*********** Not Sure to what extent this is needed *******************/
 
-        /*
         // Set the items for the Navigation View
         Menu menu = navigationView.getMenu();
 
+
+        //menu.findItem(R.id.nav_admin).setVisible(false);
+/*
         MenuItem nav_camera = menu.findItem(R.id.nav_manage);
         nav_camera.setTitle("Maintenance Request");
 
@@ -203,23 +205,15 @@ public class MainActivity extends AppCompatActivity
 
     protected void onStart() {
         super.onStart();
-
         final String TAG = "onStart";
 
-        // TODO: This will show null when called, not sure if its because the class is still initalizing
-//        Toast.makeText(MainActivity.this, "Welcome " + AndroidUser.getUserFirstName(),
-//                Toast.LENGTH_SHORT).show();
+        // TODO: This will show null when called at the very start of the app
+        Toast.makeText(MainActivity.this, "Welcome back " + AndroidUser.getUserFirstName(),
+                Toast.LENGTH_SHORT).show();
     }
 
-    public void createAnnouncement(View view, boolean edit) {
-//        Announcement new1 = new Announcement();
-//        arrayAdapter.add(new1);
-//        arrayAdapter.notifyDataSetChanged();
-//        Announcement new2 = new Announcement("Second title", "Always and forever", "today buddy", "Weellllll lets hope this works out.");
-//        arrayAdapter.add(new2);
-//        arrayAdapter.notifyDataSetChanged();
-
-        Intent intent = new Intent(this, CreateAnnouncement.class);
+    public void createAnnouncement(View view) {
+       Intent intent = new Intent(this, CreateAnnouncement.class);
         startActivityForResult(intent, 1);
     }
 
