@@ -76,7 +76,6 @@ public class MainActivity extends AppCompatActivity
         database = FirebaseDatabase.getInstance();
         databaseRef = database.getReference();
         AnnouncementRef = database.getReference().child("Announcements");
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,9 +102,9 @@ public class MainActivity extends AppCompatActivity
 
         // Set the items for the Navigation View
         Menu menu = navigationView.getMenu();
-
-
-        //menu.findItem(R.id.nav_admin).setVisible(false);
+        menu.findItem(R.id.nav_admin).setVisible(false);
+        if(AndroidUser.isUserManager())
+            menu.findItem(R.id.nav_admin).setVisible(true);
 /*
         MenuItem nav_camera = menu.findItem(R.id.nav_manage);
         nav_camera.setTitle("Maintenance Request");
