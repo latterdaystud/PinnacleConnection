@@ -157,12 +157,6 @@ public class MainActivity extends AppCompatActivity
                 createAnnouncement(MainActivity.this.listView, true);
             }
         });
-    }
-
-    protected void onStart() {
-        super.onStart();
-
-        final String TAG = "onStart";
 
         // Value event listener to listen for the real time datachanges
         announcementListener = new ChildEventListener() {
@@ -205,6 +199,12 @@ public class MainActivity extends AppCompatActivity
 
         // Attach the childEventListener
         AnnouncementRef.addChildEventListener(announcementListener);
+    }
+
+    protected void onStart() {
+        super.onStart();
+
+        final String TAG = "onStart";
 
         // TODO: This will show null when called, not sure if its because the class is still initalizing
 //        Toast.makeText(MainActivity.this, "Welcome " + AndroidUser.getUserFirstName(),
