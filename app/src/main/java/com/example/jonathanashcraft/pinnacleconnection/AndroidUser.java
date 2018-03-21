@@ -1,6 +1,7 @@
 package com.example.jonathanashcraft.pinnacleconnection;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -56,6 +57,7 @@ public class AndroidUser {
 
                 // Set the member variable user
                 user.setUser(mTempUser);
+                Log.d(TAG, "User successfully and  completely loaded");
             }
 
             @Override
