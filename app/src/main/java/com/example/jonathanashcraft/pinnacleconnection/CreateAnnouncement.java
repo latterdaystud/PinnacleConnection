@@ -24,7 +24,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
 public class CreateAnnouncement extends AppCompatActivity implements DatePickerDialog.OnDateSetListener,
@@ -34,6 +36,7 @@ TimePickerDialog.OnTimeSetListener {
     private EditText time_of_announcement;
     private EditText date_of_announcement;
     private EditText description_of_announcement;
+    private Announcement editAnnouncement;
 
     FirebaseUser currentUser;
 
@@ -73,6 +76,18 @@ TimePickerDialog.OnTimeSetListener {
         time_of_announcement = findViewById(R.id.announcement_time);
         date_of_announcement = findViewById(R.id.announcement_date);
         description_of_announcement = findViewById(R.id.announcement_description);
+
+        if (getIntent().hasExtra("announcement"))
+        {
+            String announcement = getIntent().getExtras().getString("announcement");
+
+            editAnnouncement = new Gson().fromJson(announcement, Announcement.class);
+
+            title_of_announcement.setText(editAnnouncement.getTitle());
+            time_of_announcement.setText(editAnnouncement.getTimeOfAnnouncement());
+            date_of_announcement.setText(editAnnouncement.getDate());
+            description_of_announcement.setText(editAnnouncement.getBody());
+        }
 
 
         // Create a dialog box
@@ -141,13 +156,26 @@ TimePickerDialog.OnTimeSetListener {
 
         Log.d(TAG, "The users name is " + AndroidUser.getUserFirstName());
 
-        final Announcement tempAnnouncement = new Announcement(
-                title_of_announcement.getText().toString(),
-                description_of_announcement.getText().toString(),
-                date_of_announcement.getText().toString(),
-                time_of_announcement.getText().toString(),
-                (AndroidUser.getUserFirstName() + " " + AndroidUser.getUserLastName())
-        );
+        Announcement tempAnnouncement;
+
+        if (getIntent().hasExtra("announcement")) {
+            editAnnouncement.setTitle(title_of_announcement.getText().toString());
+            editAnnouncement.setTimeOfAnnouncement(time_of_announcement.getText().toString());
+            editAnnouncement.setDate(date_of_announcement.getText().toString());
+            editAnnouncement.setBody(description_of_announcement.getText().toString());
+            tempAnnouncement = editAnnouncement;
+        }
+        else {
+            tempAnnouncement = new Announcement(
+                    title_of_announcement.getText().toString(),
+                    description_of_announcement.getText().toString(),
+                    date_of_announcement.getText().toString(),
+                    time_of_announcement.getText().toString(),
+                    (AndroidUser.getUserFirstName() + " " + AndroidUser.getUserLastName())
+            );
+        }
+
+        tempAnnouncement.setIndexInArray(getIntent().getExtras().getInt("index"));
 
         // Get the database and the reference
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -156,11 +184,10 @@ TimePickerDialog.OnTimeSetListener {
 
         AnnouncementsRef.child(tempAnnouncement.getID()).setValue(tempAnnouncement);
 
-
         Log.d(TAG, "Added announcement to database");
 
         // Make a toast for user feedback
-        Toast.makeText(CreateAnnouncement.this, "Created Announcement",
+        Toast.makeText(CreateAnnouncement.this, "Announcement Created",
                 Toast.LENGTH_SHORT).show();
 
         finish();

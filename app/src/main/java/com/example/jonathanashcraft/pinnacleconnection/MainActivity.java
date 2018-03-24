@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity
 
 
     private Announcement tempAnnouncement;
+    private Announcement empty;
 
     // Firebase database stuff
     private FirebaseDatabase database;
@@ -75,6 +76,11 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        //Create an empty/default announcement
+        empty = new Announcement();
+        empty.setTitle("Default Announcement");
+        empty.setDefault(true);
 
         // Firebase
         database = FirebaseDatabase.getInstance();
@@ -156,8 +162,23 @@ public class MainActivity extends AppCompatActivity
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                createAnnouncement(MainActivity.this.listView, true);
+                createAnnouncement(MainActivity.this.listView, true, i);
             }
+        });
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view,
+                                           int position, long arg3) {
+                DeleteAnnouncementFragment deleteAnnouncementFragment = new DeleteAnnouncementFragment();
+                tempAnnouncement = MessagesFromJsonList.get(arrayAdapter.getCount() - 1 - position);
+                deleteAnnouncementFragment.setAnnouncement(tempAnnouncement);
+                deleteAnnouncementFragment.show(getSupportFragmentManager(), "DeleteAnnouncementFragment");
+
+                return true;
+            }
+
         });
 
         // Value event listener to listen for the real time datachanges
@@ -180,12 +201,26 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                // What is going to happen if the child changes
+                tempAnnouncement = dataSnapshot.getValue(Announcement.class);
+
+                arrayAdapter.remove(tempAnnouncement.getIndexInArray());
+                arrayAdapter.add(tempAnnouncement.getIndexInArray(), tempAnnouncement);
+                arrayAdapter.notifyDataSetChanged();
+
+                Log.d(TAG, "Announcement was edited and changed in the arrayAdapter");
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                // What are we going to do if the child is removed
+
+                if (arrayAdapter.getCount() == 1) {
+                    arrayAdapter.add(empty);
+                    arrayAdapter.remove(tempAnnouncement.getIndexInArray() - 1);
+                }
+                else {
+                    arrayAdapter.remove(tempAnnouncement.getIndexInArray());
+                }
+                arrayAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -201,6 +236,11 @@ public class MainActivity extends AppCompatActivity
 
         // Attach the childEventListener
         AnnouncementRef.addChildEventListener(announcementListener);
+
+        //Adds the default announcement if there is none
+        if (arrayAdapter.getCount() == 0) {
+            arrayAdapter.add(empty);
+        }
     }
 
     protected void onStart() {
@@ -212,8 +252,16 @@ public class MainActivity extends AppCompatActivity
                 Toast.LENGTH_SHORT).show();
     }
 
-    public void createAnnouncement(View view) {
-       Intent intent = new Intent(this, CreateAnnouncement.class);
+    public void createAnnouncement(View view, boolean edit, int id) {
+        Intent intent = new Intent(this, CreateAnnouncement.class);
+        if (edit) {
+            String announcement = gson.toJson(this.arrayAdapter.getItem(arrayAdapter.getCount() - 1 - id));
+            intent.putExtra("announcement", announcement);
+            intent.putExtra("index", arrayAdapter.getCount() - 1 - id);
+        }
+
+        intent.putExtra("index", arrayAdapter.getCount() - 1 - id);
+
         startActivityForResult(intent, 1);
     }
 
@@ -284,7 +332,7 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(this, MaintenanceRequest.class);
             startActivity(intent);
         } else if (id == R.id.nav_admin) {
-            createAnnouncement(this.listView, false);
+            createAnnouncement(this.listView, false, -1);
         } else if (id == R.id.nav_login) {
             // Sign out
             FirebaseAuth.getInstance().signOut();
@@ -304,6 +352,10 @@ public class MainActivity extends AppCompatActivity
         ArrayList<Announcement> myList = new ArrayList();
         LayoutInflater inflater;
         Context context;
+
+        public void remove(int index) {
+            myList.remove(index);
+        }
 
 
         public CustomAnnouncementsAdapter(Context context, ArrayList<Announcement> myList) {
@@ -349,5 +401,10 @@ public class MainActivity extends AppCompatActivity
             myList.add(newAnnouncement);
 
         }
+        public void add(int index, Announcement newAnnouncement) {
+            myList.add(index, newAnnouncement);
+
+        }
+
     }
 }
