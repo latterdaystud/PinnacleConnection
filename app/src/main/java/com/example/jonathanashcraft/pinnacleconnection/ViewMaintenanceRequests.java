@@ -22,6 +22,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Used to view the maintenance requests that tenants send.
+ */
 public class ViewMaintenanceRequests extends AppCompatActivity {
 
     static private DatabaseReference MaintenanceRequestRef;
@@ -51,12 +54,17 @@ public class ViewMaintenanceRequests extends AppCompatActivity {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 // What happens when a new child is added
+                Log.i("MaintenanceReqListner", "How many times does this get called?");
+
                 tempMaintenanceRequest = dataSnapshot.getValue(MaintenanceRequest.class);
 
                 if (tempMaintenanceRequest != null) {
                     // add it to the array adapter
                     arrayAdapter.add(tempMaintenanceRequest);
                     arrayAdapter.notifyDataSetChanged();
+
+                    Log.d("MaintenanceReqListner", "There are currently " +
+                            arrayAdapter.getCount() + " in your arrayList fag");
                 } else {
                     // lol so tempMaintenanceRequest is null and it shouldn't ever be null
                     Log.e("MaintenanceReqListner", "tempMaintenanceRequest is null");
@@ -133,13 +141,15 @@ public class ViewMaintenanceRequests extends AppCompatActivity {
             TextView Topic = view.findViewById(R.id.textViewMaintenanceRequestTitle);
             TextView Description = view.findViewById(R.id.textViewMaintenanceRequestDescrip);
             TextView Date = view.findViewById(R.id.textViewMaintenanceRequestDate);
-            ImageView image = view.findViewById(R.id.imageViewMaintenaceRequest);
+            TextView Author = view.findViewById(R.id.textViewMaintenanceRequestPerson);
+
 
             Log.i("getView", "Got all the references for the objects in the .xml");
 
             Topic.setText(newMaintenanceRequest.getTitle());
             Description.setText(newMaintenanceRequest.getDescription());
             Date.setText(newMaintenanceRequest.getTimeSent());
+            Author.setText(newMaintenanceRequest.getAuthor());
 
             Log.i("getView", "Set the view");
 

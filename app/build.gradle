@@ -61,9 +61,7 @@ dependencies {
     compile('com.google.apis:google-api-services-gmail:v1-rev82-1.23.0') {
         exclude group: 'org.apache.httpcomponents'
     }
-    implementation files('src/libs/activation.jar')
-    implementation files('src/libs/additionnal.jar')
-    implementation files('src/libs/mail.jar')
+
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -10,23 +10,31 @@ import android.graphics.BitmapFactory;
 public class MaintenanceRequest extends Request {
     private boolean urgent;
     private Bitmap image;
+    private String author;
 
-    public MaintenanceRequest(String title, String description, User user, boolean urgent, Bitmap image) {
-        super(title, description, user);
+    public MaintenanceRequest(String title, String description, String author, boolean urgent, Bitmap image) {
+        super(title, description, new User());
         this.urgent = urgent;
         this.image = image;
+        this.author = author;
+
     }
 
-    public MaintenanceRequest(String title, String description, User user, boolean urgent) {
-        super(title, description,user);
+    public MaintenanceRequest(String title, String description, String author, boolean urgent) {
+        super(title, description, new User(null));
         this.urgent = urgent;
         this.image = null;
+        this.author = author;
     }
 
     public MaintenanceRequest() {
         super("no_title", "no_description", new User());
         this.urgent = false;
         this.image = null;
+    }
+
+    public String getAuthor() {
+        return author;
     }
 
     public boolean isUrgent() { return urgent; }

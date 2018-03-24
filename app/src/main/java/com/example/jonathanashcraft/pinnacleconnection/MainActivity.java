@@ -103,9 +103,13 @@ public class MainActivity extends AppCompatActivity
         // Set the items for the Navigation View
         Menu menu = navigationView.getMenu();
         menu.findItem(R.id.nav_admin).setVisible(false);
-        if(AndroidUser.isUserManager())
+
+        // All the things the manager can see
+        if(AndroidUser.isUserManager()) {
             menu.findItem(R.id.nav_admin).setVisible(true);
-/*
+            menu.findItem(R.id.nav_maintenance).setTitle("View Maintenance Requests");
+        }
+        /*
         MenuItem nav_camera = menu.findItem(R.id.nav_manage);
         nav_camera.setTitle("Maintenance Request");
 
