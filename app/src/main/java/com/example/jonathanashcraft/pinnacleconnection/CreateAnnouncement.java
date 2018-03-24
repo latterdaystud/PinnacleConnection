@@ -25,7 +25,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class CreateAnnouncement extends AppCompatActivity implements DatePickerDialog.OnDateSetListener,
 TimePickerDialog.OnTimeSetListener {
@@ -181,9 +184,9 @@ TimePickerDialog.OnTimeSetListener {
     public void onTimeSet(TimePicker timePicker, int i, int i1) {
         Log.d("onTimeSet", "onTimeSet got called son");
 
-        // TODO: Implent logic for 24 hour to 12 hour conversion
         String time = i + ":" + i1;
 
+        // TODO: Implent logic for 24 hour to 12 hour conversion
         time_of_announcement.setText(time);
     }
 }

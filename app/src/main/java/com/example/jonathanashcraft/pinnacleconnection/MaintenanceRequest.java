@@ -1,6 +1,7 @@
 package com.example.jonathanashcraft.pinnacleconnection;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -13,13 +14,16 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -31,59 +35,112 @@ import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Objects;
 
 public class MaintenanceRequest extends AppCompatActivity {
 
     private ListView maintenanceListView;
     private CustomMaintenanceAdapter maintenanceAdapter;
     private ArrayList<MaintenanceRequestSent> maintenanceList;
-    private EditText issue;
-    private CheckBox urgency;
+
     private ImageView imageButton;
+    private Button bCreateRequest;
+    private ImageButton ibGallery;
+
     private static int RESULT_LOAD_IMG = 1;
     String imgDecodableString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        final String TAG = "onCreate";
+
+        Log.d(TAG, "onCreate of MaintenanceRequest called!");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maintenance_request);
+
         maintenanceList = new ArrayList<>();
         maintenanceListView = findViewById(R.id.listView);
         maintenanceAdapter = new CustomMaintenanceAdapter(this, maintenanceList);
         maintenanceListView.setAdapter(maintenanceAdapter);
-        issue = findViewById(R.id.editText_issue);
-        urgency = findViewById(R.id.urgent_checkBox);
-        imageButton = findViewById(R.id.imageViewer);
-        imageButton.setImageDrawable(null);
-        Log.d("Test For Closing ERROR", "wHAT IS GOING ON!?");
+
+        bCreateRequest = findViewById(R.id.buttonCreateRequest);
+
+        // TODO: For some reason this is null by the time we attach an onclick listener to this button
+        ibGallery = findViewById(R.id.imageButtonAttachPhoto);
+
+        // Build the dialog box that will appear for creating a maintenance request
+        AlertDialog.Builder builder = new AlertDialog.Builder(MaintenanceRequest.this);
+
+        builder.setTitle("Maintenance Request")
+                .setView(R.layout.create_maintenance_request_dialog)
+                .setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // What happens when they push the Submit button
+
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+
+        // Finally create the dialog box(everything we did above)
+        final AlertDialog maintenanceRequestDialog = builder.create();
+
+        // What happens if you push the create request button
+        bCreateRequest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                maintenanceRequestDialog.show();
+            }
+        });
+
+
+//        // TODO: ibGallery equals null in my testing
+//        if(ibGallery != null) {
+//            Log.d(TAG, "ibGallery is not equal to null!!");
+//        } else {
+//            Log.d(TAG, "ibGallery equals null");
+//        }
+
+//        // TODO: The program is crashing right here because ibGallery equals null
+//        ibGallery.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Log.d(TAG, "Does this run?");
+//            }
+//        });
     }
 
-    public void submitPressed(View view) {
-        String title = "New Request";
-        String description = issue.getText().toString();
-        if(Objects.equals(description, "") || Objects.equals(description, " "))
-            return;
-        boolean isUrgent = urgency.isChecked();
-        Bitmap image;
-        if(imageButton.getDrawable() != null) {
-            image = ((BitmapDrawable) imageButton.getDrawable()).getBitmap();
-        }
-        else {
-            image = BitmapFactory.decodeResource(this.getResources(),
-                    R.drawable.ic_menu_gallery);
-        }
-        Log.d("Testing decode", "Decode occurs before this message");
-        User fakeUser = new User();
-        MaintenanceRequestSent request = new MaintenanceRequestSent(title, description, fakeUser, isUrgent, image);
-        maintenanceAdapter.add(request);
-        maintenanceAdapter.notifyDataSetChanged();
-        issue.setText("");
-        //Clear the image box
-        //imageButton.setImageResource(0);
-        imageButton.setImageDrawable(null);
-        urgency.setChecked(false);
-    }
+
+//    public void submitPressed(View view) {
+//        String title = "New Request";
+//        String description = issue.getText().toString();
+//        if(Objects.equals(description, "") || Objects.equals(description, " "))
+//            return;
+//        boolean isUrgent = urgency.isChecked();
+//        Bitmap image;
+//        if(imageButton.getDrawable() != null) {
+//            image = ((BitmapDrawable) imageButton.getDrawable()).getBitmap();
+//        }
+//        else {
+//            image = BitmapFactory.decodeResource(this.getResources(),
+//                    R.drawable.ic_menu_gallery);
+//        }
+//        Log.d("Testing decode", "Decode occurs before this message");
+//        User fakeUser = new User();
+//        MaintenanceRequestSent request = new MaintenanceRequestSent(title, description, fakeUser, isUrgent, image);
+//        maintenanceAdapter.add(request);
+//        maintenanceAdapter.notifyDataSetChanged();
+//        issue.setText("");
+//        //Clear the image box
+//        //imageButton.setImageResource(0);
+//        imageButton.setImageDrawable(null);
+//        urgency.setChecked(false);
+//    }
 
     public void openGallery(View view) {
         // Create intent to Open Image applications like Gallery, Google Photos
@@ -96,6 +153,7 @@ public class MaintenanceRequest extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d("Testing for exception", "Before the try catch block");
         try {
             // When an Image is picked
             if (requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK
@@ -126,6 +184,7 @@ public class MaintenanceRequest extends AppCompatActivity {
         } catch (Exception e) {
             Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG)
                     .show();
+            e.printStackTrace();
         }
 
     }
