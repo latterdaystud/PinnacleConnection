@@ -228,7 +228,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void maintanceRequestPressed(View view) {
-        Intent intent = new Intent(this, MaintenanceRequest.class);
+        Intent intent = new Intent(this, RequestMaintenance.class);
         startActivity(intent);
     }
 
@@ -280,8 +280,15 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(this, TheaterRequestActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_maintenance) {
-            Intent intent = new Intent(this, MaintenanceRequest.class);
-            startActivity(intent);
+            if(!AndroidUser.isUserManager()) {
+                // If the user is not a manager
+                Intent intent = new Intent(this, RequestMaintenance.class);
+                startActivity(intent);
+            } else {
+                // If the user is a manager
+                Intent intent = new Intent(this, ViewMaintenanceRequests.class);
+                startActivity(intent);
+            }
         } else if (id == R.id.nav_admin) {
             createAnnouncement(this.listView);
         } else if (id == R.id.nav_login) {

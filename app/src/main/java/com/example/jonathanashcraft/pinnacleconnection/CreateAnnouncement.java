@@ -156,6 +156,7 @@ TimePickerDialog.OnTimeSetListener {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference AnnouncementsRef = database.getReference("Announcements");
 
+//       DatabaseReference nameRef = database.getReference("contacts");
 
         AnnouncementsRef.child(tempAnnouncement.getID()).setValue(tempAnnouncement);
 

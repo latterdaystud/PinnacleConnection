@@ -172,7 +172,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             Log.d(TAG, "Called onComplete of signIn..");
 
-                            if (task.isSuccessful()) {
+                            if (task.isSuccessful() && AndroidUser.getInstance() != null) {
                                 Log.d(TAG, "We logged in!");
 
                                 // Show a toast for user feedback

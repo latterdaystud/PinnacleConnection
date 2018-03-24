@@ -16,6 +16,13 @@ public class Request {
         this.user = user;
     }
 
+    public Request() {
+        this.title = "";
+        this.description = "";
+        this.user = null;
+        this.timeSent = "";
+    }
+
     public String getDescription() {
         return description;
     }

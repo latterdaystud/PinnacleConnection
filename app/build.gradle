@@ -20,10 +20,11 @@ android {
     testOptions {
         unitTests.returnDefaultValues = true
     }
+
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation 'com.android.support:design:26.1.0'
@@ -31,38 +32,42 @@ dependencies {
     implementation 'com.android.support:support-vector-drawable:26.1.0'
     implementation 'com.android.support:support-v4:26.1.0'
     testImplementation 'junit:junit:4.12'
-
     testCompile 'junit:junit:4.12'
-    // required if you want to use Mockito for unit tests
-    testCompile 'org.mockito:mockito-core:2.7.22'
-    // required if you want to use Mockito for Android tests
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support:design:26.1.0'
-
     // Used to enable testing
     testCompile 'junit:junit:4.12'
 
+    // To send mail
+    //compile 'javax.mail:javax.mail-api:1.5.3'
+
     // Firebase
     compile 'com.google.firebase:firebase-core:11.4.0'
-
     // Firebase Authentication
     compile 'com.google.firebase:firebase-auth:11.4.0'
     compile 'com.google.android.gms:play-services-auth:11.4.0'
-
     // Firebase database
     compile 'com.google.firebase:firebase-database:11.4.0'
-
     // Gson
     compile 'com.google.code.gson:gson:2.5'
     // Used to create json objects to save to the shared preferences
     compile 'com.google.code.gson:gson:2.8.1'
-
+    // To handle to see if we have permissions
+    compile 'pub.devrel:easypermissions:0.2.1'
+    // Gmail API
+    compile('com.google.api-client:google-api-client-android:1.23.0') {
+        exclude group: 'org.apache.httpcomponents'
+    }
+    compile('com.google.apis:google-api-services-gmail:v1-rev82-1.23.0') {
+        exclude group: 'org.apache.httpcomponents'
+    }
+    implementation files('src/libs/activation.jar')
+    implementation files('src/libs/additionnal.jar')
+    implementation files('src/libs/mail.jar')
 }
 
 apply plugin: 'com.google.gms.google-services'
+
 
 
 
