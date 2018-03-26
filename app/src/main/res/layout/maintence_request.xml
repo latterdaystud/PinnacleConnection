@@ -71,4 +71,13 @@
         android:text="person"
         android:textColor="@color/colorAccent" />
 
+    <ImageView
+        android:id="@+id/imageViewMaintenanceRequestPhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/textViewMaintenanceRequestDescrip"
+        android:layout_below="@+id/textViewMaintenanceRequestDescrip"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/common_full_open_on_phone" />
+
 </RelativeLayout>

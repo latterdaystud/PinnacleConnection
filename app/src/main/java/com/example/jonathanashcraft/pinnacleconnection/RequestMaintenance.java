@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,25 +31,22 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
-import com.google.api.services.gmail.Gmail;
-import com.google.api.services.gmail.GmailScopes;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
-import java.util.Properties;
-
-
-
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class RequestMaintenance extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
@@ -56,15 +54,7 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
     private TextView mOutputText;
     private Button mCallApiButton;
     ProgressDialog mProgress;
-
-    static final int REQUEST_ACCOUNT_PICKER = 1000;
-    static final int REQUEST_AUTHORIZATION = 1001;
-    static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
-    static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
-
-    private static final String BUTTON_TEXT = "Call Gmail API";
-    private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = { GmailScopes.GMAIL_LABELS };
+    Uri fileToUpload;
 
     private ListView maintenanceListView;
     private CustomMaintenanceAdapter maintenanceAdapter;
@@ -76,9 +66,9 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
     private CheckBox cbUrgent;
     private EditText etSubjectOfIssue;
     private Boolean addedPhoto;
+    Uri currImageURI;
 
     private static int RESULT_LOAD_IMG = 1;
-    String imgDecodableString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +105,7 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
                         etIssueInput = dialogView.findViewById(R.id.editTextIssueInput);
                         cbUrgent = dialogView.findViewById(R.id.checkBoxIsUrgent);
                         etSubjectOfIssue = dialogView.findViewById(R.id.editTextTopicProblem);
+                        //imagePreview = dialogView.findViewById(R.id.imageViewDialogCreateRequest);
 
                         String text = etIssueInput.getText().toString();
 
@@ -148,24 +139,7 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
                 maintenanceRequestDialog.show();
             }
         });
-
-
-//        // TODO: ibGallery equals null in my testing
-//        if(ibGallery != null) {
-//            Log.d(TAG, "ibGallery is not equal to null!!");
-//        } else {
-//            Log.d(TAG, "ibGallery equals null");
-//        }
-
-//        // TODO: The program is crashing right here because ibGallery equals null
-//        ibGallery.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Log.d(TAG, "Does this run?");
-//            }
-//        });
     }
-
 
     public void makeRequest() {
 
@@ -196,42 +170,6 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
         maintenanceAdapter.notifyDataSetChanged();
     }
 
-
-    public void submitPressed(View view) {
-
-
-        Bitmap image;
-
-        // This is to get an image that was saved as the button, we won't be hold the image like
-        // that anymore
-//        if(imageButton.getDrawable() != null) {
-//            image = ((BitmapDrawable) imageButton.getDrawable()).getBitmap();
-//        }
-//        else {
-//            image = BitmapFactory.decodeResource(this.getResources(),
-//                    R.drawable.ic_menu_gallery);
-//        }
-
-        // Check to see if the user added a photo or not, handle that
-        if (addedPhoto) {
-            // code to add a photo that was selected over in open gallery
-        } else {
-
-        }
-
-
-//        Log.d("Testing decode", "Decode occurs before this message");
-//        User fakeUser = new User();
-//        MaintenanceRequestSent request = new MaintenanceRequestSent(title, description, fakeUser, isUrgent, image);
-//        maintenanceAdapter.add(request);
-//        maintenanceAdapter.notifyDataSetChanged();
-//        issue.setText("");
-//        //Clear the image box
-//        //imageButton.setImageResource(0);
-//        imageButton.setImageDrawable(null);
-//        urgency.setChecked(false);
-    }
-
     public void openGallery(View view) {
         // Create intent to Open Image applications like Gallery, Google Photos
         Intent galleryIntent = new Intent(Intent.ACTION_PICK,
@@ -240,85 +178,60 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
         startActivityForResult(galleryIntent, RESULT_LOAD_IMG);
     }
 
+    // To handle when an image is selected from the browser, add the following to your Activity
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Log.d("Testing for exception", "Before the try catch block");
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
+        if (resultCode == RESULT_OK) {
 
-        String[] galleryPermissions = {Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            if (requestCode == 1) {
 
-        if (EasyPermissions.hasPermissions(this, galleryPermissions)) {
-            try {
-                // When an Image is picked
-                if (requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK
-                        && null != data) {
-                    // Get the Image from data
-
-                    Uri selectedImage = data.getData();
-                    String[] filePathColumn = { MediaStore.Images.Media.DATA };
-
-                    // Get the cursor
-                    Cursor cursor = getContentResolver().query(selectedImage,
-                            filePathColumn, null, null, null);
-                    // Move to first message_right
-                    cursor.moveToFirst();
-
-                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                    imgDecodableString = cursor.getString(columnIndex);
-                    cursor.close();
-
-//                    //Set the image
-//                    imageButton.setImageBitmap(BitmapFactory
-//                            .decodeFile(imgDecodableString));
-
-                } else {
-                    Toast.makeText(this, "You haven't picked Image",
-                            Toast.LENGTH_LONG).show();
-                }
-            } catch (Exception e) {
-                Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG)
-                        .show();
-                e.printStackTrace();
+                // currImageURI is the global variable I'm using to hold the content:// URI of the image
+                currImageURI = data.getData();
             }
-        } else {
-            EasyPermissions.requestPermissions(this, "Access for storage", 101, galleryPermissions);
-
         }
-//        try {
-//            // When an Image is picked
-//            if (requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK
-//                    && null != data) {
-//                // Get the Image from data
-//
-//                Uri selectedImage = data.getData();
-//                String[] filePathColumn = { MediaStore.Images.Media.DATA };
-//
-//                // Get the cursor
-//                Cursor cursor = getContentResolver().query(selectedImage,
-//                        filePathColumn, null, null, null);
-//                // Move to first message_right
-//                cursor.moveToFirst();
-//
-//                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-//                imgDecodableString = cursor.getString(columnIndex);
-//                cursor.close();
-//
-//                //Set the image
-//                imageButton.setImageBitmap(BitmapFactory
-//                        .decodeFile(imgDecodableString));
-//
-//            } else {
-//                Toast.makeText(this, "You haven't picked Image",
-//                        Toast.LENGTH_LONG).show();
-//            }
-//        } catch (Exception e) {
-//            Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG)
-//                    .show();
-//            e.printStackTrace();
-//        }
 
+        String path = getRealPathFromURI(currImageURI);
+
+        fileToUpload = Uri.fromFile(new File(path));
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+
+        StorageReference storageRef = storage.getReference();
+
+        StorageReference imageRef = storageRef.child("images/"+ fileToUpload.getLastPathSegment());
+        UploadTask uploadTask = imageRef.putFile(fileToUpload);
+
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                // aw it didn't work
+                Toast.makeText(RequestMaintenance.this, "Photo Failed to Upload",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                Toast.makeText(RequestMaintenance.this, "Photo Uploaded!",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+        Log.d("RequestMaintenance", "The path is " + path);
+
+
+    }
+
+    public String getRealPathFromURI(Uri contentUri) {
+
+        // can post image
+        String [] proj={MediaStore.Images.Media.DATA};
+        Cursor cursor = getContentResolver().query(contentUri, proj, null, null, null);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+
+        return cursor.getString(column_index);
     }
 
     @Override

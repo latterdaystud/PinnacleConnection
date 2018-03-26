@@ -62,6 +62,9 @@ dependencies {
         exclude group: 'org.apache.httpcomponents'
     }
 
+    // Storage API
+    compile 'com.google.firebase:firebase-storage:11.4.0'
+
 }
 
 apply plugin: 'com.google.gms.google-services'
