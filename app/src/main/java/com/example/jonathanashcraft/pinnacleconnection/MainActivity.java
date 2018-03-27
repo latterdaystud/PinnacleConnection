@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 Snackbar.make(view, "Welcome Back", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-
                 Intent intent = new Intent(MainActivity.this, ContactList.class);
                 startActivity(intent);
             }
@@ -318,8 +317,8 @@ public class MainActivity extends AppCompatActivity
         }
 
         @Override
-        public Object getItem(int i) {
-            return myList.get(i);
+        public Announcement getItem(int i) {
+            return myList.get(getCount() - (i + 1));
         }
 
         @Override
@@ -330,7 +329,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public View getView(int position, View convertView, ViewGroup viewGroup) {
             View view = getLayoutInflater().inflate(R.layout.announcements_with_image, null);
-            Announcement newAnnouncement = myList.get(getCount() - (position + 1));
+            Announcement newAnnouncement = myList.get(position);
             TextView Title = view.findViewById(R.id.title);
             TextView Body = view.findViewById(R.id.body);
             TextView Time = view.findViewById(R.id.time);

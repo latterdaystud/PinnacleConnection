@@ -26,7 +26,11 @@ import com.google.gson.Gson;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-
+/**
+ * Messaging activity, contains information for the activity as well as how the messages are stored
+ * and displayed.
+ * @author Jonathan Ashcraft
+ */
 public class MessagingActivity extends AppCompatActivity {
 
     // Adapter that handles displaying the information in the list view
@@ -45,6 +49,10 @@ public class MessagingActivity extends AppCompatActivity {
 
     private TextSent[] ts;
 
+    /**
+     * Load the saved messages from the phone onto the list view.
+     * @param savedInstanceState instance of the activity
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -85,6 +93,12 @@ public class MessagingActivity extends AppCompatActivity {
             public void onClick(View view) { onSend(view); }
         });
     }
+
+    /**
+     * Called when the send button is pressed. Adds the message found in the text box into the
+     * text message list and list view.
+     * @param view Receives the current state of the activity.
+     */
     public void onSend(View view) {
         // For log messages
         String TAG = "onSend";
@@ -124,12 +138,15 @@ public class MessagingActivity extends AppCompatActivity {
     public final CustomMessagingAdapter getAdapter() {
         return arrayAdapter;
     }
-
     public final EditText getMessage() {
         return message;
     }
     public void setEditText(String value) { message.setText(value);}
 
+    /**
+     * The extends the base adapter to have a custom list view for the messages.
+     * @author Jonathan Ashcraft
+     */
     public class CustomMessagingAdapter extends BaseAdapter {
 
         ArrayList<TextSent> myList = new ArrayList();
@@ -137,7 +154,11 @@ public class MessagingActivity extends AppCompatActivity {
         Context context;
 
 
-
+        /**
+         * Non-default Constructor for the custom messaging adapter
+         * @param context Context of the program
+         * @param myList List to which we will add values.
+         */
         public CustomMessagingAdapter(Context context, ArrayList<TextSent> myList) {
             this.myList = myList;
             this.context = context;
@@ -160,6 +181,13 @@ public class MessagingActivity extends AppCompatActivity {
             return 0;
         }
 
+        /**
+         * Includes the code that will determine how the messages are displayed.
+         * @param position The index of the data in the list.
+         * @param convertView Unused
+         * @param viewGroup Unused
+         * @return Returns the actual view or display of the individual message.
+         */
         @Override
         public View getView(int position, View convertView, ViewGroup viewGroup) {
             TextSent textSent;
@@ -186,6 +214,10 @@ public class MessagingActivity extends AppCompatActivity {
             return view;
         }
 
+        /**
+         * Saves the message into the list to be displayed in the list view.
+         * @param string The message being saved
+         */
         public void add(String string) {
 
             SimpleDateFormat df = new SimpleDateFormat("h:mma, EEE, MMM d");
