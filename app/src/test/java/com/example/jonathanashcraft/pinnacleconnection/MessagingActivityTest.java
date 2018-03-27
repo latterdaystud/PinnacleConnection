@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.EditText;
 
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.*;

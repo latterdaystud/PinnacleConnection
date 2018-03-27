@@ -10,13 +10,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import static android.content.ContentValues.TAG;
 
 /**
- * Class representing the user with their loaded information from the firedatabase
- *
+ * Stores the current user from Google Firebase in a singleton pattern so that it is available
+ * globally. Uses the Eager Singleton pattern.
  */
-
 public class AndroidUser {
     private static final AndroidUser ourInstance = new AndroidUser();
 
@@ -27,15 +25,44 @@ public class AndroidUser {
         return ourInstance;
     }
 
-    // Basic user  functions
+    /**
+     * Returns a user
+     * @return an instance of user that was loaded from Google Firebase
+     */
     public static User getUser() { return user; }
+
+    /**
+     * Returns The users first name.
+     * @return A string regarding the first name of the current user
+     */
     public static String getUserFirstName() { return user.getFirstName(); }
+
+    /**
+     * Returns the users last name.
+     * @return A string regarding the first name of the  current user
+     */
     public static String getUserLastName() { return user.getLastName(); }
+
+    /**
+     * Returns the apartment number of the user
+     * @return A string representing the current users apartment number
+     */
     public static String getUserApartmentNumber() { return user.getApartmentNumber(); }
+
+    /**
+     * Returns true or false depending if the user is a manager or not.
+     * @return A boolean indicating in they are a manager or not
+     */
     public static Boolean isUserManager() { return user.isManager(); }
 
     // TODO: Handle the case where the user logs out and switches to a new user
     // current bug and crash in LoginActivity
+
+    /**
+     * lol current bug here
+     * @param mTempUser A user that you want the AndroidUser to be. Changes the instance of User
+     *                  inside the Android user class.
+     */
     public static void updateUser(User mTempUser) { user.setUser(mTempUser);}
 
     // The private constructor (gets called once)
@@ -56,12 +83,12 @@ public class AndroidUser {
 
                 // Set the member variable user
                 user.setUser(mTempUser);
+                Log.d(TAG, "User successfully and  completely loaded");
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.d(TAG, "Accessing User for " +
-                        FirebaseAuth.getInstance().getCurrentUser().getUid() + " failed.");
+                Log.d(TAG, "Accessing User for failed.");
             }
         });
     }

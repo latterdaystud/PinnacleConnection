@@ -7,6 +7,8 @@
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -30,7 +32,7 @@
         <!-- List of other activity -->
         <activity android:name=".TheaterRequestActivity" />
         <activity
-            android:name=".MaintenanceRequest"
+            android:name=".RequestMaintenance"
             android:label="Problems?" />
         <activity
             android:name=".MainActivity"
@@ -46,7 +48,8 @@
             android:label="Create an Announcement"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".CreateProfile" />
-        <activity android:name=".ContactList"></activity>
+        <activity android:name=".ContactList" />
+        <activity android:name=".ViewMaintenanceRequests"></activity>
     </application>
 
 </manifest>
