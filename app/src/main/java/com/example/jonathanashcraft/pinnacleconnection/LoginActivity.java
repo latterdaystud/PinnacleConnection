@@ -30,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -137,6 +138,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
 
+        Log.d(TAG, "email: " + email);
+        Log.d(TAG, "password: " + password);
+
         boolean cancel = false;
         View focusView = null;
 
@@ -202,7 +206,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         }
 
 
-                    });
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d(TAG, "Login completely failed");
+                }
+            });
 
             Log.d(TAG, "attemptLogin is ending.");
         }

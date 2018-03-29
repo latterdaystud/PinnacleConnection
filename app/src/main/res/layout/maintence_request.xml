@@ -77,7 +77,7 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/textViewMaintenanceRequestDescrip"
         android:layout_below="@+id/textViewMaintenanceRequestDescrip"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:srcCompat="@drawable/common_full_open_on_phone" />
 
 </RelativeLayout>

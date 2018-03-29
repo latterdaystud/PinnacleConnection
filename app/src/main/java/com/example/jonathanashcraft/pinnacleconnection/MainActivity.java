@@ -193,6 +193,7 @@ public class MainActivity extends AppCompatActivity
         // Attach the childEventListener
         AnnouncementRef.addChildEventListener(announcementListener);
 
+        AndroidUser.reloadUser();
         // TODO: This will show null when called, not sure if its because the class is still initalizing
 //        Toast.makeText(MainActivity.this, "Welcome " + AndroidUser.getUserFirstName(),
 //                Toast.LENGTH_SHORT).show();
@@ -202,6 +203,7 @@ public class MainActivity extends AppCompatActivity
         super.onStart();
         final String TAG = "onStart";
 
+        AndroidUser.reloadUser();
         // TODO: This will show null when called at the very start of the app
         Toast.makeText(MainActivity.this, "Welcome back " + AndroidUser.getUserFirstName(),
                 Toast.LENGTH_SHORT).show();
@@ -222,16 +224,6 @@ public class MainActivity extends AppCompatActivity
 
     public void loginPressed(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-    }
-
-    public void theaterRequestPressed(View view) {
-        Intent intent = new Intent(this, TheaterRequestActivity.class);
-        startActivity(intent);
-    }
-
-    public void maintanceRequestPressed(View view) {
-        Intent intent = new Intent(this, RequestMaintenance.class);
         startActivity(intent);
     }
 
@@ -297,7 +289,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_login) {
             // Sign out
             FirebaseAuth.getInstance().signOut();
-            loginPressed(this.listView);
+            loginPressed(getCurrentFocus());
         } else if (id == R.id.nav_message) {
             Intent intent = new Intent(this, MessagingActivity.class);
             startActivity(intent);

@@ -31,25 +31,39 @@
 
         <!-- List of other activity -->
         <activity android:name=".TheaterRequestActivity" />
+
         <activity
             android:name=".RequestMaintenance"
             android:label="Problems?" />
+
         <activity
             android:name=".MainActivity"
             android:label="Announcements"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".MessagingActivity"
+            android:screenOrientation="portrait"
             android:label="Messages"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
+
         <activity
             android:name=".CreateAnnouncement"
+            android:screenOrientation="portrait"
             android:label="Create an Announcement"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".CreateProfile" />
+
+        <activity
+            android:name=".CreateProfile"
+            android:screenOrientation="portrait" />
+
         <activity android:name=".ContactList" />
-        <activity android:name=".ViewMaintenanceRequests"></activity>
+
+        <activity
+            android:name=".ViewMaintenanceRequests"
+            android:screenOrientation="portrait" />
+
     </application>
 
 </manifest>
