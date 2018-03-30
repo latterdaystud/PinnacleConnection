@@ -13,12 +13,6 @@ public class UserClassTest {
 
     @Test
     public void isManagerTest() {
-        User user = new User("jridgley", "girlygirl123", 1);
 
-        assertFalse(user.isManager);
-
-        user.validateManager("555");
-
-        assertTrue(user.isManager());
     }
 }
