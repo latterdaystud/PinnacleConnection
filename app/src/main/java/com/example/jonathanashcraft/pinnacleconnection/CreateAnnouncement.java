@@ -107,7 +107,7 @@ TimePickerDialog.OnTimeSetListener {
             time_of_announcement.setText(editAnnouncement.getTimeOfAnnouncement());
             date_of_announcement.setText(editAnnouncement.getDate());
             description_of_announcement.setText(editAnnouncement.getBody());
-            imageButton.setImageBitmap(new Gson().fromJson(editAnnouncement.getJsonImage(), Bitmap.class));
+           // imageButton.setImageBitmap(new Gson().fromJson(editAnnouncement.getJsonImage(), Bitmap.class));
         }
 
 
@@ -242,7 +242,7 @@ TimePickerDialog.OnTimeSetListener {
             editAnnouncement.setTimeOfAnnouncement(time_of_announcement.getText().toString());
             editAnnouncement.setDate(date_of_announcement.getText().toString());
             editAnnouncement.setBody(description_of_announcement.getText().toString());
-            editAnnouncement.setJsonImage(jsonImage);
+           // editAnnouncement.setJsonImage(jsonImage);
             tempAnnouncement = editAnnouncement;
         }
         else {
@@ -251,7 +251,7 @@ TimePickerDialog.OnTimeSetListener {
                     description_of_announcement.getText().toString(),
                     date_of_announcement.getText().toString(),
                     time_of_announcement.getText().toString(),
-                    (AndroidUser.getUserFirstName() + " " + AndroidUser.getUserLastName()), jsonImage
+                    (AndroidUser.getUserFirstName() + " " + AndroidUser.getUserLastName())
             );
         }
 

@@ -28,7 +28,6 @@ public class Announcement {
     private String date;
     private int indexInArray;
     private Bitmap image;
-    private String jsonImage;
     private boolean isDefault;
 
     /**
@@ -55,13 +54,12 @@ public class Announcement {
      * @param time
      * @param Author
      */
-    public Announcement(String Title, String Body, String Date, String time, String Author, String jsonImage) {
+    public Announcement(String Title, String Body, String Date, String time, String Author) {
         this.body = Body;
         this.author = Author;
         this.title = Title;
         this.timeOfAnnouncement = time;
         this.date = Date;
-        this.jsonImage = jsonImage;
 
         // The ID will be the date and time of the announcement being created
         this.ID = Calendar.getInstance().getTime().toString();
@@ -140,13 +138,5 @@ public class Announcement {
 
     public void setImage(Bitmap image) {
         this.image = image;
-    }
-
-    public String getJsonImage() {
-        return jsonImage;
-    }
-
-    public void setJsonImage(String jsonImage) {
-        this.jsonImage = jsonImage;
     }
 }

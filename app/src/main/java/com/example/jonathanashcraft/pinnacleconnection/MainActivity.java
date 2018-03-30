@@ -401,12 +401,13 @@ public class MainActivity extends AppCompatActivity
             Manager.setText(newAnnouncement.getAuthor());
             ImageView image = view.findViewById(R.id.imageView2);
 
-            Gson gson = new Gson();
-            Bitmap notJson = gson.fromJson(newAnnouncement.getJsonImage(), Bitmap.class);
+           // Gson gson = new Gson();
+            //Bitmap notJson = gson.fromJson(newAnnouncement.getJsonImage(), Bitmap.class);
 
-            if (notJson != BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_menu_gallery)) {
+           /* if (notJson != BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_menu_gallery)) {
                 image.setImageBitmap(notJson);
             }
+            */
 
             Log.i("View set", "Values should be set");
 
