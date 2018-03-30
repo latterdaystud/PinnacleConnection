@@ -9,12 +9,14 @@ public class User {
     private String firstName;
     private String lastName;
     private String apartmentNumber;
+    private String deviceToken;
     private boolean isManager;
 
-    User(String firstName, String lastName, String apt, boolean isManager) {
+    User(String firstName, String lastName, String apt, String deviceToken, boolean isManager) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.apartmentNumber = apt;
+        this.deviceToken = deviceToken;
         this.isManager = isManager;
     }
 

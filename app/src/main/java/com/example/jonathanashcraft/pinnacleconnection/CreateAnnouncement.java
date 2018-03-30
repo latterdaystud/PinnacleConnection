@@ -2,9 +2,16 @@ package com.example.jonathanashcraft.pinnacleconnection;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,6 +21,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -27,7 +36,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class CreateAnnouncement extends AppCompatActivity implements DatePickerDialog.OnDateSetListener,
 TimePickerDialog.OnTimeSetListener {
@@ -37,6 +49,11 @@ TimePickerDialog.OnTimeSetListener {
     private EditText date_of_announcement;
     private EditText description_of_announcement;
     private Announcement editAnnouncement;
+    private static int RESULT_LOAD_IMG = 1;
+    private String imgDecodableString;
+    private ImageView imageButton;
+    private Bitmap image;
+    private String jsonImage;
 
     FirebaseUser currentUser;
 
@@ -52,6 +69,9 @@ TimePickerDialog.OnTimeSetListener {
         setContentView(R.layout.activity_create_announcement);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        imageButton = findViewById(R.id.AnnouncementImage);
+        image = BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_menu_gallery);
 
         // Get the current user
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -87,6 +107,7 @@ TimePickerDialog.OnTimeSetListener {
             time_of_announcement.setText(editAnnouncement.getTimeOfAnnouncement());
             date_of_announcement.setText(editAnnouncement.getDate());
             description_of_announcement.setText(editAnnouncement.getBody());
+            imageButton.setImageBitmap(new Gson().fromJson(editAnnouncement.getJsonImage(), Bitmap.class));
         }
 
 
@@ -151,6 +172,53 @@ TimePickerDialog.OnTimeSetListener {
 
     }
 
+    public void openGallery(View view) {
+        // Create intent to Open Image applications like Gallery, Google Photos
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        // Start the Intent
+        startActivityForResult(galleryIntent, RESULT_LOAD_IMG);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("Testing for exception", "Before the try catch block");
+        try {
+            // When an Image is picked
+            if (requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK
+                    && null != data) {
+                // Get the Image from data
+
+                Uri selectedImage = data.getData();
+                String[] filePathColumn = { MediaStore.Images.Media.DATA };
+
+                // Get the cursor
+                Cursor cursor = getContentResolver().query(selectedImage,
+                        filePathColumn, null, null, null);
+                // Move to first message_right
+                cursor.moveToFirst();
+
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                imgDecodableString = cursor.getString(columnIndex);
+                cursor.close();
+
+                //Set the image
+                imageButton.setImageBitmap(BitmapFactory
+                        .decodeFile(imgDecodableString));
+
+            } else {
+                Toast.makeText(this, "You haven't picked Image",
+                        Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG)
+                    .show();
+            e.printStackTrace();
+        }
+
+    }
+
     public void onSubmitAnnouncement(View view) {
         String TAG = "onSubmitAnnouncement";
 
@@ -158,11 +226,23 @@ TimePickerDialog.OnTimeSetListener {
 
         Announcement tempAnnouncement;
 
+        BitmapDrawable drawable = (BitmapDrawable) imageButton.getDrawable();
+
+        if (drawable != null) {
+            image = drawable.getBitmap();
+        }
+        else {
+            image = BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_menu_gallery);
+        }
+
+        jsonImage = new Gson().toJson(image);
+
         if (getIntent().hasExtra("announcement")) {
             editAnnouncement.setTitle(title_of_announcement.getText().toString());
             editAnnouncement.setTimeOfAnnouncement(time_of_announcement.getText().toString());
             editAnnouncement.setDate(date_of_announcement.getText().toString());
             editAnnouncement.setBody(description_of_announcement.getText().toString());
+            editAnnouncement.setJsonImage(jsonImage);
             tempAnnouncement = editAnnouncement;
         }
         else {
@@ -171,7 +251,7 @@ TimePickerDialog.OnTimeSetListener {
                     description_of_announcement.getText().toString(),
                     date_of_announcement.getText().toString(),
                     time_of_announcement.getText().toString(),
-                    (AndroidUser.getUserFirstName() + " " + AndroidUser.getUserLastName())
+                    (AndroidUser.getUserFirstName() + " " + AndroidUser.getUserLastName()), jsonImage
             );
         }
 

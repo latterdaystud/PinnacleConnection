@@ -4,6 +4,8 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -23,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -79,14 +82,14 @@ public class MainActivity extends AppCompatActivity
 
         //Create an empty/default announcement
         empty = new Announcement();
-        empty.setTitle("Default Announcement");
+        empty.setTitle("Welcome to Pinnacle!");
+        empty.setBody("This is the default announcement.");
         empty.setDefault(true);
 
         // Firebase
         database = FirebaseDatabase.getInstance();
         databaseRef = database.getReference();
         AnnouncementRef = database.getReference().child("Announcements");
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,9 +116,9 @@ public class MainActivity extends AppCompatActivity
 
         // Set the items for the Navigation View
         Menu menu = navigationView.getMenu();
-
-
-        //menu.findItem(R.id.nav_admin).setVisible(false);
+        menu.findItem(R.id.nav_admin).setVisible(false);
+        if(AndroidUser.isUserManager())
+            menu.findItem(R.id.nav_admin).setVisible(true);
 /*
         MenuItem nav_camera = menu.findItem(R.id.nav_manage);
         nav_camera.setTitle("Maintenance Request");
@@ -162,7 +165,9 @@ public class MainActivity extends AppCompatActivity
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                createAnnouncement(MainActivity.this.listView, true, i);
+                if(AndroidUser.isUserManager()) {
+                    createAnnouncement(MainActivity.this.listView, true, i);
+                }
             }
         });
 
@@ -171,11 +176,13 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view,
                                            int position, long arg3) {
-                DeleteAnnouncementFragment deleteAnnouncementFragment = new DeleteAnnouncementFragment();
-                tempAnnouncement = MessagesFromJsonList.get(arrayAdapter.getCount() - 1 - position);
-                deleteAnnouncementFragment.setAnnouncement(tempAnnouncement);
-                deleteAnnouncementFragment.show(getSupportFragmentManager(), "DeleteAnnouncementFragment");
 
+                if(AndroidUser.isUserManager()) {
+                    DeleteAnnouncementFragment deleteAnnouncementFragment = new DeleteAnnouncementFragment();
+                    tempAnnouncement = MessagesFromJsonList.get(arrayAdapter.getCount() - 1 - position);
+                    deleteAnnouncementFragment.setAnnouncement(tempAnnouncement);
+                    deleteAnnouncementFragment.show(getSupportFragmentManager(), "DeleteAnnouncementFragment");
+                }
                 return true;
             }
 
@@ -213,7 +220,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
 
-                if (arrayAdapter.getCount() == 1) {
+               if (arrayAdapter.getCount() == 1) {
                     arrayAdapter.add(empty);
                     arrayAdapter.remove(tempAnnouncement.getIndexInArray() - 1);
                 }
@@ -392,6 +399,15 @@ public class MainActivity extends AppCompatActivity
             Body.setText(newAnnouncement.getBody());
             Time.setText(newAnnouncement.getTimeOfAnnouncement());
             Manager.setText(newAnnouncement.getAuthor());
+            ImageView image = view.findViewById(R.id.imageView2);
+
+            Gson gson = new Gson();
+            Bitmap notJson = gson.fromJson(newAnnouncement.getJsonImage(), Bitmap.class);
+
+            if (notJson != BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_menu_gallery)) {
+                image.setImageBitmap(notJson);
+            }
+
             Log.i("View set", "Values should be set");
 
             return view;
