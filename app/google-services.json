@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "489015114760-ap2qukehj94ln5qj0u39m1c30hv6kmak.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.jonathanashcraft.pinnacleconnection",
+            "certificate_hash": "36823d489b7404d147196fa5ebbafc074105651e"
+          }
+        },
+        {
           "client_id": "489015114760-i6bdnil61j96t6npq6b5l1hb998ti7in.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

@@ -154,14 +154,17 @@ public class CreateProfile extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            Log.d(TAG, "createUserWithEmail: Sucecssful");
+                            Log.d(TAG, "createUserWithEmail: Successful");
                             currentUser = mAuth.getCurrentUser();
 
                             // Create a temp user to slap into the database
-                            User tempUser = new User(FirstName, LastName, apartmentNumber,
-                                    isUserManager);
+                            User tempUser = new User();
+                            tempUser.setFirstName(FirstName);
+                            tempUser.setLastName(LastName);
+                            tempUser.setApartmentNumber(apartmentNumber);
+                            tempUser.setManager(isUserManager);
 
-                            // Slap into the database
+                                    // Slap into the database
                             mUserRef.child(currentUser.getUid()).setValue(tempUser);
 
                             Toast.makeText(CreateProfile.this, "Created Profile",

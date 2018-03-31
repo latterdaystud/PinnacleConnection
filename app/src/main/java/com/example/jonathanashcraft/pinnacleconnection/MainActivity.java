@@ -299,7 +299,7 @@ public class MainActivity extends AppCompatActivity
             FirebaseAuth.getInstance().signOut();
             loginPressed(this.listView);
         } else if (id == R.id.nav_message) {
-            Intent intent = new Intent(this, MessagingActivity.class);
+            Intent intent = new Intent(this, ContactList.class);
             startActivity(intent);
         }
 
@@ -340,7 +340,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public View getView(int position, View convertView, ViewGroup viewGroup) {
             View view = getLayoutInflater().inflate(R.layout.announcements_with_image, null);
-            Announcement newAnnouncement = myList.get(position);
+            Announcement newAnnouncement = getItem(position);
             TextView Title = view.findViewById(R.id.title);
             TextView Body = view.findViewById(R.id.body);
             TextView Time = view.findViewById(R.id.time);

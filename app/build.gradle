@@ -48,6 +48,8 @@ dependencies {
     compile 'com.google.android.gms:play-services-auth:11.4.0'
     // Firebase database
     compile 'com.google.firebase:firebase-database:11.4.0'
+    // Messaging
+    compile 'com.google.firebase:firebase-messaging:11.4.0'
     // Gson
     compile 'com.google.code.gson:gson:2.5'
     // Used to create json objects to save to the shared preferences

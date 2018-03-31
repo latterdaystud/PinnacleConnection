@@ -9,34 +9,39 @@ public class User {
     private String firstName;
     private String lastName;
     private String apartmentNumber;
-    private boolean isManager;
+    private boolean manager;
+    private String device_token;
 
-    User(String firstName, String lastName, String apt, boolean isManager) {
+    User(String firstName, String lastName, String apt, boolean manager, String device_token) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.apartmentNumber = apt;
-        this.isManager = isManager;
+        this.manager = manager;
+        this.device_token = device_token;
     }
 
     User() {
         this.firstName = "";
         this.lastName = "";
         this.apartmentNumber = "";
-        this.isManager = false;
+        this.manager = false;
+        this.device_token = "";
     }
 
     User(User user) {
         this.firstName = user.firstName;
         this.lastName = user.lastName;
         this.apartmentNumber = user.apartmentNumber;
-        this.isManager = user.isManager;
+        this.manager = user.manager;
+        this.device_token = user.device_token;
     }
 
     public void setUser(User user) {
         this.firstName = user.firstName;
         this.lastName = user.lastName;
         this.apartmentNumber = user.apartmentNumber;
-        this.isManager = user.isManager;
+        this.manager = user.manager;
+        this.device_token = user.device_token;
     }
 
 
@@ -65,10 +70,18 @@ public class User {
     }
 
     public boolean isManager() {
-        return isManager;
+        return manager;
     }
 
     public void setManager(boolean manager) {
-        isManager = manager;
+        manager = manager;
+    }
+
+    public String getDeviceToken() {
+        return device_token;
+    }
+
+    public void setDeviceToken(String device_token) {
+        this.device_token = device_token;
     }
 }
