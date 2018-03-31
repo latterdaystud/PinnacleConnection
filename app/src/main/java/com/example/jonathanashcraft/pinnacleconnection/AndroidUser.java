@@ -65,32 +65,52 @@ public class AndroidUser {
      */
     public static void updateUser(User mTempUser) { user.setUser(mTempUser);}
 
+    public static void reloadUser() { loadUser(); }
+
     // The private constructor (gets called once)
     private AndroidUser() {
         // Going to call the database reference to grab the user
         Log.d(TAG, "Private Default Constructor getting called");
 
-        String userPath = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        loadUser();
+    }
 
-        // Set the reference to where the user is at of the current user
-        DatabaseReference mUserRef = FirebaseDatabase.getInstance().getReference("Users")
-                .child(userPath);
+    private static void loadUser() {
 
-        mUserRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                User mTempUser = dataSnapshot.getValue(User.class);
+        String userPath;
 
-                // Set the member variable user
-                user.setUser(mTempUser);
-                Log.d(TAG, "User successfully and  completely loaded");
-            }
+        // If there is a current user (or an authenticated user)
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            userPath = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        } else {
+            // If the user is not an authenticated user
+            userPath = "";
+        }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d(TAG, "Accessing User for failed.");
-            }
-        });
+        // Check to see if there is a current user
+        if (userPath != "") {
+            DatabaseReference mUserRef = FirebaseDatabase.getInstance().getReference("Users")
+                    .child(userPath);
+
+            mUserRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    User mTempUser = dataSnapshot.getValue(User.class);
+
+                    // Set the member variable user
+                    user.setUser(mTempUser);
+                    Log.d(TAG, "User successfully and  completely loaded");
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.d(TAG, "Accessing User for failed.");
+                }
+            });
+        } else {
+            // There is not a current user
+            user.setUser(new User());
+        }
     }
 
 }

@@ -33,6 +33,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.firebase.database.DatabaseReference;
@@ -89,8 +90,6 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
         cbUrgent = findViewById(R.id.checkBoxIsUrgent);
         addedPhoto = false;
 
-        // TODO: For some reason this is null by the time we attach an onclick listener to this button
-
         // Build the dialog box that will appear for creating a maintenance request
         AlertDialog.Builder builder = new AlertDialog.Builder(RequestMaintenance.this);
 
@@ -116,12 +115,7 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
 
                     }
                 })
-                .setNeutralButton("Attach Photo", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        openGallery(getCurrentFocus());
-                    }
-                })
+                .setNeutralButton("Attach Photo", null)
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -132,13 +126,25 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
         // Finally create the dialog box(everything we did above)
         final AlertDialog maintenanceRequestDialog = builder.create();
 
+        // Add a listener for the neutral button (open the gallery)
+        maintenanceRequestDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                Button button = ((AlertDialog) dialogInterface).getButton(AlertDialog.BUTTON_NEUTRAL);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        openGallery(getCurrentFocus());
+                        }
+                    });
+                };
+            });
+
         // What happens if you push the create request button
         bCreateRequest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                maintenanceRequestDialog.show();
-            }
-        });
+                    @Override
+                    public void onClick(View view) {maintenanceRequestDialog.show();}
+                });
     }
 
     public void makeRequest() {
@@ -157,7 +163,11 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
 
         // Make a temporary request to hold the data that has been inputted
         MaintenanceRequest tempMaintenanceRequest = new MaintenanceRequest(topic, description,
-                AndroidUser.getUserFirstName() + " " + AndroidUser.getUserLastName(), isUrgent);
+                AndroidUser.getUserFirstName() + " " + AndroidUser.getUserLastName(), isUrgent,
+                fileToUpload.getLastPathSegment());
+
+        Log.d("makeReqguest", "fileToUpload: " + fileToUpload.getLastPathSegment());
+        Log.d("makeRequest", "fileLocation is: " + tempMaintenanceRequest.getPath());
 
         DatabaseReference maintenanceRequestRef = FirebaseDatabase.getInstance()
                 .getReference("MaintenanceRequests");
@@ -171,6 +181,13 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
     }
 
     public void openGallery(View view) {
+
+        // Before we do anything, let's make sure we have permissions to do it
+        if(!EasyPermissions.hasPermissions(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            EasyPermissions.requestPermissions(this, "We need to access your photos",
+                    1, Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+
         // Create intent to Open Image applications like Gallery, Google Photos
         Intent galleryIntent = new Intent(Intent.ACTION_PICK,
                 android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -191,15 +208,19 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
             }
         }
 
-        String path = getRealPathFromURI(currImageURI);
-
-        fileToUpload = Uri.fromFile(new File(path));
+        String path;
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
 
         StorageReference storageRef = storage.getReference();
 
+        path = getRealPathFromURI(currImageURI);
+
+        fileToUpload = Uri.fromFile(new File(path));
+
+        // TODO: When uploading images it displays photo failed to upload and photo uploaded at the same time
         StorageReference imageRef = storageRef.child("images/"+ fileToUpload.getLastPathSegment());
+
         UploadTask uploadTask = imageRef.putFile(fileToUpload);
 
         uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -208,19 +229,19 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
                 // aw it didn't work
                 Toast.makeText(RequestMaintenance.this, "Photo Failed to Upload",
                         Toast.LENGTH_SHORT).show();
-            }
-        });
 
-        uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                Log.d("onFailure", "The uploadTask failed");
+                e.printStackTrace();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                Toast.makeText(RequestMaintenance.this, "Photo Uploaded!",
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Toast.makeText(RequestMaintenance.this, "Photo Uploaded",
                         Toast.LENGTH_SHORT).show();
             }
         });
+
         Log.d("RequestMaintenance", "The path is " + path);
-
-
     }
 
     public String getRealPathFromURI(Uri contentUri) {
