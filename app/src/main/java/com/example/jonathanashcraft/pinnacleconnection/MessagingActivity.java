@@ -24,6 +24,8 @@ import java.util.Objects;
 
 import com.google.gson.Gson;
 
+import org.w3c.dom.Text;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -42,13 +44,13 @@ public class MessagingActivity extends AppCompatActivity {
     private EditText message;
 
     // Hold all of the messages in an Array
-    ArrayList<TextSent> MessagesFromJsonList;
+    ArrayList<Text> MessagesFromJsonList;
 
     // To use for serializing and deserializing to JSON
     private Gson gson = new Gson();
     private String jsonMessages;
 
-    private TextSent[] ts;
+    private Text[] ts;
 
     /**
      * Load the saved messages from the phone onto the list view.
@@ -77,7 +79,7 @@ public class MessagingActivity extends AppCompatActivity {
 
         // Convert the JSON to an array of TextSents
         if(!jsonMessagesLoadedFromMyPreferences.isEmpty()) {
-            ts = gson.fromJson(jsonMessagesLoadedFromMyPreferences, TextSent[].class);
+            ts = gson.fromJson(jsonMessagesLoadedFromMyPreferences, Text[].class);
         }
         // Slap that ^ array into an ArrayList
         MessagesFromJsonList = new ArrayList<>(Arrays.asList(ts));
@@ -100,6 +102,7 @@ public class MessagingActivity extends AppCompatActivity {
             name = extraBundles.getString("ID");
             arrayAdapter.add(name);
             this.setTitle(name);
+
         }
     }
 
@@ -158,7 +161,7 @@ public class MessagingActivity extends AppCompatActivity {
      */
     public class CustomMessagingAdapter extends BaseAdapter {
 
-        ArrayList<TextSent> myList = new ArrayList();
+        ArrayList<Text> myList = new ArrayList();
         LayoutInflater inflater;
         Context context;
 
@@ -168,7 +171,7 @@ public class MessagingActivity extends AppCompatActivity {
          * @param context Context of the program
          * @param myList List to which we will add values.
          */
-        public CustomMessagingAdapter(Context context, ArrayList<TextSent> myList) {
+        public CustomMessagingAdapter(Context context, ArrayList<Text> myList) {
             this.myList = myList;
             this.context = context;
             inflater = LayoutInflater.from(this.context);
@@ -199,7 +202,7 @@ public class MessagingActivity extends AppCompatActivity {
          */
         @Override
         public View getView(int position, View convertView, ViewGroup viewGroup) {
-            TextSent textSent;
+            Text text;
             String addition;
             View view;
             TextView textview;
@@ -216,10 +219,10 @@ public class MessagingActivity extends AppCompatActivity {
                 textView2 = view.findViewById(R.id.TextView2);
                 addition = "Received: ";
             }
-            textSent = myList.get(position);
-            String time = addition + textSent.getTime();
+            text = myList.get(position);
+            String time = addition + text.getTime();
             textView2.setText(time);
-            textview.setText(textSent.getText());
+            textview.setText(text.getText());
             return view;
         }
 
@@ -235,15 +238,20 @@ public class MessagingActivity extends AppCompatActivity {
             myList.add(textSent);
 
         }
+
+
     }
 
-    // A class which holds information pertaining to a text
-    public class TextSent {
+    /**
+     * Holds the basic information for a text message
+     */
+    public class Text {
         private String text;
         private String time;
-        public TextSent(String textGiven, String timeGiven) {
-            text = textGiven;
-            time = timeGiven;
+
+        public Text(String text, String time) {
+            text = text;
+            time = time;
         }
 
         public String getText() {
@@ -264,6 +272,21 @@ public class MessagingActivity extends AppCompatActivity {
 
         public String toString() {
             return "Text: " + text + " at " + time;
+        }
+    }
+
+    public class TextSent extends Text {
+
+        public TextSent(String textGiven, String timeGiven) {
+            super(textGiven, timeGiven);
+        }
+
+    }
+
+    public class TextReceived extends Text {
+
+        public TextReceived(String textReceived, String timeReceived) {
+            super(timeReceived, timeReceived);
         }
     }
 
