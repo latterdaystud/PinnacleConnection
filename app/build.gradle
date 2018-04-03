@@ -38,9 +38,9 @@ dependencies {
     // Used to enable testing
     testCompile 'junit:junit:4.12'
 
-    // To send mail
-    //compile 'javax.mail:javax.mail-api:1.5.3'
 
+    // Firebase messaging
+    compile 'com.google.firebase:firebase-messaging:11.4.0'
     // Firebase
     compile 'com.google.firebase:firebase-core:11.4.0'
     // Firebase Authentication

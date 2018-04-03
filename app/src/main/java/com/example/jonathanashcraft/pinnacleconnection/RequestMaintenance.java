@@ -67,7 +67,7 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
     private CheckBox cbUrgent;
     private EditText etSubjectOfIssue;
     private Boolean addedPhoto;
-    Uri currImageURI;
+    private Uri currImageURI;
 
     private static int RESULT_LOAD_IMG = 1;
 
