@@ -1,6 +1,7 @@
 package com.example.jonathanashcraft.pinnacleconnection;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -55,11 +56,14 @@ public class MessagingActivity extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         final String TAG = "onCreate";
-
         Log.d(TAG, "Called onCreate");
         super.onCreate(savedInstanceState);
+        Intent intentExtras = getIntent();
+        Bundle extraBundles = intentExtras.getBundleExtra("Contact Name");
+        String name;
+
+
         setContentView(R.layout.activity_messaging);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -92,6 +96,11 @@ public class MessagingActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) { onSend(view); }
         });
+        if (extraBundles != null && !extraBundles.isEmpty()) {
+            name = extraBundles.getString("ID");
+            arrayAdapter.add(name);
+            this.setTitle(name);
+        }
     }
 
     /**
