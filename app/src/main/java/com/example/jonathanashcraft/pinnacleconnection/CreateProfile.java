@@ -22,6 +22,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Objects;
 
@@ -157,14 +158,18 @@ public class CreateProfile extends AppCompatActivity {
                             Log.d(TAG, "createUserWithEmail: Successful");
                             currentUser = mAuth.getCurrentUser();
 
+                            // Get the current device token
+                            String Token = FirebaseInstanceId.getInstance().getToken();
+
                             // Create a temp user to slap into the database
                             User tempUser = new User();
                             tempUser.setFirstName(FirstName);
                             tempUser.setLastName(LastName);
                             tempUser.setApartmentNumber(apartmentNumber);
                             tempUser.setManager(isUserManager);
+                            tempUser.setDeviceToken(Token);
 
-                                    // Slap into the database
+                            // Slap into the database
                             mUserRef.child(currentUser.getUid()).setValue(tempUser);
 
                             Toast.makeText(CreateProfile.this, "Created Profile",

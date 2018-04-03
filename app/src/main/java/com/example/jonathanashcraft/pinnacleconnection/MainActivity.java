@@ -32,6 +32,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -103,11 +104,15 @@ public class MainActivity extends AppCompatActivity
         Menu menu = navigationView.getMenu();
         menu.findItem(R.id.nav_admin).setVisible(false);
 
+        Log.d(TAG, "Is the user a manager?" + AndroidUser.isUserManager());
+
         // All the things the manager can see
         if(AndroidUser.isUserManager()) {
             menu.findItem(R.id.nav_admin).setVisible(true);
             menu.findItem(R.id.nav_maintenance).setTitle("View Maintenance Requests");
         }
+
+        Log.d(TAG, "The current device ID is: " + FirebaseInstanceId.getInstance().getToken().toString());
         /*
         MenuItem nav_camera = menu.findItem(R.id.nav_manage);
         nav_camera.setTitle("Maintenance Request");
@@ -197,6 +202,12 @@ public class MainActivity extends AppCompatActivity
         // TODO: This will show null when called, not sure if its because the class is still initalizing
 //        Toast.makeText(MainActivity.this, "Welcome " + AndroidUser.getUserFirstName(),
 //                Toast.LENGTH_SHORT).show();
+
+        // Creating a new Token access
+        TokenAccess token = new TokenAccess();
+
+        // Let's reload it
+        token.loadToken();
     }
 
     protected void onStart() {

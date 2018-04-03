@@ -51,7 +51,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     // Firebase database
     private FirebaseDatabase database;
 
-    // UI references./
+    // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private Button mCreateAccount;
@@ -103,6 +103,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         if (mAuth.getCurrentUser() != null) {
             // if the user is equal to something, skip to the main activity
+
+            // Let's start to reload the user;
+            AndroidUser.reloadUser();
+
+            Log.d(TAG, "The user is loaded now!");
 
             // Start the main activity
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -183,12 +188,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 Toast.makeText(LoginActivity.this, "Login Sucessful",
                                         Toast.LENGTH_SHORT).show();
 
+                                Log.d(TAG, "Let's see if the user is loaded: " +
+                                        AndroidUser.isUserLoaded());
+
+                                // Check to see if the user isn't loaded
+
                                 // Start the main activity
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(intent);
 
                                 // End this activity
                                 finish();
+
                             } else {
                                 // Log this so we can debug
                                 Log.d(TAG, "Unable to Login");
@@ -228,8 +239,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     public void onCreateAccount(View view) {
-      Intent intent = new Intent(getApplicationContext(), CreateProfile.class);
-      startActivityForResult(intent, 1);
+        Intent intent = new Intent(getApplicationContext(), CreateProfile.class);
+        startActivityForResult(intent, 1);
     }
 
     // UNKNOWN IF I NEED ALL OF THIS

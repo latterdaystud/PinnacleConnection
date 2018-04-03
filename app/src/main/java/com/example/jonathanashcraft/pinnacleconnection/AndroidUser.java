@@ -18,11 +18,22 @@ import com.google.firebase.database.ValueEventListener;
 public class AndroidUser {
     private static final AndroidUser ourInstance = new AndroidUser();
 
+    // To know whether it is loaded or not
+    public static Boolean userLoaded = false;
+
     // To store the user
     private static final User user = new User();
     private static final String TAG = "AndroidUser";
     public static AndroidUser getInstance() {
         return ourInstance;
+    }
+
+    /**
+     * Sees if the user is loaded or not
+     * @return if the user is loaded or not
+     */
+    public static Boolean isUserLoaded() {
+        return userLoaded;
     }
 
     /**
@@ -82,8 +93,10 @@ public class AndroidUser {
         // If there is a current user (or an authenticated user)
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             userPath = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            Log.d(TAG, "Current user UID is " + userPath);
         } else {
             // If the user is not an authenticated user
+            Log.d(TAG, "The user is not an authenicated user");
             userPath = "";
         }
 
@@ -97,10 +110,19 @@ public class AndroidUser {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     User mTempUser = dataSnapshot.getValue(User.class);
 
+                    // Log some messages to see if we are loading the correct information
+                    Log.d(TAG, "Loaded user name is " + mTempUser.getFirstName() + " "
+                            + mTempUser.getLastName());
+                    Log.d(TAG, "Is the user a manager? " + mTempUser.isManager());
+
                     // Set the member variable user
                     user.setUser(mTempUser);
+
                     Log.d(TAG, "User successfully and  completely loaded");
+
+                    userLoaded = true;
                 }
+
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
@@ -109,6 +131,7 @@ public class AndroidUser {
             });
         } else {
             // There is not a current user
+            Log.d(TAG, "There is not a current user");
             user.setUser(new User());
         }
     }
