@@ -390,8 +390,8 @@ public class ContactList extends AppCompatActivity
             User temp = ContactsFromJsonList.get(i);
             String name = temp.getFirstName() + " " + temp.getLastName();
             Log.d("Name found", name);
-            // If the name contans the search then save it.
-            if (name.toLowerCase().contains(search.toLowerCase())) {
+            // If the name contans the search then save it. Does not save if it is the users name.
+            if (name.toLowerCase().contains(search.toLowerCase()) && !Objects.equals(name, AndroidUser.getUserFirstName() + " " + AndroidUser.getUserLastName())) {
                 Log.d("Names Match", name);
                 contactListAdapter.add(temp);
                 contactListAdapter.notifyDataSetChanged();

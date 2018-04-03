@@ -74,7 +74,7 @@ public class User {
     }
 
     public void setManager(boolean manager) {
-        manager = manager;
+        this.manager = manager;
     }
 
     public String getDeviceToken() {
