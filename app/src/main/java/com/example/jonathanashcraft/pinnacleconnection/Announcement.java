@@ -54,7 +54,7 @@ public class Announcement {
      * @param time
      * @param Author
      */
-    public Announcement(String Title, String Body, String Date, String time, String Author) {
+    public Announcement(String Title, String Body, String Date, String time, String Author, String pathToImage) {
         this.body = Body;
         this.author = Author;
         this.title = Title;
