@@ -12,6 +12,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
 /**
+ * This class handles the device tokens and updating these tokens.
  * Created by Jonathan Ashcraft on 3/28/2018.
  */
 
@@ -46,13 +47,59 @@ public class TokenAccess extends FirebaseInstanceIdService {
     private void sendRegistrationToServer(String refreshedToken) {
         // Make the changes to Firebase so that the token is updated
 
-        String firebasePath = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
 
-        Log.d(TAG, "firebasePath: " + firebasePath);
+        String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        Log.d(TAG, "firebasePath: " + currentUID);
 
         // Hopefully that finds the correct reference
-        DatabaseReference userUpdateRef = FirebaseDatabase.getInstance().getReference().child("Users")
-                .child(firebasePath).child("deviceToken");
+        DatabaseReference userUpdateRef = database.getReference().child("Users")
+                .child(currentUID).child("deviceToken");
+
+        // Find out if the user is a manager by this point
+        Log.d(TAG, "Is the user a manager right now? " + CurrentUser.isManager());
+
+        // See if the user is a manager
+        if (CurrentUser.isManager()) {
+            // Get the reference to the manager section of the users
+            DatabaseReference managerUpdateRef = database.getReference().child("Managers")
+                    .child(currentUID).child("deviceToken");
+
+            // Update the token
+            managerUpdateRef.setValue(refreshedToken)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "Refreshed Manager Token");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e(TAG, "Failed to Refresh Manager Token");
+                        }
+                    });
+        } else {
+            // User is not a manager
+            DatabaseReference tenantUpdateRef = database.getReference().child("Tenants")
+                    .child(currentUID).child("deviceToken");
+
+            // Update the token
+            tenantUpdateRef.setValue(refreshedToken)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "Tenant Token Refreshed!");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e(TAG, "Failed To Refresh Tenant Token");
+                        }
+                    });
+        }
 
         // Let's log it just to make sure
         Log.d(TAG, "Current user is: " + FirebaseAuth.getInstance().getCurrentUser().getUid());

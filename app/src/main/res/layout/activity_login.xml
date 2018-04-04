@@ -82,6 +82,12 @@
                 android:onClick="onCreateAccount"
                 android:text="@string/action_register" />
 
+            <Button
+                android:id="@+id/buttonLoggedIn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Logged In Already?" />
+
         </LinearLayout>
 
     </ScrollView>

@@ -5,14 +5,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,14 +17,10 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -39,10 +31,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Objects;
 
 public class ContactList extends AppCompatActivity
@@ -94,7 +84,7 @@ public class ContactList extends AppCompatActivity
         contactFab = findViewById(R.id.contactFab);
 
         // Temp values for display purposes.
-        User user = new User(AndroidUser.getUser());
+        User user = new User(CurrentUser.getCurrentUser());
         Log.d("Show Token", user.getDeviceToken());
         User user2 = new User("George", "Romania", "0", true, "123qwe456asd");
         User user3 = new User();
@@ -391,7 +381,7 @@ public class ContactList extends AppCompatActivity
             String name = temp.getFirstName() + " " + temp.getLastName();
             Log.d("Name found", name);
             // If the name contans the search then save it. Does not save if it is the users name.
-            if (name.toLowerCase().contains(search.toLowerCase()) && !Objects.equals(name, AndroidUser.getUserFirstName() + " " + AndroidUser.getUserLastName())) {
+            if (name.toLowerCase().contains(search.toLowerCase()) && !Objects.equals(name, CurrentUser.getFirstName() + " " + CurrentUser.getLastName())) {
                 Log.d("Names Match", name);
                 contactListAdapter.add(temp);
                 contactListAdapter.notifyDataSetChanged();
