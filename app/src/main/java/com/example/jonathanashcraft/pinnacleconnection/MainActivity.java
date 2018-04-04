@@ -1,6 +1,5 @@
 package com.example.jonathanashcraft.pinnacleconnection;
 
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,7 +19,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -104,10 +102,10 @@ public class MainActivity extends AppCompatActivity
         Menu menu = navigationView.getMenu();
         menu.findItem(R.id.nav_admin).setVisible(false);
 
-        Log.d(TAG, "Is the user a manager?" + AndroidUser.isUserManager());
+        Log.d(TAG, "Is the user a manager?" + CurrentUser.isManager());
 
         // All the things the manager can see
-        if(AndroidUser.isUserManager()) {
+        if(CurrentUser.isManager()) {
             menu.findItem(R.id.nav_admin).setVisible(true);
             menu.findItem(R.id.nav_maintenance).setTitle("View Maintenance Requests");
         }
@@ -198,9 +196,9 @@ public class MainActivity extends AppCompatActivity
         // Attach the childEventListener
         AnnouncementRef.addChildEventListener(announcementListener);
 
-        AndroidUser.reloadUser();
+        CurrentUser.reloadUser();
         // TODO: This will show null when called, not sure if its because the class is still initalizing
-//        Toast.makeText(MainActivity.this, "Welcome " + AndroidUser.getUserFirstName(),
+//        Toast.makeText(MainActivity.this, "Welcome " + CurrentUser.getFirstName(),
 //                Toast.LENGTH_SHORT).show();
 
         // Creating a new Token access
@@ -214,9 +212,9 @@ public class MainActivity extends AppCompatActivity
         super.onStart();
         final String TAG = "onStart";
 
-        AndroidUser.reloadUser();
+        CurrentUser.reloadUser();
         // TODO: This will show null when called at the very start of the app
-        Toast.makeText(MainActivity.this, "Welcome back " + AndroidUser.getUserFirstName(),
+        Toast.makeText(MainActivity.this, "Welcome back " + CurrentUser.getFirstName(),
                 Toast.LENGTH_SHORT).show();
     }
 
@@ -286,7 +284,7 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(this, TheaterRequestActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_maintenance) {
-            if(!AndroidUser.isUserManager()) {
+            if(!CurrentUser.isManager()) {
                 // If the user is not a manager
                 Intent intent = new Intent(this, RequestMaintenance.class);
                 startActivity(intent);

@@ -6,13 +6,11 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageInstaller;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -31,10 +29,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -163,7 +159,7 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
 
         // Make a temporary request to hold the data that has been inputted
         MaintenanceRequest tempMaintenanceRequest = new MaintenanceRequest(topic, description,
-                AndroidUser.getUserFirstName() + " " + AndroidUser.getUserLastName(), isUrgent,
+                CurrentUser.getFirstName() + " " + CurrentUser.getLastName(), isUrgent,
                 fileToUpload.getLastPathSegment());
 
         Log.d("makeReqguest", "fileToUpload: " + fileToUpload.getLastPathSegment());
@@ -173,7 +169,7 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
                 .getReference("MaintenanceRequests");
 
         // Store in the database with the key of users name and the date of the maintenance request is sent
-        maintenanceRequestRef.child(AndroidUser.getUserFirstName() + AndroidUser.getUserLastName()
+        maintenanceRequestRef.child(CurrentUser.getFirstName() + CurrentUser.getLastName()
                 + " " + Calendar.getInstance().getTime().toString()).setValue(tempMaintenanceRequest);
 
         maintenanceAdapter.add(tempMaintenanceRequest);

@@ -106,6 +106,18 @@ public class MessagingActivity extends AppCompatActivity {
         }
     }
 
+    public void onSendTemp(View view) {
+        // For log messages
+        String TAG = "onSendTemp";
+
+        // See if there is actually text in there, if it's just space, return from the function
+        if(Objects.equals(message.getText().toString(), " ") || Objects.equals(message.getText().toString(), ""))
+            return;
+
+        String text = message.getText().toString();
+
+    }
+
     /**
      * Called when the send button is pressed. Adds the message found in the text box into the
      * text message list and list view.
@@ -118,6 +130,7 @@ public class MessagingActivity extends AppCompatActivity {
         // See if there is actually text in there, if it's just space, return from the function
         if(Objects.equals(message.getText().toString(), " ") || Objects.equals(message.getText().toString(), ""))
             return;
+
 
         // Add the string in the message EditText to the preference manager
         PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString(

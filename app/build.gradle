@@ -38,6 +38,8 @@ dependencies {
     // Used to enable testing
     testCompile 'junit:junit:4.12'
 
+    implementation "com.android.support:support-compat:26.1.0"
+
 
     // Firebase messaging
     compile 'com.google.firebase:firebase-messaging:11.4.0'

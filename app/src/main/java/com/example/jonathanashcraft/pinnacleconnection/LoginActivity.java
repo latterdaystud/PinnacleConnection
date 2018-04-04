@@ -22,7 +22,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,7 +33,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
@@ -105,7 +103,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // if the user is equal to something, skip to the main activity
 
             // Let's start to reload the user;
-            AndroidUser.reloadUser();
+            CurrentUser.reloadUser();
 
             Log.d(TAG, "The user is loaded now!");
 
@@ -120,7 +118,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             finish();
         } else {
             Log.d(TAG, "The user is not logged in");
-            Log.d(TAG, "currentUser == null");
+            Log.d(TAG, "CurrentUser == null");
         }
     }
 
@@ -165,6 +163,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             focusView = mEmailView;
             cancel = true;
         }
+
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
@@ -181,7 +180,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             Log.d(TAG, "Called onComplete of signIn..");
 
-                            if (task.isSuccessful() && AndroidUser.getInstance() != null) {
+                            if (task.isSuccessful() && CurrentUser.getInstance() != null) {
                                 Log.d(TAG, "We logged in!");
 
                                 // Show a toast for user feedback
@@ -189,7 +188,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                         Toast.LENGTH_SHORT).show();
 
                                 Log.d(TAG, "Let's see if the user is loaded: " +
-                                        AndroidUser.isUserLoaded());
+                                        CurrentUser.isCurrentUserLoaded());
 
                                 // Check to see if the user isn't loaded
 

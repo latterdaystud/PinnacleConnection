@@ -40,9 +40,6 @@ public class MessagingActivityService extends FirebaseMessagingService {
 
                 String messageReceived = remoteMessage.getData().toString();
 
-                // add message to messaging area
-
-
             } else {
                 // Handle message within 10 seconds
                 handleNow();
@@ -53,10 +50,11 @@ public class MessagingActivityService extends FirebaseMessagingService {
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+
+            // Send this to messagingActivity
         }
 
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.
+
     }
 
     private void handleNow() {

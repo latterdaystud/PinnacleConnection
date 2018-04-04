@@ -2,10 +2,7 @@ package com.example.jonathanashcraft.pinnacleconnection;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -19,16 +16,10 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 public class CreateAnnouncement extends AppCompatActivity implements DatePickerDialog.OnDateSetListener,
 TimePickerDialog.OnTimeSetListener {
@@ -57,9 +48,9 @@ TimePickerDialog.OnTimeSetListener {
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (currentUser == null) {
-            Log.d(TAG, "currentUser is equal to null");
+            Log.d(TAG, "CurrentUser is equal to null");
         } else {
-            Log.d(TAG, "currentUser equals something!!");
+            Log.d(TAG, "CurrentUser equals something!!");
         }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -114,9 +105,9 @@ TimePickerDialog.OnTimeSetListener {
 //        */
 //        // Get a reference and the name of the first name and last name of the user
 //        DatabaseReference mFirstNameRef = FirebaseDatabase.getInstance().getReference("Users")
-//                .child(currentUser.getUid());
+//                .child(CurrentUser.getUid());
 //
-//        Log.d(TAG, "Currentuser is " + currentUser.getUid());
+//        Log.d(TAG, "Currentuser is " + CurrentUser.getUid());
 //
 //        // Database access
 //        mFirstNameRef.addValueEventListener(new ValueEventListener() {
@@ -142,14 +133,14 @@ TimePickerDialog.OnTimeSetListener {
     public void onSubmitAnnouncement(View view) {
         String TAG = "onSubmitAnnouncement";
 
-        Log.d(TAG, "The users name is " + AndroidUser.getUserFirstName());
+        Log.d(TAG, "The users name is " + CurrentUser.getFirstName());
 
         final Announcement tempAnnouncement = new Announcement(
                 title_of_announcement.getText().toString(),
                 description_of_announcement.getText().toString(),
                 date_of_announcement.getText().toString(),
                 time_of_announcement.getText().toString(),
-                (AndroidUser.getUserFirstName() + " " + AndroidUser.getUserLastName())
+                (CurrentUser.getFirstName() + " " + CurrentUser.getLastName())
         );
 
         // Get the database and the reference
