@@ -52,8 +52,10 @@ TimePickerDialog.OnTimeSetListener {
     private static int RESULT_LOAD_IMG = 1;
     private String imgDecodableString;
     private ImageView imageButton;
+    private Uri selectedImage;
     private Bitmap image;
-    private String jsonImage;
+    private String pathToImage;
+    private byte[] imageAsBytes;
 
     FirebaseUser currentUser;
 
@@ -70,8 +72,8 @@ TimePickerDialog.OnTimeSetListener {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        imageButton = findViewById(R.id.AnnouncementImage);
-        image = BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_menu_gallery);
+        //imageButton = findViewById(R.id.AnnouncementImage);
+        //image = BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_menu_gallery);
 
         // Get the current user
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -190,8 +192,10 @@ TimePickerDialog.OnTimeSetListener {
                     && null != data) {
                 // Get the Image from data
 
-                Uri selectedImage = data.getData();
-                String[] filePathColumn = { MediaStore.Images.Media.DATA };
+                selectedImage = data.getData();
+
+                //FirebaseStorage storage = Firebase
+               /* String[] filePathColumn = { MediaStore.Images.Media.DATA };
 
                 // Get the cursor
                 Cursor cursor = getContentResolver().query(selectedImage,
@@ -206,6 +210,8 @@ TimePickerDialog.OnTimeSetListener {
                 //Set the image
                 imageButton.setImageBitmap(BitmapFactory
                         .decodeFile(imgDecodableString));
+
+                */
 
             } else {
                 Toast.makeText(this, "You haven't picked Image",
@@ -224,38 +230,13 @@ TimePickerDialog.OnTimeSetListener {
 
         Log.d(TAG, "The users name is " + AndroidUser.getUserFirstName());
 
-        Announcement tempAnnouncement;
-
-        BitmapDrawable drawable = (BitmapDrawable) imageButton.getDrawable();
-
-        if (drawable != null) {
-            image = drawable.getBitmap();
-        }
-        else {
-            image = BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_menu_gallery);
-        }
-
-        jsonImage = new Gson().toJson(image);
-
-        if (getIntent().hasExtra("announcement")) {
-            editAnnouncement.setTitle(title_of_announcement.getText().toString());
-            editAnnouncement.setTimeOfAnnouncement(time_of_announcement.getText().toString());
-            editAnnouncement.setDate(date_of_announcement.getText().toString());
-            editAnnouncement.setBody(description_of_announcement.getText().toString());
-           // editAnnouncement.setJsonImage(jsonImage);
-            tempAnnouncement = editAnnouncement;
-        }
-        else {
-            tempAnnouncement = new Announcement(
-                    title_of_announcement.getText().toString(),
-                    description_of_announcement.getText().toString(),
-                    date_of_announcement.getText().toString(),
-                    time_of_announcement.getText().toString(),
-                    (AndroidUser.getUserFirstName() + " " + AndroidUser.getUserLastName())
-            );
-        }
-
-        tempAnnouncement.setIndexInArray(getIntent().getExtras().getInt("index"));
+        final Announcement tempAnnouncement = new Announcement(
+                title_of_announcement.getText().toString(),
+                description_of_announcement.getText().toString(),
+                date_of_announcement.getText().toString(),
+                time_of_announcement.getText().toString(),
+                (AndroidUser.getUserFirstName() + " " + AndroidUser.getUserLastName())
+        );
 
         // Get the database and the reference
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -263,6 +244,7 @@ TimePickerDialog.OnTimeSetListener {
 
 
         AnnouncementsRef.child(tempAnnouncement.getID()).setValue(tempAnnouncement);
+
 
         Log.d(TAG, "Added announcement to database");
 
@@ -288,9 +270,9 @@ TimePickerDialog.OnTimeSetListener {
     public void onTimeSet(TimePicker timePicker, int i, int i1) {
         Log.d("onTimeSet", "onTimeSet got called son");
 
-        // TODO: Implent logic for 24 hour to 12 hour conversion
         String time = i + ":" + i1;
 
+        // TODO: Implent logic for 24 hour to 12 hour conversion
         time_of_announcement.setText(time);
     }
 }

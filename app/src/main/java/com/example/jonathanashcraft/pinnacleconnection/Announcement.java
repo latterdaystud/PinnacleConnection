@@ -8,7 +8,6 @@ import android.text.Editable;
 import java.util.Calendar;
 import java.util.Date;
 
-
 /**
  * Class to create and retrieve data from announcements
  *
@@ -18,6 +17,7 @@ import java.util.Date;
  * @version 2018.01
  * @since 2018.01
  */
+
 public class Announcement {
     private String body;
     // For use in the database when an announcement is created
@@ -27,8 +27,9 @@ public class Announcement {
     private String title;
     private String date;
     private int indexInArray;
-    private Bitmap image;
     private boolean isDefault;
+    private String pathToImage;
+    private byte[] imageAsBytes;
 
     /**
      * Default constructor for the announcement class
@@ -44,22 +45,16 @@ public class Announcement {
         this.timeOfAnnouncement = "";
         this.title = "";
         this.date = "";
+        this.pathToImage = "no_path";
     }
 
-    /**
-     *
-     * @param Title
-     * @param Body
-     * @param Date
-     * @param time
-     * @param Author
-     */
-    public Announcement(String Title, String Body, String Date, String time, String Author, String pathToImage) {
+    public Announcement(String Title, String Body, String Date, String time, String Author) {
         this.body = Body;
         this.author = Author;
         this.title = Title;
         this.timeOfAnnouncement = time;
         this.date = Date;
+        this.pathToImage = pathToImage;
 
         // The ID will be the date and time of the announcement being created
         this.ID = Calendar.getInstance().getTime().toString();
@@ -116,27 +111,4 @@ public class Announcement {
         this.date = date;
     }
 
-    public void setIndexInArray(int index) {
-        this.indexInArray = index;
-    }
-
-    public int getIndexInArray() {
-        return indexInArray;
-    }
-
-    public void setDefault(boolean isDefault) {
-        this.isDefault = isDefault;
-    }
-
-    public boolean getDefault() {
-        return isDefault;
-    }
-
-    public Bitmap getImage() {
-        return image;
-    }
-
-    public void setImage(Bitmap image) {
-        this.image = image;
-    }
 }
