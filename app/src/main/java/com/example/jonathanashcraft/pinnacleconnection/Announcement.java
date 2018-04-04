@@ -111,4 +111,27 @@ public class Announcement {
         this.date = date;
     }
 
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(boolean aDefault) {
+        isDefault = aDefault;
+    }
+
+    public byte[] getImageAsBytes() {
+        return imageAsBytes;
+    }
+
+    public void setImageAsBytes(byte[] imageAsBytes) {
+        this.imageAsBytes = imageAsBytes;
+    }
+
+    public int getIndexInArray() {
+        return indexInArray;
+    }
+
+    public void setIndexInArray(int indexInArray) {
+        this.indexInArray = indexInArray;
+    }
 }
