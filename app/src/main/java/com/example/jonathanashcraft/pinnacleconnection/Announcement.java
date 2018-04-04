@@ -1,5 +1,6 @@
 package com.example.jonathanashcraft.pinnacleconnection;
 
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.text.Editable;
@@ -7,10 +8,16 @@ import android.text.Editable;
 import java.util.Calendar;
 import java.util.Date;
 
-/**
- * Created by Joseph on 3/9/2018.
- */
 
+/**
+ * Class to create and retrieve data from announcements
+ *
+ * This class stores the different parts of an announcement
+ *
+ * @author Joseph Ridgley
+ * @version 2018.01
+ * @since 2018.01
+ */
 public class Announcement {
     private String body;
     // For use in the database when an announcement is created
@@ -19,7 +26,18 @@ public class Announcement {
     private String timeOfAnnouncement;
     private String title;
     private String date;
+    private int indexInArray;
+    private boolean isDefault;
+    private String pathToImage;
+    private byte[] imageAsBytes;
 
+    /**
+     * Default constructor for the announcement class
+     *
+     * This method sets the body, author, timeOfAnnouncement, title, and date to be empty.
+     * It sets the ID to be the date and time of when the method was called.
+     *
+     */
     public Announcement() {
         this.body = "";
         this.ID = Calendar.getInstance().getTime().toString();
@@ -27,14 +45,24 @@ public class Announcement {
         this.timeOfAnnouncement = "";
         this.title = "";
         this.date = "";
+        this.pathToImage = "no_path";
     }
 
+    /**
+     *
+     * @param Title
+     * @param Body
+     * @param Date
+     * @param time
+     * @param Author
+     */
     public Announcement(String Title, String Body, String Date, String time, String Author) {
         this.body = Body;
         this.author = Author;
         this.title = Title;
         this.timeOfAnnouncement = time;
         this.date = Date;
+        this.pathToImage = pathToImage;
 
         // The ID will be the date and time of the announcement being created
         this.ID = Calendar.getInstance().getTime().toString();
@@ -91,4 +119,35 @@ public class Announcement {
         this.date = date;
     }
 
+    public void setIndexInArray(int index) {
+        this.indexInArray = index;
+    }
+
+    public int getIndexInArray() {
+        return indexInArray;
+    }
+
+    public void setDefault(boolean isDefault) {
+        this.isDefault = isDefault;
+    }
+
+    public boolean getDefault() {
+        return isDefault;
+    }
+
+    public String getPathToImage() {
+        return pathToImage;
+    }
+
+    public void setPathToImage(String pathToImage) {
+        this.pathToImage = pathToImage;
+    }
+
+    public byte[] getImageAsBytes() {
+        return imageAsBytes;
+    }
+
+    public void setImageAsBytes(byte[] imageAsBytes) {
+        this.imageAsBytes = imageAsBytes;
+    }
 }
