@@ -37,6 +37,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A login screen that offers login via email/password.
@@ -53,6 +54,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private Button mCreateAccount;
+    private Button mLoggedIn;
     private View mProgressView;
     private View mLoginFormView;
     private Button mSignInButton;
@@ -92,7 +94,29 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+        mLoggedIn = findViewById(R.id.buttonLoggedIn);
 
+        mLoggedIn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (CurrentUser.isCurrentUserLoaded()) {
+                    Toast.makeText(LoginActivity.this, "You're logged in",
+                            Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+
+                    Toast.makeText(LoginActivity.this, "You are already logged in",
+                            Toast.LENGTH_SHORT).show();
+
+                    // End this activity
+                    finish();
+
+                } else {
+                    Toast.makeText(LoginActivity.this, "You're not logged in",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         // Get the instance for Firebase
         mAuth = FirebaseAuth.getInstance();
 
@@ -103,19 +127,48 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // if the user is equal to something, skip to the main activity
 
             // Let's start to reload the user;
-            CurrentUser.reloadUser();
+            // Making the loading of a user on a new thread
+            Thread loadUser = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    CurrentUser.reloadUser();
+                }
+            });
+
+            // Start that thread
+            loadUser.start();
+
+            Log.d(TAG, "We are going to wait for the user to be loaded");
+
+            try {
+                loadUser.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            Log.d(TAG, "<---------------------------------->");
+            Log.d(TAG, "Let's see if the user is loaded");
+            Log.d(TAG, "CurrentUsers Name: " + CurrentUser.getFirstName() +
+                    CurrentUser.getLastName());
+            Log.d(TAG, "Is the current user a manager? " + CurrentUser.isManager());
+
 
             Log.d(TAG, "The user is loaded now!");
+            Log.d(TAG, "Is the user really loaded? " + CurrentUser.isCurrentUserLoaded());
+
+            if (CurrentUser.isCurrentUserLoaded()) {
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
+
+                Toast.makeText(LoginActivity.this, "You are already logged in",
+                        Toast.LENGTH_SHORT).show();
+
+                // End this activity
+                finish();
+            }
 
             // Start the main activity
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
 
-            Toast.makeText(LoginActivity.this, "You are already logged in",
-                    Toast.LENGTH_SHORT).show();
-
-            // End this activity
-            finish();
         } else {
             Log.d(TAG, "The user is not logged in");
             Log.d(TAG, "CurrentUser == null");
@@ -187,11 +240,26 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 Toast.makeText(LoginActivity.this, "Login Sucessful",
                                         Toast.LENGTH_SHORT).show();
 
-                                Log.d(TAG, "Let's see if the user is loaded: " +
-                                        CurrentUser.isCurrentUserLoaded());
+                                // Create a seperate thread to load the user
+                                Thread loadCurrentUser = new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        CurrentUser.reloadUser();
+                                    }
+                                });
 
-                                // Check to see if the user isn't loaded
+                                // Start the thread
+                                loadCurrentUser.start();
 
+                                Log.d(TAG, "Started the thread, waiting for it to die");
+                                // Wait for it to end
+                                try {
+                                    loadCurrentUser.join();
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+
+                                Log.d(TAG, "Current User Has Been Loaded");
                                 // Start the main activity
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(intent);

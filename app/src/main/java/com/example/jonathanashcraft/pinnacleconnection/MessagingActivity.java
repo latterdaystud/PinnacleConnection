@@ -284,7 +284,7 @@ public class MessagingActivity extends AppCompatActivity {
         }
 
         public String toString() {
-            return "Text: " + text + " at " + time;
+            return "Message: " + text + " at " + time;
         }
     }
 

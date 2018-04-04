@@ -20,10 +20,10 @@ public class MessagingActivityTest {
         MessagingActivity mess1 = Mockito.mock(MessagingActivity.class);
         View view = new View(mess1.getApplicationContext());
         //view.setId(R.layout.content_messaging);
-        EditText editText = mess1.getMessage();
+        EditText editText = mess1.getBody();
         //editText.setText("Hello dude");
         mess1.setEditText("Hello dude");
-        assertEquals(mess1.getMessage().getText().toString(), "Hello dude");
+        assertEquals(mess1.getBody().getText().toString(), "Hello dude");
         String message = editText.getText().toString();
         mess1.onSend(view);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mess1.getApplicationContext());
