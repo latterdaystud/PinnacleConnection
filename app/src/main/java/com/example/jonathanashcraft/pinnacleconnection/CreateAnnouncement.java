@@ -41,7 +41,7 @@ TimePickerDialog.OnTimeSetListener {
         final String TAG = "onCreate";
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_announcement);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // Get the current user
@@ -53,7 +53,7 @@ TimePickerDialog.OnTimeSetListener {
             Log.d(TAG, "CurrentUser equals something!!");
         }
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

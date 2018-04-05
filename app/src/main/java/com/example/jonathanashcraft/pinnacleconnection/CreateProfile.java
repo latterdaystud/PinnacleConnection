@@ -113,6 +113,7 @@ public class CreateProfile extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        String TAG = "onStart";
         FirebaseUser currentUser = mAuth.getCurrentUser();
     }
 

@@ -133,8 +133,8 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
                         openGallery(getCurrentFocus());
                         }
                     });
-                };
-            });
+                }
+        });
 
         // What happens if you push the create request button
         bCreateRequest.setOnClickListener(new View.OnClickListener() {

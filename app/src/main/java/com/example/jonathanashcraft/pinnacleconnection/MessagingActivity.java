@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -22,9 +23,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
-
-import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -40,8 +47,8 @@ public class MessagingActivity extends AppCompatActivity {
     private CustomMessagingAdapter arrayAdapter;
     // The basic format of the texts
     private ListView listView;
-    // Where to enter the text for the message
-    private EditText message;
+    // Where to enter the text for the messageBox
+    private EditText messageBox;
 
     // Hold all of the messages in an Array
     ArrayList<Text> MessagesFromJsonList;
@@ -49,6 +56,7 @@ public class MessagingActivity extends AppCompatActivity {
     // To use for serializing and deserializing to JSON
     private Gson gson = new Gson();
     private String jsonMessages;
+
 
     private Text[] ts;
 
@@ -65,22 +73,54 @@ public class MessagingActivity extends AppCompatActivity {
         Bundle extraBundles = intentExtras.getBundleExtra("Contact Name");
         String name;
 
-
         setContentView(R.layout.activity_messaging);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        message = findViewById(R.id.editText);
+        messageBox = findViewById(R.id.editText);
+
+        // pull from firebase the messages that haven't been loaded yet
+        DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference().child("Messages")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        messagesRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Message messageTemp = dataSnapshot.getValue(Message.class);
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         // Load the existing messages from the sharedPreferences
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String jsonMessagesLoadedFromMyPreferences = prefs.getString("jsonMessages", "[ ]");
 
-        Log.d(TAG,"The json message is " + jsonMessagesLoadedFromMyPreferences);
+        Log.d(TAG,"The json messageBox is " + jsonMessagesLoadedFromMyPreferences);
 
         // Convert the JSON to an array of TextSents
         if(!jsonMessagesLoadedFromMyPreferences.isEmpty()) {
             ts = gson.fromJson(jsonMessagesLoadedFromMyPreferences, Text[].class);
         }
+
         // Slap that ^ array into an ArrayList
         MessagesFromJsonList = new ArrayList<>(Arrays.asList(ts));
 
@@ -90,13 +130,13 @@ public class MessagingActivity extends AppCompatActivity {
 
         // Create the arrayAdapter with the existing ArrayList with the messages preloaded
         arrayAdapter = new CustomMessagingAdapter(this, MessagesFromJsonList);
-        listView = (ListView) findViewById(R.id.messageListView);
+        listView = findViewById(R.id.messageListView);
         listView.setAdapter(arrayAdapter);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) { onSend(view); }
+            public void onClick(View view) { onSendTemp(view); }
         });
         if (extraBundles != null && !extraBundles.isEmpty()) {
             name = extraBundles.getString("ID");
@@ -108,19 +148,49 @@ public class MessagingActivity extends AppCompatActivity {
 
     public void onSendTemp(View view) {
         // For log messages
-        String TAG = "onSendTemp";
+        final String TAG = "onSendTemp";
 
         // See if there is actually text in there, if it's just space, return from the function
-        if(Objects.equals(message.getText().toString(), " ") || Objects.equals(message.getText().toString(), ""))
+        if(Objects.equals(messageBox.getText().toString(), " ") || Objects.equals(messageBox.getText().toString(), ""))
             return;
 
-        String text = message.getText().toString();
+        String messageToSend = messageBox.getText().toString();
 
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        // Make a database reference to Joseph Ridgleys messages area
+        DatabaseReference messagesRef = database.getReference().child("Messages").child("MI1NAYHwywaWuwOyjXR7WOur23z2");
+
+        Message message = new Message("MI1NAYHwywaWuwOyjXR7WOur23z2",
+                FirebaseAuth.getInstance().getCurrentUser().getUid(), messageToSend);
+
+
+        messageBox.setText("");
+
+        // Set the value and monitor to see if it is successful or not
+        messagesRef.setValue(message)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(MessagingActivity.this, "Message Sent",
+                                Toast.LENGTH_SHORT).show();
+
+                        Log.d(TAG, "Sent the messageBox");
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(MessagingActivity.this, "Failed to Send",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     /**
-     * Called when the send button is pressed. Adds the message found in the text box into the
-     * text message list and list view.
+     * Called when the send button is pressed. Adds the messageBox found in the text box into the
+     * text messageBox list and list view.
      * @param view Receives the current state of the activity.
      */
     public void onSend(View view) {
@@ -128,13 +198,13 @@ public class MessagingActivity extends AppCompatActivity {
         String TAG = "onSend";
 
         // See if there is actually text in there, if it's just space, return from the function
-        if(Objects.equals(message.getText().toString(), " ") || Objects.equals(message.getText().toString(), ""))
+        if(Objects.equals(messageBox.getText().toString(), " ") || Objects.equals(messageBox.getText().toString(), ""))
             return;
 
 
-        // Add the string in the message EditText to the preference manager
+        // Add the string in the messageBox EditText to the preference manager
         PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString(
-                "Message", message.getText().toString()).apply();
+                "Message", messageBox.getText().toString()).apply();
 
         // Get the string we just saved and add it to the arrayAdapter
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -153,8 +223,8 @@ public class MessagingActivity extends AppCompatActivity {
         // Notify the arrayAdapter that changes have been made to the arrayList
         arrayAdapter.notifyDataSetChanged();
 
-        // Reset the EditText where the user typed the message
-        message.setText("");
+        // Reset the EditText where the user typed the messageBox
+        messageBox.setText("");
 
         // Display a toast for user experience
         Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_SHORT / 3).show();
@@ -163,10 +233,10 @@ public class MessagingActivity extends AppCompatActivity {
     public final CustomMessagingAdapter getAdapter() {
         return arrayAdapter;
     }
-    public final EditText getMessage() {
-        return message;
+    public final EditText getMessageBox() {
+        return messageBox;
     }
-    public void setEditText(String value) { message.setText(value);}
+    public void setEditText(String value) { messageBox.setText(value);}
 
     /**
      * The extends the base adapter to have a custom list view for the messages.
@@ -211,7 +281,7 @@ public class MessagingActivity extends AppCompatActivity {
          * @param position The index of the data in the list.
          * @param convertView Unused
          * @param viewGroup Unused
-         * @return Returns the actual view or display of the individual message.
+         * @return Returns the actual view or display of the individual messageBox.
          */
         @Override
         public View getView(int position, View convertView, ViewGroup viewGroup) {
@@ -240,8 +310,8 @@ public class MessagingActivity extends AppCompatActivity {
         }
 
         /**
-         * Saves the message into the list to be displayed in the list view.
-         * @param string The message being saved
+         * Saves the messageBox into the list to be displayed in the list view.
+         * @param string The messageBox being saved
          */
         public void add(String string) {
 
@@ -256,7 +326,7 @@ public class MessagingActivity extends AppCompatActivity {
     }
 
     /**
-     * Holds the basic information for a text message
+     * Holds the basic information for a text messageBox
      */
     public class Text {
         private String text;

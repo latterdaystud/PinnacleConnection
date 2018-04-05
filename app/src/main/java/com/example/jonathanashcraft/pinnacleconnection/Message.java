@@ -6,9 +6,20 @@ package com.example.jonathanashcraft.pinnacleconnection;
  */
 public class Message {
 
+    public Message(String to, String from, String body) {
+        To = to;
+        From = from;
+        Body = body;
+    }
+
     private String To;
     private String From;
     private String Body;
+    private String Time;
+
+    public String getTime() { return Time; }
+
+    public void setTime(String time) { Time = time; }
 
     public String getTo() {
         return To;
