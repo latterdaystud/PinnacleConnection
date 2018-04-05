@@ -9,25 +9,29 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/checkBoxIsUrgent"
+        android:layout_marginTop="12dp"
         android:ems="10"
         android:hint="What's the Issue?"
         android:inputType="textMultiLine" />
-
+/;
     <CheckBox
         android:id="@+id/checkBoxIsUrgent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/editTextIssueInput"
-        android:layout_below="@+id/editTextIssueInput"
-        android:layout_marginTop="14dp"
+        android:layout_alignBottom="@+id/editTextTopicProblem"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="47dp"
         android:text="Urgent" />
 
-    <ImageButton
-        android:id="@+id/imageButtonAttachPhoto"
+    <EditText
+        android:id="@+id/editTextTopicProblem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/checkBoxIsUrgent"
-        android:layout_alignEnd="@+id/editTextIssueInput"
-        app:srcCompat="@drawable/ic_menu_gallery" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:ems="10"
+        android:hint="Topic of Problem"
+        android:inputType="textPersonName" />
+
 </RelativeLayout>

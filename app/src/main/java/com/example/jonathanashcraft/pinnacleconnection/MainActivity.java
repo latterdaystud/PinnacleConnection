@@ -4,8 +4,6 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -36,6 +34,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
@@ -74,6 +73,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         final String TAG = "onCreate";
+
+        Log.d(TAG,"You are now in MainActivity");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -117,9 +118,17 @@ public class MainActivity extends AppCompatActivity
         // Set the items for the Navigation View
         Menu menu = navigationView.getMenu();
         menu.findItem(R.id.nav_admin).setVisible(false);
-        if(AndroidUser.isUserManager())
+
+        Log.d(TAG, "Is the user a manager?" + CurrentUser.isManager());
+
+        // All the things the manager can see
+        if(CurrentUser.isManager()) {
             menu.findItem(R.id.nav_admin).setVisible(true);
-/*
+            menu.findItem(R.id.nav_maintenance).setTitle("View Maintenance Requests");
+        }
+
+        Log.d(TAG, "The current device ID is: " + FirebaseInstanceId.getInstance().getToken().toString());
+        /*
         MenuItem nav_camera = menu.findItem(R.id.nav_manage);
         nav_camera.setTitle("Maintenance Request");
 
@@ -165,7 +174,7 @@ public class MainActivity extends AppCompatActivity
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if(AndroidUser.isUserManager()) {
+                if(CurrentUser.isManager()) {
                     createAnnouncement(MainActivity.this.listView, true, i);
                 }
             }
@@ -177,7 +186,7 @@ public class MainActivity extends AppCompatActivity
             public boolean onItemLongClick(AdapterView<?> parent, View view,
                                            int position, long arg3) {
 
-                if(AndroidUser.isUserManager()) {
+                if(CurrentUser.isManager()) {
                     DeleteAnnouncementFragment deleteAnnouncementFragment = new DeleteAnnouncementFragment();
                     tempAnnouncement = MessagesFromJsonList.get(arrayAdapter.getCount() - 1 - position);
                     deleteAnnouncementFragment.setAnnouncement(tempAnnouncement);
@@ -244,6 +253,16 @@ public class MainActivity extends AppCompatActivity
         // Attach the childEventListener
         AnnouncementRef.addChildEventListener(announcementListener);
 
+        CurrentUser.reloadUser();
+        // TODO: This will show null when called, not sure if its because the class is still initalizing
+//        Toast.makeText(MainActivity.this, "Welcome " + CurrentUser.getFirstName(),
+//                Toast.LENGTH_SHORT).show();
+
+        // Creating a new Token access
+        TokenAccess token = new TokenAccess();
+
+        // Let's reload it
+        token.loadToken();
         //Adds the default announcement if there is none
         if (arrayAdapter.getCount() == 0) {
             arrayAdapter.add(empty);
@@ -254,8 +273,9 @@ public class MainActivity extends AppCompatActivity
         super.onStart();
         final String TAG = "onStart";
 
+        CurrentUser.reloadUser();
         // TODO: This will show null when called at the very start of the app
-        Toast.makeText(MainActivity.this, "Welcome back " + AndroidUser.getUserFirstName(),
+        Toast.makeText(MainActivity.this, "Welcome back " + CurrentUser.getFirstName(),
                 Toast.LENGTH_SHORT).show();
     }
 
@@ -275,16 +295,6 @@ public class MainActivity extends AppCompatActivity
 
     public void loginPressed(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-    }
-
-    public void theaterRequestPressed(View view) {
-        Intent intent = new Intent(this, TheaterRequestActivity.class);
-        startActivity(intent);
-    }
-
-    public void maintanceRequestPressed(View view) {
-        Intent intent = new Intent(this, MaintenanceRequest.class);
         startActivity(intent);
     }
 
@@ -336,14 +346,21 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(this, TheaterRequestActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_maintenance) {
-            Intent intent = new Intent(this, MaintenanceRequest.class);
-            startActivity(intent);
+            if(!CurrentUser.isManager()) {
+                // If the user is not a manager
+                Intent intent = new Intent(this, RequestMaintenance.class);
+                startActivity(intent);
+            } else {
+                // If the user is a manager
+                Intent intent = new Intent(this, ViewMaintenanceRequests.class);
+                startActivity(intent);
+            }
         } else if (id == R.id.nav_admin) {
             createAnnouncement(this.listView, false, -1);
         } else if (id == R.id.nav_login) {
             // Sign out
             FirebaseAuth.getInstance().signOut();
-            loginPressed(this.listView);
+            loginPressed(getCurrentFocus());
         } else if (id == R.id.nav_message) {
             Intent intent = new Intent(this, ContactList.class);
             startActivity(intent);
@@ -378,8 +395,8 @@ public class MainActivity extends AppCompatActivity
         }
 
         @Override
-        public Object getItem(int i) {
-            return myList.get(i);
+        public Announcement getItem(int i) {
+            return myList.get(getCount() - (i + 1));
         }
 
         @Override
@@ -390,7 +407,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public View getView(int position, View convertView, ViewGroup viewGroup) {
             View view = getLayoutInflater().inflate(R.layout.announcements_with_image, null);
-            Announcement newAnnouncement = myList.get(getCount() - (position + 1));
+            Announcement newAnnouncement = getItem(position);
             TextView Title = view.findViewById(R.id.title);
             TextView Body = view.findViewById(R.id.body);
             TextView Time = view.findViewById(R.id.time);
@@ -399,25 +416,11 @@ public class MainActivity extends AppCompatActivity
             Body.setText(newAnnouncement.getBody());
             Time.setText(newAnnouncement.getTimeOfAnnouncement());
             Manager.setText(newAnnouncement.getAuthor());
-            ImageView image = view.findViewById(R.id.imageView2);
-
-           // Gson gson = new Gson();
-            //Bitmap notJson = gson.fromJson(newAnnouncement.getJsonImage(), Bitmap.class);
-
-           /* if (notJson != BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_menu_gallery)) {
-                image.setImageBitmap(notJson);
-            }
-            */
-
             Log.i("View set", "Values should be set");
 
             return view;
         }
 
-        public void add(Announcement newAnnouncement) {
-            myList.add(newAnnouncement);
-
-        }
         public void add(int index, Announcement newAnnouncement) {
             myList.add(index, newAnnouncement);
 

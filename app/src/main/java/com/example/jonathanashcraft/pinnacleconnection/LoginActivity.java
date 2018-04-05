@@ -22,7 +22,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,14 +29,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A login screen that offers login via email/password.
@@ -50,10 +50,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     // Firebase database
     private FirebaseDatabase database;
 
-    // UI references./
+    // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private Button mCreateAccount;
+    private Button mLoggedIn;
     private View mProgressView;
     private View mLoginFormView;
     private Button mSignInButton;
@@ -93,7 +94,29 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+        mLoggedIn = findViewById(R.id.buttonLoggedIn);
 
+        mLoggedIn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (CurrentUser.isCurrentUserLoaded()) {
+                    Toast.makeText(LoginActivity.this, "You're logged in",
+                            Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+
+                    Toast.makeText(LoginActivity.this, "You are already logged in",
+                            Toast.LENGTH_SHORT).show();
+
+                    // End this activity
+                    finish();
+
+                } else {
+                    Toast.makeText(LoginActivity.this, "You're not logged in",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         // Get the instance for Firebase
         mAuth = FirebaseAuth.getInstance();
 
@@ -103,18 +126,52 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if (mAuth.getCurrentUser() != null) {
             // if the user is equal to something, skip to the main activity
 
+            // Let's start to reload the user;
+            // Making the loading of a user on a new thread
+            Thread loadUser = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    CurrentUser.reloadUser();
+                }
+            });
+
+            // Start that thread
+            loadUser.start();
+
+            Log.d(TAG, "We are going to wait for the user to be loaded");
+
+            try {
+                loadUser.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            Log.d(TAG, "<---------------------------------->");
+            Log.d(TAG, "Let's see if the user is loaded");
+            Log.d(TAG, "CurrentUsers Name: " + CurrentUser.getFirstName() +
+                    CurrentUser.getLastName());
+            Log.d(TAG, "Is the current user a manager? " + CurrentUser.isManager());
+
+
+            Log.d(TAG, "The user is loaded now!");
+            Log.d(TAG, "Is the user really loaded? " + CurrentUser.isCurrentUserLoaded());
+
+            if (CurrentUser.isCurrentUserLoaded()) {
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
+
+                Toast.makeText(LoginActivity.this, "You are already logged in",
+                        Toast.LENGTH_SHORT).show();
+
+                // End this activity
+                finish();
+            }
+
             // Start the main activity
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
 
-            Toast.makeText(LoginActivity.this, "You are already logged in",
-                    Toast.LENGTH_SHORT).show();
-
-            // End this activity
-            finish();
         } else {
             Log.d(TAG, "The user is not logged in");
-            Log.d(TAG, "currentUser == null");
+            Log.d(TAG, "CurrentUser == null");
         }
     }
 
@@ -137,6 +194,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
 
+        Log.d(TAG, "email: " + email);
+        Log.d(TAG, "password: " + password);
+
         boolean cancel = false;
         View focusView = null;
 
@@ -156,6 +216,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             focusView = mEmailView;
             cancel = true;
         }
+
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
@@ -172,19 +233,40 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             Log.d(TAG, "Called onComplete of signIn..");
 
-                            if (task.isSuccessful()) {
+                            if (task.isSuccessful() && CurrentUser.getInstance() != null) {
                                 Log.d(TAG, "We logged in!");
 
                                 // Show a toast for user feedback
                                 Toast.makeText(LoginActivity.this, "Login Sucessful",
                                         Toast.LENGTH_SHORT).show();
 
+                                // Create a seperate thread to load the user
+                                Thread loadCurrentUser = new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        CurrentUser.reloadUser();
+                                    }
+                                });
+
+                                // Start the thread
+                                loadCurrentUser.start();
+
+                                Log.d(TAG, "Started the thread, waiting for it to die");
+                                // Wait for it to end
+                                try {
+                                    loadCurrentUser.join();
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+
+                                Log.d(TAG, "Current User Has Been Loaded");
                                 // Start the main activity
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(intent);
 
                                 // End this activity
                                 finish();
+
                             } else {
                                 // Log this so we can debug
                                 Log.d(TAG, "Unable to Login");
@@ -202,7 +284,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         }
 
 
-                    });
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d(TAG, "Login completely failed");
+                }
+            });
 
             Log.d(TAG, "attemptLogin is ending.");
         }
@@ -219,8 +306,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     public void onCreateAccount(View view) {
-      Intent intent = new Intent(getApplicationContext(), CreateProfile.class);
-      startActivityForResult(intent, 1);
+        Intent intent = new Intent(getApplicationContext(), CreateProfile.class);
+        startActivityForResult(intent, 1);
     }
 
     // UNKNOWN IF I NEED ALL OF THIS

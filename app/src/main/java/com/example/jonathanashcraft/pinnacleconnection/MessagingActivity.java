@@ -1,6 +1,7 @@
 package com.example.jonathanashcraft.pinnacleconnection;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -23,10 +24,16 @@ import java.util.Objects;
 
 import com.google.gson.Gson;
 
+import org.w3c.dom.Text;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-
+/**
+ * Messaging activity, contains information for the activity as well as how the messages are stored
+ * and displayed.
+ * @author Jonathan Ashcraft
+ */
 public class MessagingActivity extends AppCompatActivity {
 
     // Adapter that handles displaying the information in the list view
@@ -37,21 +44,28 @@ public class MessagingActivity extends AppCompatActivity {
     private EditText message;
 
     // Hold all of the messages in an Array
-    ArrayList<TextSent> MessagesFromJsonList;
+    ArrayList<Text> MessagesFromJsonList;
 
     // To use for serializing and deserializing to JSON
     private Gson gson = new Gson();
     private String jsonMessages;
 
-    private TextSent[] ts;
+    private Text[] ts;
 
+    /**
+     * Load the saved messages from the phone onto the list view.
+     * @param savedInstanceState instance of the activity
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         final String TAG = "onCreate";
-
         Log.d(TAG, "Called onCreate");
         super.onCreate(savedInstanceState);
+        Intent intentExtras = getIntent();
+        Bundle extraBundles = intentExtras.getBundleExtra("Contact Name");
+        String name;
+
+
         setContentView(R.layout.activity_messaging);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -65,7 +79,7 @@ public class MessagingActivity extends AppCompatActivity {
 
         // Convert the JSON to an array of TextSents
         if(!jsonMessagesLoadedFromMyPreferences.isEmpty()) {
-            ts = gson.fromJson(jsonMessagesLoadedFromMyPreferences, TextSent[].class);
+            ts = gson.fromJson(jsonMessagesLoadedFromMyPreferences, Text[].class);
         }
         // Slap that ^ array into an ArrayList
         MessagesFromJsonList = new ArrayList<>(Arrays.asList(ts));
@@ -84,7 +98,31 @@ public class MessagingActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) { onSend(view); }
         });
+        if (extraBundles != null && !extraBundles.isEmpty()) {
+            name = extraBundles.getString("ID");
+            arrayAdapter.add(name);
+            this.setTitle(name);
+
+        }
     }
+
+    public void onSendTemp(View view) {
+        // For log messages
+        String TAG = "onSendTemp";
+
+        // See if there is actually text in there, if it's just space, return from the function
+        if(Objects.equals(message.getText().toString(), " ") || Objects.equals(message.getText().toString(), ""))
+            return;
+
+        String text = message.getText().toString();
+
+    }
+
+    /**
+     * Called when the send button is pressed. Adds the message found in the text box into the
+     * text message list and list view.
+     * @param view Receives the current state of the activity.
+     */
     public void onSend(View view) {
         // For log messages
         String TAG = "onSend";
@@ -92,6 +130,7 @@ public class MessagingActivity extends AppCompatActivity {
         // See if there is actually text in there, if it's just space, return from the function
         if(Objects.equals(message.getText().toString(), " ") || Objects.equals(message.getText().toString(), ""))
             return;
+
 
         // Add the string in the message EditText to the preference manager
         PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString(
@@ -124,21 +163,28 @@ public class MessagingActivity extends AppCompatActivity {
     public final CustomMessagingAdapter getAdapter() {
         return arrayAdapter;
     }
-
     public final EditText getMessage() {
         return message;
     }
     public void setEditText(String value) { message.setText(value);}
 
+    /**
+     * The extends the base adapter to have a custom list view for the messages.
+     * @author Jonathan Ashcraft
+     */
     public class CustomMessagingAdapter extends BaseAdapter {
 
-        ArrayList<TextSent> myList = new ArrayList();
+        ArrayList<Text> myList = new ArrayList();
         LayoutInflater inflater;
         Context context;
 
 
-
-        public CustomMessagingAdapter(Context context, ArrayList<TextSent> myList) {
+        /**
+         * Non-default Constructor for the custom messaging adapter
+         * @param context Context of the program
+         * @param myList List to which we will add values.
+         */
+        public CustomMessagingAdapter(Context context, ArrayList<Text> myList) {
             this.myList = myList;
             this.context = context;
             inflater = LayoutInflater.from(this.context);
@@ -160,9 +206,16 @@ public class MessagingActivity extends AppCompatActivity {
             return 0;
         }
 
+        /**
+         * Includes the code that will determine how the messages are displayed.
+         * @param position The index of the data in the list.
+         * @param convertView Unused
+         * @param viewGroup Unused
+         * @return Returns the actual view or display of the individual message.
+         */
         @Override
         public View getView(int position, View convertView, ViewGroup viewGroup) {
-            TextSent textSent;
+            Text text;
             String addition;
             View view;
             TextView textview;
@@ -179,13 +232,17 @@ public class MessagingActivity extends AppCompatActivity {
                 textView2 = view.findViewById(R.id.TextView2);
                 addition = "Received: ";
             }
-            textSent = myList.get(position);
-            String time = addition + textSent.getTime();
+            text = myList.get(position);
+            String time = addition + text.getTime();
             textView2.setText(time);
-            textview.setText(textSent.getText());
+            textview.setText(text.getText());
             return view;
         }
 
+        /**
+         * Saves the message into the list to be displayed in the list view.
+         * @param string The message being saved
+         */
         public void add(String string) {
 
             SimpleDateFormat df = new SimpleDateFormat("h:mma, EEE, MMM d");
@@ -194,15 +251,20 @@ public class MessagingActivity extends AppCompatActivity {
             myList.add(textSent);
 
         }
+
+
     }
 
-    // A class which holds information pertaining to a text
-    public class TextSent {
+    /**
+     * Holds the basic information for a text message
+     */
+    public class Text {
         private String text;
         private String time;
-        public TextSent(String textGiven, String timeGiven) {
-            text = textGiven;
-            time = timeGiven;
+
+        public Text(String text, String time) {
+            text = text;
+            time = time;
         }
 
         public String getText() {
@@ -222,7 +284,22 @@ public class MessagingActivity extends AppCompatActivity {
         }
 
         public String toString() {
-            return "Text: " + text + " at " + time;
+            return "Message: " + text + " at " + time;
+        }
+    }
+
+    public class TextSent extends Text {
+
+        public TextSent(String textGiven, String timeGiven) {
+            super(textGiven, timeGiven);
+        }
+
+    }
+
+    public class TextReceived extends Text {
+
+        public TextReceived(String textReceived, String timeReceived) {
+            super(timeReceived, timeReceived);
         }
     }
 
