@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity
                 tempAnnouncement = dataSnapshot.getValue(Announcement.class);
                 if (tempAnnouncement != null) {
                     Log.d(TAG, "TempAnnouncements is not equal to null");
-                    arrayAdapter.add(tempAnnouncement);
+                    arrayAdapter.add(tempAnnouncement.getIndexInArray(), tempAnnouncement);
                     arrayAdapter.notifyDataSetChanged();
                 } else {
                     Log.d(TAG, "TempAnnouncements is equal to null");
@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity
             public void onChildRemoved(DataSnapshot dataSnapshot) {
 
                if (arrayAdapter.getCount() == 1) {
-                    arrayAdapter.add(empty);
+                    arrayAdapter.add(0, empty);
                     arrayAdapter.remove(tempAnnouncement.getIndexInArray() - 1);
                 }
                 else {
@@ -265,7 +265,7 @@ public class MainActivity extends AppCompatActivity
         token.loadToken();
         //Adds the default announcement if there is none
         if (arrayAdapter.getCount() == 0) {
-            arrayAdapter.add(empty);
+            arrayAdapter.add(0, empty);
         }
     }
 

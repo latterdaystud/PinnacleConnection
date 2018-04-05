@@ -60,4 +60,8 @@
     <string name="admin_title">Create Announcement</string>
     <string name="login_title">Sign Out</string>
     <string name="message_title">Message Manager</string>
+    <string name="dialog_delete_announcement">Delete Announcement?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="add_image">Add Image</string>
 </resources>

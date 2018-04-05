@@ -86,7 +86,7 @@ public class ContactList extends AppCompatActivity
         // Temp values for display purposes.
         User user = new User(CurrentUser.getCurrentUser());
         Log.d("Show Token", user.getDeviceToken());
-        User user2 = new User("George", "Romania", "0", true, "123qwe456asd");
+        User user2 = new User("George", "Romania", "0", user.getDeviceToken(), true);
         User user3 = new User();
         contactAdapter.add(user);
         contactAdapter.add(user2);

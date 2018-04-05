@@ -8,7 +8,6 @@ import android.text.Editable;
 import java.util.Calendar;
 import java.util.Date;
 
-
 /**
  * Class to create and retrieve data from announcements
  *
@@ -18,6 +17,7 @@ import java.util.Date;
  * @version 2018.01
  * @since 2018.01
  */
+
 public class Announcement {
     private String body;
     // For use in the database when an announcement is created
@@ -48,15 +48,7 @@ public class Announcement {
         this.pathToImage = "no_path";
     }
 
-    /**
-     *
-     * @param Title
-     * @param Body
-     * @param Date
-     * @param time
-     * @param Author
-     */
-    public Announcement(String Title, String Body, String Date, String time, String Author) {
+    public Announcement(String Title, String Body, String Date, String time, String Author, String pathToImage) {
         this.body = Body;
         this.author = Author;
         this.title = Title;
@@ -119,28 +111,12 @@ public class Announcement {
         this.date = date;
     }
 
-    public void setIndexInArray(int index) {
-        this.indexInArray = index;
-    }
-
-    public int getIndexInArray() {
-        return indexInArray;
-    }
-
-    public void setDefault(boolean isDefault) {
-        this.isDefault = isDefault;
-    }
-
-    public boolean getDefault() {
+    public boolean isDefault() {
         return isDefault;
     }
 
-    public String getPathToImage() {
-        return pathToImage;
-    }
-
-    public void setPathToImage(String pathToImage) {
-        this.pathToImage = pathToImage;
+    public void setDefault(boolean aDefault) {
+        isDefault = aDefault;
     }
 
     public byte[] getImageAsBytes() {
@@ -149,5 +125,13 @@ public class Announcement {
 
     public void setImageAsBytes(byte[] imageAsBytes) {
         this.imageAsBytes = imageAsBytes;
+    }
+
+    public int getIndexInArray() {
+        return indexInArray;
+    }
+
+    public void setIndexInArray(int indexInArray) {
+        this.indexInArray = indexInArray;
     }
 }

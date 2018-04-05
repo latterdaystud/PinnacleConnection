@@ -28,14 +28,18 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class CreateAnnouncement extends AppCompatActivity implements DatePickerDialog.OnDateSetListener,
 TimePickerDialog.OnTimeSetListener {
@@ -68,13 +72,16 @@ TimePickerDialog.OnTimeSetListener {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //imageButton = findViewById(R.id.AnnouncementImage);
+        //image = BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_menu_gallery);
+
         // Get the current user
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (currentUser == null) {
-            Log.d(TAG, "CurrentUser is equal to null");
+            Log.d(TAG, "currentUser is equal to null");
         } else {
-            Log.d(TAG, "CurrentUser equals something!!");
+            Log.d(TAG, "currentUser equals something!!");
         }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -223,13 +230,6 @@ TimePickerDialog.OnTimeSetListener {
 
         Log.d(TAG, "The users name is " + CurrentUser.getFirstName());
 
-        final Announcement tempAnnouncement = new Announcement(
-                title_of_announcement.getText().toString(),
-                description_of_announcement.getText().toString(),
-                date_of_announcement.getText().toString(),
-                time_of_announcement.getText().toString(),
-                (CurrentUser.getFirstName() + " " + CurrentUser.getLastName())
-        );
         Announcement tempAnnouncement;
 
         BitmapDrawable drawable = (BitmapDrawable) imageButton.getDrawable();
@@ -255,7 +255,7 @@ TimePickerDialog.OnTimeSetListener {
                     description_of_announcement.getText().toString(),
                     date_of_announcement.getText().toString(),
                     time_of_announcement.getText().toString(),
-                    (AndroidUser.getUserFirstName() + " " + AndroidUser.getUserLastName()),
+                    (CurrentUser.getFirstName() + " " + CurrentUser.getLastName()),
                     pathToImage
             );
         }
@@ -266,15 +266,13 @@ TimePickerDialog.OnTimeSetListener {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference AnnouncementsRef = database.getReference("Announcements");
 
-//       DatabaseReference nameRef = database.getReference("contacts");
 
         AnnouncementsRef.child(tempAnnouncement.getID()).setValue(tempAnnouncement);
-
 
         Log.d(TAG, "Added announcement to database");
 
         // Make a toast for user feedback
-        Toast.makeText(CreateAnnouncement.this, "Created Announcement",
+        Toast.makeText(CreateAnnouncement.this, "Announcement Created",
                 Toast.LENGTH_SHORT).show();
 
         finish();
@@ -295,9 +293,9 @@ TimePickerDialog.OnTimeSetListener {
     public void onTimeSet(TimePicker timePicker, int i, int i1) {
         Log.d("onTimeSet", "onTimeSet got called son");
 
+        // TODO: Implent logic for 24 hour to 12 hour conversion
         String time = i + ":" + i1;
 
-        // TODO: Implent logic for 24 hour to 12 hour conversion
         time_of_announcement.setText(time);
     }
 }
