@@ -10,15 +10,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,7 +28,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Used to view the maintenance requests that tenants send.
@@ -82,7 +80,7 @@ public class ViewMaintenanceRequests extends AppCompatActivity {
         MaintenanceRequestList = new ArrayList<>();
 
         arrayAdapter = new CustomerArrayAdapter(this, MaintenanceRequestList);
-        listViewMaintenanceRequests = (ListView) findViewById(R.id.ListViewMaintenanceRequests);
+        listViewMaintenanceRequests = findViewById(R.id.ListViewMaintenanceRequests);
         listViewMaintenanceRequests.setAdapter(arrayAdapter);
         MaintenanceRequestListner = new ChildEventListener() {
             @Override
@@ -299,8 +297,10 @@ public class ViewMaintenanceRequests extends AppCompatActivity {
             TextView Date = view.findViewById(R.id.textViewMaintenanceRequestDate);
             TextView Author = view.findViewById(R.id.textViewMaintenanceRequestPerson);
             ImageView Photo = view.findViewById(R.id.imageViewMaintenanceRequestPhoto);
+            ProgressBar imageLoadingProgressBar = view.findViewById(R.id.progressBarImageLoading);
+            TextView imageLoadingTextView = view.findViewById(R.id.textViewImageLoading);
 
-
+            // See if there is an image to load already.
             if (newMaintenanceRequest.getBytes() != null) {
                 Log.d("getView", "What is the length of bytes " + newMaintenanceRequest.getBytes().toString());
 
@@ -309,10 +309,17 @@ public class ViewMaintenanceRequests extends AppCompatActivity {
                 Bitmap bity = BitmapFactory.decodeByteArray(newMaintenanceRequest.getBytes(), 0, newMaintenanceRequest.getBytes().length);
 
                 Log.i("getView", "Setting the new photo");
+
+                // Set the image to the imageView
                 Photo.setImageBitmap(bity);
+                Photo.setVisibility(View.VISIBLE);
+
+                // Set the loading bar and image loading textview go away
+                imageLoadingProgressBar.setVisibility(View.GONE);
+                imageLoadingTextView.setVisibility(View.GONE);
+
             } else {
                 Log.d("getView", "getBytes equals null");
-
                 Log.d("getView", "Let's try to load from the path of the object");
 
                 loadImage(position);

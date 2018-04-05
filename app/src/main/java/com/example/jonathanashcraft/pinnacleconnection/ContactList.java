@@ -24,6 +24,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,6 +32,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -39,13 +44,14 @@ public class ContactList extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
 
     private ListView conversationListView;
-    private ArrayList<User> userList;
+    private ArrayList<UserWithID> userList;
     private CustomContactAdapter contactAdapter;
 
-    ArrayList<User> ContactsFromJsonList;
-    ArrayList<User> ContactsFromJsonMatch;
+    ArrayList<UserWithID> ContactsFromJsonList;
+    ArrayList<UserWithID> ContactsFromJsonMatch;
+
     private Gson gson = new Gson();
-    private User[] users;
+    private UserWithID[] users;
 
     private ListView contactListView;
     private CustomContactListAdapter contactListAdapter;
@@ -55,9 +61,11 @@ public class ContactList extends AppCompatActivity
     private FloatingActionButton contactFab;
     private FirebaseDatabase database;
     private DatabaseReference databaseRef;
+    private ChildEventListener messagingListener;
     private ChildEventListener contactListener;
     private DatabaseReference contactRef;
 
+    private String userId;
 
     /**
      * Creates an instance of the Contact list activity which has recorded conversations and
@@ -74,6 +82,8 @@ public class ContactList extends AppCompatActivity
 
         myDialog.setContentView(R.layout.contact_list);
         myDialog.setCancelable(false);
+        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
 
 
         // initializing some values for suture referrence.
@@ -83,18 +93,9 @@ public class ContactList extends AppCompatActivity
         conversationListView.setAdapter(contactAdapter);
         contactFab = findViewById(R.id.contactFab);
 
-        // Temp values for display purposes.
-        User user = new User(CurrentUser.getCurrentUser());
-        Log.d("Show Token", user.getDeviceToken());
-        User user2 = new User("George", "Romania", "0", user.getDeviceToken(), true);
-        User user3 = new User();
-        contactAdapter.add(user);
-        contactAdapter.add(user2);
-        contactAdapter.add(user3);
-
         //Firebase connection
         database = FirebaseDatabase.getInstance();
-        databaseRef = database.getReference();
+        databaseRef = database.getReference().child("Messaging").child(userId).child("Conversations");
         contactRef = database.getReference().child("Users");
 
         // shared preferences to be shared to the phone.
@@ -105,7 +106,7 @@ public class ContactList extends AppCompatActivity
 
         // Convert the JSON to an array of TextSents
         if(!jsonContactsLoadedFromMyPreferences.isEmpty()) {
-            users = gson.fromJson(jsonContactsLoadedFromMyPreferences, User[].class);
+            users = gson.fromJson(jsonContactsLoadedFromMyPreferences, UserWithID[].class);
         }
         // Slap that ^ array into an ArrayList
         ContactsFromJsonList = new ArrayList<>(Arrays.asList(users));
@@ -118,8 +119,10 @@ public class ContactList extends AppCompatActivity
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(ContactList.this, MessagingActivity.class);
                 TextView name = view.findViewById(R.id.contactName);
-                // Pass the data to the messaging activity.
-                String passedInfo = contactAdapter.getItem(i).getDeviceToken();
+                // Pass the data to the messaging activity. The data is backwards so access it backwards.
+                contactAdapter.getItem(i).setNewMessage(false);
+                contactAdapter.notifyDataSetChanged();
+                String passedInfo = contactAdapter.getItem(i).getID();
                 Bundle bundle = new Bundle();
                 bundle.putString("ID", passedInfo);
                 Log.d("Given ID", passedInfo);
@@ -178,7 +181,8 @@ public class ContactList extends AppCompatActivity
                         Intent intent = new Intent(ContactList.this, MessagingActivity.class);
                         TextView name = view.findViewById(R.id.ContactNameView);
                         // Pass the data to the messaging activity.
-                        String passedInfo = contactListAdapter.getItem(i).getDeviceToken();
+
+                        String passedInfo = contactListAdapter.getItem(i).getID();
                         Bundle bundle = new Bundle();
                         bundle.putString("ID", passedInfo);
                         Log.d("Given ID", passedInfo);
@@ -188,7 +192,16 @@ public class ContactList extends AppCompatActivity
                 });
             }
         });
+
+        setUpConversations();
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        myDialog.cancel();
+    }
+
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -201,7 +214,7 @@ public class ContactList extends AppCompatActivity
      */
     public class CustomContactListAdapter extends BaseAdapter {
 
-        ArrayList<User> myList = new ArrayList();
+        ArrayList<UserWithID> myList = new ArrayList();
         LayoutInflater inflater;
         Context context;
 
@@ -210,7 +223,7 @@ public class ContactList extends AppCompatActivity
          * @param context Context of the program
          * @param myList List to which we will add values.
          */
-        public CustomContactListAdapter(Context context, ArrayList<User> myList) {
+        public CustomContactListAdapter(Context context, ArrayList<UserWithID> myList) {
             this.myList = myList;
             this.context = context;
             inflater = LayoutInflater.from(this.context);
@@ -224,7 +237,7 @@ public class ContactList extends AppCompatActivity
         }
 
         @Override
-        public User getItem(int i) {
+        public UserWithID getItem(int i) {
             return myList.get(i);
         }
 
@@ -242,7 +255,7 @@ public class ContactList extends AppCompatActivity
          */
         @Override
         public View getView(int position, View convertView, ViewGroup viewGroup) {
-            User tempUser = getItem(position);
+            UserWithID tempUser = getItem(position);
             String name = tempUser.getFirstName() + " " + tempUser.getLastName();
             View view;
             view = getLayoutInflater().inflate(R.layout.contact_name, null);
@@ -255,8 +268,7 @@ public class ContactList extends AppCompatActivity
          * Saves the contacts into the list to be displayed in the list view.
          * @param user The User being saved
          */
-        public void add(User user) {
-
+        public void add(UserWithID user) {
             myList.add(user);
 
         }
@@ -267,11 +279,11 @@ public class ContactList extends AppCompatActivity
      */
     public class CustomContactAdapter extends BaseAdapter {
 
-        ArrayList<User> myList = new ArrayList();
+        ArrayList<UserWithID> myList = new ArrayList();
         LayoutInflater inflater;
         Context context;
 
-        public CustomContactAdapter(Context context, ArrayList<User> myList) {
+        public CustomContactAdapter(Context context, ArrayList<UserWithID> myList) {
             this.myList = myList;
             this.context = context;
             inflater = LayoutInflater.from(this.context);
@@ -282,8 +294,20 @@ public class ContactList extends AppCompatActivity
             return myList.size();
         }
 
+        public void clear() {
+            myList.clear();
+        }
+
+        public Boolean contains(UserWithID tempUser) {
+            return myList.contains(tempUser);
+        }
+
+        public int getItemIndex(UserWithID tempUser) {
+            return myList.indexOf(tempUser);
+        }
+
         @Override
-        public User getItem(int i) {
+        public UserWithID getItem(int i) {
             return myList.get(i);
         }
 
@@ -302,10 +326,13 @@ public class ContactList extends AppCompatActivity
         @Override
         public View getView(int position, View convertView, ViewGroup viewGroup) {
             View view = getLayoutInflater().inflate(R.layout.contact_view, null);
-            User user = myList.get(position);
+            UserWithID user = myList.get(position);
 
             TextView name = view.findViewById(R.id.contactName);
             TextView body = view.findViewById(R.id.contactConversation);
+            if(user.getNewMessage()) {
+                body.setText("New Message!");
+            }
 
             String nameGiven = user.getFirstName() + " " + user.getLastName();
             name.setText(nameGiven);
@@ -313,8 +340,8 @@ public class ContactList extends AppCompatActivity
             return view;
         }
 
-        public void add(User user) {
-            myList.add(user);
+        public void add(UserWithID user) {
+            myList.add(0, user);
         }
     }
 
@@ -331,13 +358,23 @@ public class ContactList extends AppCompatActivity
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d("Contact", "The size of the ContactsFromJsonList is " + ContactsFromJsonList.size());
                 User tempUser = dataSnapshot.getValue(User.class);
-                String otherUsers = gson.toJson(tempUser);
+                UserWithID tempUserWithID = new UserWithID(tempUser, dataSnapshot.getKey());
+                Log.d("Saving key!!!", dataSnapshot.getKey());
+                Log.d("About to search", "The size is" + ContactsFromJsonList.size());
+                String path = tempUserWithID.getID() + userId;
+
+                if (fileExist(path)) {
+                    Log.d("Finding conversations", "File exists");
+                    contactAdapter.add(tempUserWithID);
+                    contactAdapter.notifyDataSetChanged();
+                }
+                String otherUsers = gson.toJson(tempUserWithID);
                 Log.d("Testing for firebase", tempUser.getFirstName());
                 Log.d("Testing for firebase", otherUsers);
                 // Add the string in the message EditText to the preference manager
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString(
                         "Contact", otherUsers).apply();
-                ContactsFromJsonList.add(tempUser);
+                ContactsFromJsonList.add(tempUserWithID);
 
                 // Make the current arrayList to a JSON and put it in the sharedPreferences
                 String jsonContacts = gson.toJson(ContactsFromJsonList);
@@ -377,7 +414,7 @@ public class ContactList extends AppCompatActivity
         Log.d("Name Given", search);
         // Go through the list from the shared preferences and save the ones that match the search.
         for (int i = 0; i < ContactsFromJsonList.size(); i++) {
-            User temp = ContactsFromJsonList.get(i);
+            UserWithID temp = ContactsFromJsonList.get(i);
             String name = temp.getFirstName() + " " + temp.getLastName();
             Log.d("Name found", name);
             // If the name contans the search then save it. Does not save if it is the users name.
@@ -387,6 +424,75 @@ public class ContactList extends AppCompatActivity
                 contactListAdapter.notifyDataSetChanged();
             }
         }
+    }
 
+    /**
+     * Determines if file exists.
+     * @param fname File name
+     * @return If file exists.
+     */
+    public Boolean fileExist(String fname){
+        File file = getBaseContext().getFileStreamPath(fname);
+        return file.exists();
+    }
+
+    private void setUpConversations() {
+        messagingListener = new ChildEventListener() {
+            // Add the child added to a tempAnnouncement
+
+            /**
+             * Sets up what happens when a user is found with conversations on firebase.
+             * @param dataSnapshot The link to the data.
+             * @param s not used.
+             */
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Log.d("Contact for messaging", "The size of the ContactsFromJsonList is " + ContactsFromJsonList.size());
+                String id = dataSnapshot.getKey();
+                UserWithID tempUserWithID = new UserWithID();
+                for(int i = 0; i < ContactsFromJsonList.size(); i++) {
+                    if (Objects.equals(ContactsFromJsonList.get(i).getID(), id)) {
+                        tempUserWithID = new UserWithID(ContactsFromJsonList.get(i));
+                        break;
+                    }
+                }
+                String path = tempUserWithID.getID() + userId;
+
+                // Edit the existing conversation or add one.
+                if (fileExist(path)) {
+                    // If already in the phone then just edit.
+                    int index = contactAdapter.getItemIndex(tempUserWithID);
+                    contactAdapter.getItem(index+1).setNewMessage(true);
+                } else {
+                    // Otherwise add new.
+                    tempUserWithID.setNewMessage(true);
+                    contactAdapter.add(tempUserWithID);
+                    contactAdapter.notifyDataSetChanged();
+                }
+                Log.d("Testing for firebase", tempUserWithID.getFirstName());
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                // What is going to happen if the child changes
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                // What are we going to do if the child is removed
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                // What happens if we move the child
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // What if we cancel... what....
+            }
+        };
+        databaseRef.addChildEventListener(messagingListener);
+        databaseRef.keepSynced(true);
     }
 }

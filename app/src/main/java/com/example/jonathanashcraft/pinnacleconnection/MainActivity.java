@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         //Create an empty/default announcement
@@ -91,26 +91,25 @@ public class MainActivity extends AppCompatActivity
         database = FirebaseDatabase.getInstance();
         databaseRef = database.getReference();
         AnnouncementRef = database.getReference().child("Announcements");
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Welcome Back", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-
                 Intent intent = new Intent(MainActivity.this, ContactList.class);
                 startActivity(intent);
             }
         });
 
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
 
 
         /*********** Not Sure to what extent this is needed *******************/
@@ -168,14 +167,14 @@ public class MainActivity extends AppCompatActivity
 
         // Instantiation for the list view.
         arrayAdapter = new CustomAnnouncementsAdapter(this, MessagesFromJsonList);
-        listView = (ListView) findViewById(R.id.announcementsListView);
+        listView = findViewById(R.id.announcementsListView);
         listView.setAdapter(arrayAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if(CurrentUser.isManager()) {
-                    createAnnouncement(MainActivity.this.listView, true, i);
+                    createAnnouncement(MainActivity.this.listView, true,  arrayAdapter.getCount() - 1 - i);
                 }
             }
         });
@@ -253,10 +252,9 @@ public class MainActivity extends AppCompatActivity
         // Attach the childEventListener
         AnnouncementRef.addChildEventListener(announcementListener);
 
-        CurrentUser.reloadUser();
-        // TODO: This will show null when called, not sure if its because the class is still initalizing
-//        Toast.makeText(MainActivity.this, "Welcome " + CurrentUser.getFirstName(),
-//                Toast.LENGTH_SHORT).show();
+        // Let's greet the user because we are nice
+        Toast.makeText(MainActivity.this, "Welcome " + CurrentUser.getFirstName(),
+                Toast.LENGTH_SHORT).show();
 
         // Creating a new Token access
         TokenAccess token = new TokenAccess();
@@ -267,16 +265,16 @@ public class MainActivity extends AppCompatActivity
         if (arrayAdapter.getCount() == 0) {
             arrayAdapter.add(0, empty);
         }
+        // Static method is static
+        // Let's check to see if we need to reload the device token
+        TokenAccess.loadToken();
     }
 
     protected void onStart() {
         super.onStart();
         final String TAG = "onStart";
 
-        CurrentUser.reloadUser();
-        // TODO: This will show null when called at the very start of the app
-        Toast.makeText(MainActivity.this, "Welcome back " + CurrentUser.getFirstName(),
-                Toast.LENGTH_SHORT).show();
+//        CurrentUser.reloadUser();
     }
 
     public void createAnnouncement(View view, boolean edit, int id) {
@@ -284,7 +282,7 @@ public class MainActivity extends AppCompatActivity
         if (edit) {
             String announcement = gson.toJson(this.arrayAdapter.getItem(arrayAdapter.getCount() - 1 - id));
             intent.putExtra("announcement", announcement);
-            intent.putExtra("index", arrayAdapter.getCount() - 1 - id);
+            //intent.putExtra("index", arrayAdapter.getCount() - 1 - id);
         }
 
         intent.putExtra("index", arrayAdapter.getCount() - 1 - id);
@@ -300,7 +298,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -333,6 +331,8 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+        String TAG = "onNavigationItem";
+
         // Handle navigation view item clicks here.
 
         Log.d("onNavigationItem", "Method Opened!");
@@ -340,7 +340,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_announcements) {
-            FirebaseAuth.getInstance().signOut();
+            // What happens when you tap the announcements tab
 
         } else if (id == R.id.nav_theater) {
             Intent intent = new Intent(this, TheaterRequestActivity.class);
@@ -356,17 +356,26 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
             }
         } else if (id == R.id.nav_admin) {
+
             createAnnouncement(this.listView, false, -1);
+
         } else if (id == R.id.nav_login) {
+
+            Log.d(TAG, "You pressed sign out, let's sign you out");
             // Sign out
             FirebaseAuth.getInstance().signOut();
-            loginPressed(getCurrentFocus());
+
+            Log.d(TAG, "Let's start the loginActivity");
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+
+
         } else if (id == R.id.nav_message) {
             Intent intent = new Intent(this, ContactList.class);
             startActivity(intent);
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -425,6 +434,5 @@ public class MainActivity extends AppCompatActivity
             myList.add(index, newAnnouncement);
 
         }
-
     }
 }

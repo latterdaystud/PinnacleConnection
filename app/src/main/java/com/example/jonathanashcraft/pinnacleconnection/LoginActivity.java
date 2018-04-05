@@ -47,14 +47,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     // Firebase Authentication
     private FirebaseAuth mAuth;
 
-    // Firebase database
-    private FirebaseDatabase database;
-
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
-    private Button mCreateAccount;
-    private Button mLoggedIn;
     private View mProgressView;
     private View mLoginFormView;
     private Button mSignInButton;
@@ -64,15 +59,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        // Used for logging
         final String TAG = "onCreate";
+        Log.d(TAG, "called onCreate of LoginActivity");
 
+        // Make all the references to UI items
         mSignInButton = findViewById(R.id.email_sign_in_button);
-        mCreateAccount = findViewById(R.id.buttonCreateAccount);
+        mEmailView = findViewById(R.id.email);
+        mPasswordView = findViewById(R.id.password);
+        mLoginFormView = findViewById(R.id.login_form);
+        mProgressView = findViewById(R.id.login_progress);
 
-        // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-
-        mPasswordView = (EditText) findViewById(R.id.password);
+        // If the user presses the checkmark button on keyboard
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -84,47 +82,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+        // If the user presses the login button
+        mSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogin();
             }
         });
 
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
-        mLoggedIn = findViewById(R.id.buttonLoggedIn);
-
-        mLoggedIn.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (CurrentUser.isCurrentUserLoaded()) {
-                    Toast.makeText(LoginActivity.this, "You're logged in",
-                            Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
-
-                    Toast.makeText(LoginActivity.this, "You are already logged in",
-                            Toast.LENGTH_SHORT).show();
-
-                    // End this activity
-                    finish();
-
-                } else {
-                    Toast.makeText(LoginActivity.this, "You're not logged in",
-                            Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
         // Get the instance for Firebase
         mAuth = FirebaseAuth.getInstance();
 
-        // Get the instance for the Firebase database
-        database = FirebaseDatabase.getInstance();
-
+        // Check to see if a user is logged in
         if (mAuth.getCurrentUser() != null) {
-            // if the user is equal to something, skip to the main activity
 
             // Let's start to reload the user;
             // Making the loading of a user on a new thread
@@ -138,39 +108,25 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Start that thread
             loadUser.start();
 
-            Log.d(TAG, "We are going to wait for the user to be loaded");
+            // When the user gets loaded, start the new activity
+            CurrentUser.setListener(new userLoadedListener() {
+                @Override
+                public void onSuccess() {
+                    Log.d(TAG, "The Listener for CurrentUser fired! (This is good)");
 
-            try {
-                loadUser.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+                    Log.d(TAG, "Starting the MainActivity with intent");
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
 
-            Log.d(TAG, "<---------------------------------->");
-            Log.d(TAG, "Let's see if the user is loaded");
-            Log.d(TAG, "CurrentUsers Name: " + CurrentUser.getFirstName() +
-                    CurrentUser.getLastName());
-            Log.d(TAG, "Is the current user a manager? " + CurrentUser.isManager());
+                    Log.d(TAG, "Finishing the LoginActivity");
+                    finish();
 
-
-            Log.d(TAG, "The user is loaded now!");
-            Log.d(TAG, "Is the user really loaded? " + CurrentUser.isCurrentUserLoaded());
-
-            if (CurrentUser.isCurrentUserLoaded()) {
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
-
-                Toast.makeText(LoginActivity.this, "You are already logged in",
-                        Toast.LENGTH_SHORT).show();
-
-                // End this activity
-                finish();
-            }
-
-            // Start the main activity
+                    Log.d(TAG, "Setting CurrentUser listener equal to null");
+                    CurrentUser.setListener(null);
+                }
+            });
 
         } else {
-            Log.d(TAG, "The user is not logged in");
             Log.d(TAG, "CurrentUser == null");
         }
     }
@@ -231,14 +187,24 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
-                            Log.d(TAG, "Called onComplete of signIn..");
+                            Log.d(TAG, "Called onSuccess of signIn..");
 
                             if (task.isSuccessful() && CurrentUser.getInstance() != null) {
                                 Log.d(TAG, "We logged in!");
 
-                                // Show a toast for user feedback
-                                Toast.makeText(LoginActivity.this, "Login Sucessful",
-                                        Toast.LENGTH_SHORT).show();
+                                CurrentUser.setListener(new userLoadedListener() {
+                                    @Override
+                                    public void onSuccess() {
+                                        Log.d(TAG, "CurrentUser loaded");
+
+                                        // Start the main activity
+                                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                        startActivity(intent);
+
+                                        // End this activity
+                                        finish();
+                                    }
+                                });
 
                                 // Create a seperate thread to load the user
                                 Thread loadCurrentUser = new Thread(new Runnable() {
@@ -251,21 +217,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 // Start the thread
                                 loadCurrentUser.start();
 
-                                Log.d(TAG, "Started the thread, waiting for it to die");
-                                // Wait for it to end
-                                try {
-                                    loadCurrentUser.join();
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
 
-                                Log.d(TAG, "Current User Has Been Loaded");
-                                // Start the main activity
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                startActivity(intent);
-
-                                // End this activity
-                                finish();
 
                             } else {
                                 // Log this so we can debug

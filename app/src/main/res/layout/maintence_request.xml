@@ -75,9 +75,27 @@
         android:id="@+id/imageViewMaintenanceRequestPhoto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/textViewMaintenanceRequestDescrip"
+        android:layout_alignStart="@+id/textViewMaintenanceRequestTitle"
         android:layout_below="@+id/textViewMaintenanceRequestDescrip"
-        android:visibility="visible"
+        android:layout_marginTop="16dp"
+        android:visibility="invisible"
         app:srcCompat="@drawable/common_full_open_on_phone" />
+
+    <ProgressBar
+        android:id="@+id/progressBarImageLoading"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imageViewMaintenanceRequestPhoto"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/textViewImageLoading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/progressBarImageLoading"
+        android:layout_centerHorizontal="true"
+        android:text="@string/image_loading"
+        android:textColor="@color/colorAccent" />
 
 </RelativeLayout>

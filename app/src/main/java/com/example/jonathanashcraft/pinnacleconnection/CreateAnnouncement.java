@@ -69,7 +69,7 @@ TimePickerDialog.OnTimeSetListener {
         final String TAG = "onCreate";
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_announcement);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         //imageButton = findViewById(R.id.AnnouncementImage);
@@ -84,7 +84,7 @@ TimePickerDialog.OnTimeSetListener {
             Log.d(TAG, "currentUser equals something!!");
         }
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -232,14 +232,17 @@ TimePickerDialog.OnTimeSetListener {
 
         Announcement tempAnnouncement;
 
-        BitmapDrawable drawable = (BitmapDrawable) imageButton.getDrawable();
+        //BitmapDrawable drawable = (BitmapDrawable) imageButton.getDrawable();
 
+        /*
         if (drawable != null) {
             image = drawable.getBitmap();
         }
         else {
             image = BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_menu_gallery);
         }
+
+        */
 
         if (getIntent().hasExtra("announcement")) {
             editAnnouncement.setTitle(title_of_announcement.getText().toString());
