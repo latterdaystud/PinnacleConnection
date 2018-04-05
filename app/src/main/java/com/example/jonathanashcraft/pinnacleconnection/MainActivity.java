@@ -110,9 +110,11 @@ public class MainActivity extends AppCompatActivity
         if(CurrentUser.isManager()) {
             menu.findItem(R.id.nav_admin).setVisible(true);
             menu.findItem(R.id.nav_maintenance).setTitle("View Maintenance Requests");
+            menu.findItem(R.id.nav_message).setTitle("Messages");
         }
 
         Log.d(TAG, "The current device ID is: " + FirebaseInstanceId.getInstance().getToken().toString());
+
         /*
         MenuItem nav_camera = menu.findItem(R.id.nav_manage);
         nav_camera.setTitle("Maintenance Request");

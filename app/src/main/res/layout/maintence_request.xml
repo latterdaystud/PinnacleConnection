@@ -16,7 +16,7 @@
         android:textColor="@color/colorPrimary" />
 
     <TextView
-        android:id="@+id/textViewMaintenanceRequestDate"
+        android:id="@+id/textViewMaintenanceViewDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/textView11"
@@ -67,7 +67,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/textView12"
-        android:layout_alignEnd="@+id/textViewMaintenanceRequestDate"
+        android:layout_alignEnd="@+id/textViewMaintenanceViewDate"
         android:text="person"
         android:textColor="@color/colorAccent" />
 
