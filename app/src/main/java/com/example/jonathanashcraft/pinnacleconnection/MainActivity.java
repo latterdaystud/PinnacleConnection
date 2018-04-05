@@ -1,5 +1,6 @@
 package com.example.jonathanashcraft.pinnacleconnection;
 
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,7 +20,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,10 +35,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 
 /**
  * This activity is the main activty that holds the announcements. When a user first logs in or the
@@ -54,6 +61,7 @@ public class MainActivity extends AppCompatActivity
 
 
     private Announcement tempAnnouncement;
+    private Announcement empty;
 
     // Firebase database stuff
     private FirebaseDatabase database;
@@ -72,6 +80,12 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        //Create an empty/default announcement
+        empty = new Announcement();
+        empty.setTitle("Welcome to Pinnacle!");
+        empty.setBody("This is the default announcement.");
+        empty.setDefault(true);
 
         // Firebase
         database = FirebaseDatabase.getInstance();
@@ -158,6 +172,32 @@ public class MainActivity extends AppCompatActivity
         listView = findViewById(R.id.announcementsListView);
         listView.setAdapter(arrayAdapter);
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if(CurrentUser.isManager()) {
+                    createAnnouncement(MainActivity.this.listView, true,  arrayAdapter.getCount() - 1 - i);
+                }
+            }
+        });
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view,
+                                           int position, long arg3) {
+
+                if(CurrentUser.isManager()) {
+                    DeleteAnnouncementFragment deleteAnnouncementFragment = new DeleteAnnouncementFragment();
+                    tempAnnouncement = MessagesFromJsonList.get(arrayAdapter.getCount() - 1 - position);
+                    deleteAnnouncementFragment.setAnnouncement(tempAnnouncement);
+                    deleteAnnouncementFragment.show(getSupportFragmentManager(), "DeleteAnnouncementFragment");
+                }
+                return true;
+            }
+
+        });
+
         // Value event listener to listen for the real time datachanges
         announcementListener = new ChildEventListener() {
             // Add the child added to a tempAnnouncement
@@ -167,7 +207,7 @@ public class MainActivity extends AppCompatActivity
                 tempAnnouncement = dataSnapshot.getValue(Announcement.class);
                 if (tempAnnouncement != null) {
                     Log.d(TAG, "TempAnnouncements is not equal to null");
-                    arrayAdapter.add(tempAnnouncement);
+                    arrayAdapter.add(tempAnnouncement.getIndexInArray(), tempAnnouncement);
                     arrayAdapter.notifyDataSetChanged();
                 } else {
                     Log.d(TAG, "TempAnnouncements is equal to null");
@@ -178,12 +218,26 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                // What is going to happen if the child changes
+                tempAnnouncement = dataSnapshot.getValue(Announcement.class);
+
+                arrayAdapter.remove(tempAnnouncement.getIndexInArray());
+                arrayAdapter.add(tempAnnouncement.getIndexInArray(), tempAnnouncement);
+                arrayAdapter.notifyDataSetChanged();
+
+                Log.d(TAG, "Announcement was edited and changed in the arrayAdapter");
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                // What are we going to do if the child is removed
+
+               if (arrayAdapter.getCount() == 1) {
+                    arrayAdapter.add(0, empty);
+                    arrayAdapter.remove(tempAnnouncement.getIndexInArray() - 1);
+                }
+                else {
+                    arrayAdapter.remove(tempAnnouncement.getIndexInArray());
+                }
+                arrayAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -204,6 +258,15 @@ public class MainActivity extends AppCompatActivity
         Toast.makeText(MainActivity.this, "Welcome " + CurrentUser.getFirstName(),
                 Toast.LENGTH_SHORT).show();
 
+        // Creating a new Token access
+        TokenAccess token = new TokenAccess();
+
+        // Let's reload it
+        token.loadToken();
+        //Adds the default announcement if there is none
+        if (arrayAdapter.getCount() == 0) {
+            arrayAdapter.add(0, empty);
+        }
         // Static method is static
         // Let's check to see if we need to reload the device token
         TokenAccess.loadToken();
@@ -216,15 +279,16 @@ public class MainActivity extends AppCompatActivity
 //        CurrentUser.reloadUser();
     }
 
-    public void createAnnouncement(View view) {
-//        Announcement new1 = new Announcement();
-//        arrayAdapter.add(new1);
-//        arrayAdapter.notifyDataSetChanged();
-//        Announcement new2 = new Announcement("Second title", "Always and forever", "today buddy", "Weellllll lets hope this works out.");
-//        arrayAdapter.add(new2);
-//        arrayAdapter.notifyDataSetChanged();
+    public void createAnnouncement(View view, boolean edit, int id) {
+        Intent intent = new Intent(this, CreateAnnouncement.class);
+        if (edit) {
+            String announcement = gson.toJson(this.arrayAdapter.getItem(arrayAdapter.getCount() - 1 - id));
+            intent.putExtra("announcement", announcement);
+            //intent.putExtra("index", arrayAdapter.getCount() - 1 - id);
+        }
 
-       Intent intent = new Intent(this, CreateAnnouncement.class);
+        intent.putExtra("index", arrayAdapter.getCount() - 1 - id);
+
         startActivityForResult(intent, 1);
     }
 
@@ -272,6 +336,7 @@ public class MainActivity extends AppCompatActivity
         String TAG = "onNavigationItem";
 
         // Handle navigation view item clicks here.
+
         Log.d("onNavigationItem", "Method Opened!");
 
         int id = item.getItemId();
@@ -280,12 +345,9 @@ public class MainActivity extends AppCompatActivity
             // What happens when you tap the announcements tab
 
         } else if (id == R.id.nav_theater) {
-
             Intent intent = new Intent(this, TheaterRequestActivity.class);
             startActivity(intent);
-
         } else if (id == R.id.nav_maintenance) {
-
             if(!CurrentUser.isManager()) {
                 // If the user is not a manager
                 Intent intent = new Intent(this, RequestMaintenance.class);
@@ -295,10 +357,9 @@ public class MainActivity extends AppCompatActivity
                 Intent intent = new Intent(this, ViewMaintenanceRequests.class);
                 startActivity(intent);
             }
-
         } else if (id == R.id.nav_admin) {
 
-            createAnnouncement(this.listView);
+            createAnnouncement(this.listView, false, -1);
 
         } else if (id == R.id.nav_login) {
 
@@ -312,10 +373,8 @@ public class MainActivity extends AppCompatActivity
 
 
         } else if (id == R.id.nav_message) {
-
             Intent intent = new Intent(this, ContactList.class);
             startActivity(intent);
-
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -328,6 +387,10 @@ public class MainActivity extends AppCompatActivity
         ArrayList<Announcement> myList = new ArrayList();
         LayoutInflater inflater;
         Context context;
+
+        public void remove(int index) {
+            myList.remove(index);
+        }
 
 
         public CustomAnnouncementsAdapter(Context context, ArrayList<Announcement> myList) {
@@ -369,8 +432,8 @@ public class MainActivity extends AppCompatActivity
             return view;
         }
 
-        public void add(Announcement newAnnouncement) {
-            myList.add(newAnnouncement);
+        public void add(int index, Announcement newAnnouncement) {
+            myList.add(index, newAnnouncement);
 
         }
     }

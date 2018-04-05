@@ -270,6 +270,7 @@ public class ContactList extends AppCompatActivity
          */
         public void add(UserWithID user) {
             myList.add(user);
+
         }
     }
 

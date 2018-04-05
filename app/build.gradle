@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 26
@@ -42,16 +43,16 @@ dependencies {
 
 
     // Firebase messaging
-    compile 'com.google.firebase:firebase-messaging:11.4.0'
+    compile 'com.google.firebase:firebase-messaging:11.4.2'
     // Firebase
-    compile 'com.google.firebase:firebase-core:11.4.0'
+    compile 'com.google.firebase:firebase-core:11.4.2'
     // Firebase Authentication
-    compile 'com.google.firebase:firebase-auth:11.4.0'
-    compile 'com.google.android.gms:play-services-auth:11.4.0'
+    compile 'com.google.firebase:firebase-auth:11.4.2'
+    compile 'com.google.android.gms:play-services-auth:11.4.2'
     // Firebase database
-    compile 'com.google.firebase:firebase-database:11.4.0'
+    compile 'com.google.firebase:firebase-database:11.4.2'
     // Messaging
-    compile 'com.google.firebase:firebase-messaging:11.4.0'
+    compile 'com.google.firebase:firebase-messaging:11.4.2'
     // Gson
     compile 'com.google.code.gson:gson:2.5'
     // Used to create json objects to save to the shared preferences
@@ -67,7 +68,7 @@ dependencies {
     }
 
     // Storage API
-    compile 'com.google.firebase:firebase-storage:11.4.0'
+    compile 'com.google.firebase:firebase-storage:11.4.2'
 
 }
 
