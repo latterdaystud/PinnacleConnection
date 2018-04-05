@@ -6,20 +6,24 @@ package com.example.jonathanashcraft.pinnacleconnection;
  */
 public class Message {
 
-    public Message(String to, String from, String body) {
-        To = to;
-        From = from;
-        Body = body;
-    }
-
     private String To;
     private String From;
     private String Body;
-    private String Time;
+    private String time;
 
-    public String getTime() { return Time; }
+    public Message() {
+        To = "";
+        From = "";
+        Body = "";
+        time = "";
+    }
 
-    public void setTime(String time) { Time = time; }
+    public Message(String To, String From, String Body, String time) {
+        this.To = To;
+        this.From = From;
+        this.Body = Body;
+        this.time = time;
+    }
 
     public String getTo() {
         return To;
@@ -43,5 +47,13 @@ public class Message {
 
     public void setBody(String body) {
         Body = body;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }
