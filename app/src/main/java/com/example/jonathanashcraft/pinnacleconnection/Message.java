@@ -9,6 +9,21 @@ public class Message {
     private String To;
     private String From;
     private String Body;
+    private String time;
+
+    public Message() {
+        To = "";
+        From = "";
+        Body = "";
+        time = "";
+    }
+
+    public Message(String To, String From, String Body, String time) {
+        this.To = To;
+        this.From = From;
+        this.Body = Body;
+        this.time = time;
+    }
 
     public String getTo() {
         return To;
@@ -32,5 +47,13 @@ public class Message {
 
     public void setBody(String body) {
         Body = body;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }

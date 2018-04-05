@@ -2,9 +2,8 @@ package com.example.jonathanashcraft.pinnacleconnection;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -18,13 +17,23 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
-
-import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -44,13 +53,23 @@ public class MessagingActivity extends AppCompatActivity {
     private EditText message;
 
     // Hold all of the messages in an Array
-    ArrayList<Text> MessagesFromJsonList;
+    ArrayList<Message> messageFromJsonList;
 
     // To use for serializing and deserializing to JSON
     private Gson gson = new Gson();
-    private String jsonMessages;
 
-    private Text[] ts;
+    private Message[] ts;
+
+    private String userId;
+    private String name;
+
+
+    // Firebase stuff.
+    private FirebaseDatabase database;
+    private DatabaseReference databaseRef;
+    private ChildEventListener messagingListener;
+    private DatabaseReference messagingRef;
+
 
     /**
      * Load the saved messages from the phone onto the list view.
@@ -63,7 +82,11 @@ public class MessagingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Intent intentExtras = getIntent();
         Bundle extraBundles = intentExtras.getBundleExtra("Contact Name");
-        String name;
+
+        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        database = FirebaseDatabase.getInstance();
+        databaseRef = database.getReference();
+        messagingRef = databaseRef.child("Messaging").child(userId).child("Conversations");
 
 
         setContentView(R.layout.activity_messaging);
@@ -71,25 +94,46 @@ public class MessagingActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         message = findViewById(R.id.editText);
 
-        // Load the existing messages from the sharedPreferences
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String jsonMessagesLoadedFromMyPreferences = prefs.getString("jsonMessages", "[ ]");
+        // Load the existing messages from files on phone
+        String jsonMessagesLoadedFromMyStorage = "";
+        if (extraBundles != null && !extraBundles.isEmpty()) {
+            name = extraBundles.getString("ID");
+            // declare the path
+            messagingRef = databaseRef.child("Messaging").child(userId).child("Conversations").child(name).child("Messages");
+            FileInputStream inputStream;
 
-        Log.d(TAG,"The json message is " + jsonMessagesLoadedFromMyPreferences);
-
-        // Convert the JSON to an array of TextSents
-        if(!jsonMessagesLoadedFromMyPreferences.isEmpty()) {
-            ts = gson.fromJson(jsonMessagesLoadedFromMyPreferences, Text[].class);
+            try {
+                inputStream = openFileInput(name + userId);
+                InputStreamReader reader = new InputStreamReader(inputStream);
+                BufferedReader br = new BufferedReader(reader);
+                StringBuilder sb = new StringBuilder();
+                String tempString;
+                while ((tempString = br.readLine()) != null) {
+                    sb.append(tempString);
+                }
+                jsonMessagesLoadedFromMyStorage = sb.toString();
+                inputStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+        // empty first
+        messageFromJsonList = new ArrayList<>();
+        // Convert the JSON to an array of TextSents
+        if(!jsonMessagesLoadedFromMyStorage.isEmpty()) {
+            Log.d("Null?", "Was not NULL");
+            ts = gson.fromJson(jsonMessagesLoadedFromMyStorage, Message[].class);
+            messageFromJsonList = new ArrayList<>(Arrays.asList(ts));
+        }
+        Log.d("Null?", "Previous message should say not NULL");
         // Slap that ^ array into an ArrayList
-        MessagesFromJsonList = new ArrayList<>(Arrays.asList(ts));
-
         // Print some logs to make sure everything is working correctly
-        Log.d(TAG, "The size of MessagesFromJsonList is " + MessagesFromJsonList.size());
-        Log.d(TAG, "MessagesFromJsonList consists of: " + MessagesFromJsonList);
+        Log.d(TAG, "The size of messageFromJsonList is " + messageFromJsonList.size());
+        Log.d(TAG, "messageFromJsonList consists of: " + messageFromJsonList);
 
         // Create the arrayAdapter with the existing ArrayList with the messages preloaded
-        arrayAdapter = new CustomMessagingAdapter(this, MessagesFromJsonList);
+        arrayAdapter = new CustomMessagingAdapter(this, messageFromJsonList);
+        setUpMessages();
         listView = (ListView) findViewById(R.id.messageListView);
         listView.setAdapter(arrayAdapter);
 
@@ -98,12 +142,6 @@ public class MessagingActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) { onSend(view); }
         });
-        if (extraBundles != null && !extraBundles.isEmpty()) {
-            name = extraBundles.getString("ID");
-            arrayAdapter.add(name);
-            this.setTitle(name);
-
-        }
     }
 
     public void onSendTemp(View view) {
@@ -131,33 +169,41 @@ public class MessagingActivity extends AppCompatActivity {
         if(Objects.equals(message.getText().toString(), " ") || Objects.equals(message.getText().toString(), ""))
             return;
 
+        SimpleDateFormat df = new SimpleDateFormat("h:mma, EEE, MMM d");
+        String date = df.format(Calendar.getInstance().getTime());
+        String text = message.getText().toString();
+        Message messageSent = new Message(name, userId, text, date);
+        // Add o display.
+        arrayAdapter.add(messageSent);
 
-        // Add the string in the message EditText to the preference manager
-        PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString(
-                "Message", message.getText().toString()).apply();
+        String jsonMessages = gson.toJson(messageFromJsonList);
 
-        // Get the string we just saved and add it to the arrayAdapter
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String myStrValue = prefs.getString("Message", "[ ]");
-        arrayAdapter.add(myStrValue);
+        // Add to file on phone.
+        FileOutputStream outputStream;
+        try {
+            outputStream = openFileOutput(name + userId, Context.MODE_PRIVATE);
+            outputStream.write(jsonMessages.getBytes());
+            outputStream.close();
+        } catch (Exception e) {
+            File file = new File(this.getFilesDir(), name);
+        }
 
-        Log.d(TAG, "The size of the MessagesFromJsonList is " + MessagesFromJsonList.size());
-
-        // Make the current arrayList to a JSON and put it in the sharedPreferences
-        jsonMessages = gson.toJson(MessagesFromJsonList);
-        PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString(
-                "jsonMessages", jsonMessages).apply();
-
-        Log.d(TAG, "jsonMessages: " + jsonMessages);
+        //Up to firebase.
+        DatabaseReference messagesRefOut =  database.getReference().child("Messaging").child(name).child("Conversations").child(userId).child("Messages");
+        messagesRefOut.push().setValue(messageSent)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Display a toast for user experience
+                        Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_SHORT / 3).show();
+                    }
+                });
 
         // Notify the arrayAdapter that changes have been made to the arrayList
         arrayAdapter.notifyDataSetChanged();
 
         // Reset the EditText where the user typed the message
         message.setText("");
-
-        // Display a toast for user experience
-        Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_SHORT / 3).show();
     }
 
     public final CustomMessagingAdapter getAdapter() {
@@ -174,7 +220,7 @@ public class MessagingActivity extends AppCompatActivity {
      */
     public class CustomMessagingAdapter extends BaseAdapter {
 
-        ArrayList<Text> myList = new ArrayList();
+        ArrayList<Message> myList = new ArrayList();
         LayoutInflater inflater;
         Context context;
 
@@ -184,7 +230,7 @@ public class MessagingActivity extends AppCompatActivity {
          * @param context Context of the program
          * @param myList List to which we will add values.
          */
-        public CustomMessagingAdapter(Context context, ArrayList<Text> myList) {
+        public CustomMessagingAdapter(Context context, ArrayList<Message> myList) {
             this.myList = myList;
             this.context = context;
             inflater = LayoutInflater.from(this.context);
@@ -215,12 +261,14 @@ public class MessagingActivity extends AppCompatActivity {
          */
         @Override
         public View getView(int position, View convertView, ViewGroup viewGroup) {
-            Text text;
+            Message message;
+            message = myList.get(position);
             String addition;
             View view;
             TextView textview;
             TextView textView2;
-            if (position % 2 == 1) {
+            // Display differently based on if from user or to user.
+            if (Objects.equals(message.getFrom(), userId)) {
                 view = getLayoutInflater().inflate(R.layout.message_right, null);
                 textview = view.findViewById(R.id.msgr);
                 textView2 = view.findViewById(R.id.TextView2);
@@ -232,75 +280,83 @@ public class MessagingActivity extends AppCompatActivity {
                 textView2 = view.findViewById(R.id.TextView2);
                 addition = "Received: ";
             }
-            text = myList.get(position);
-            String time = addition + text.getTime();
+
+            String time = addition + message.getTime();
             textView2.setText(time);
-            textview.setText(text.getText());
+            textview.setText(message.getBody());
             return view;
         }
 
         /**
          * Saves the message into the list to be displayed in the list view.
-         * @param string The message being saved
+         * @param message The message being saved
          */
-        public void add(String string) {
-
-            SimpleDateFormat df = new SimpleDateFormat("h:mma, EEE, MMM d");
-            String date = df.format(Calendar.getInstance().getTime());
-            TextSent textSent = new TextSent(string, date);
-            myList.add(textSent);
-
+        public void add(Message message) {
+            myList.add(message);
+            arrayAdapter.notifyDataSetChanged();
         }
 
 
     }
 
     /**
-     * Holds the basic information for a text message
+     * Set up the firebase messages on the list.
      */
-    public class Text {
-        private String text;
-        private String time;
+    private void setUpMessages() {
+        Log.d("MESSAGING DOWNLOAD", "The size of the MessagesFomJsonList is " + messageFromJsonList.size());
+        messagingListener = new ChildEventListener() {
+            // Add the child added to a tempAnnouncement
 
-        public Text(String text, String time) {
-            text = text;
-            time = time;
-        }
+            /**
+             * Sets up what happens when a value is received from firebase.
+             * @param dataSnapshot The link to the data.
+             * @param s not used.
+             */
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Log.d("MESSAGING DOWNLOAD", "The size of the MessagesFomJsonList is ");
+                Message messageFound = dataSnapshot.getValue(Message.class);
 
-        public String getText() {
-            return text;
-        }
+                // Once loaded, remove from firebase.
+                databaseRef.child("Messaging").child(userId).child("Conversations").child(name).child("Messages").child(dataSnapshot.getKey()).removeValue();
+                // Put message on display.
+                arrayAdapter.add(messageFound);
+                arrayAdapter.notifyDataSetChanged();
+                // Make the current arrayList to a JSON and put it in the sharedPreferences
+                String jsonMessages = gson.toJson(messageFromJsonList);
+                // Store data in phone.
+                FileOutputStream outputStream;
+                 try {
+                     outputStream = openFileOutput(name + userId, Context.MODE_PRIVATE);
+                     outputStream.write(jsonMessages.getBytes());
+                     outputStream.close();
+                 } catch (Exception e) {
+                     File file = new File(getApplicationContext().getFilesDir(), name);
+                 }
+            }
 
-        public void setText(String text) {
-            this.text = text;
-        }
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                // What is going to happen if the child changes
+            }
 
-        public String getTime() {
-            return time;
-        }
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                // What are we going to do if the child is removed
+            }
 
-        public void setTime(String time) {
-            this.time = time;
-        }
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                // What happens if we move the child
+            }
 
-        public String toString() {
-            return "Message: " + text + " at " + time;
-        }
-    }
-
-    public class TextSent extends Text {
-
-        public TextSent(String textGiven, String timeGiven) {
-            super(textGiven, timeGiven);
-        }
-
-    }
-
-    public class TextReceived extends Text {
-
-        public TextReceived(String textReceived, String timeReceived) {
-            super(timeReceived, timeReceived);
-        }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // What if we cancel... what....
+            }
+        };
+        messagingRef.addChildEventListener(messagingListener);
+        messagingRef.keepSynced(true);
     }
 
 }
