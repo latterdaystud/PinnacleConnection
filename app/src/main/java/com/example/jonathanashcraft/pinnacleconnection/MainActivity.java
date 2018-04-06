@@ -111,9 +111,6 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
 
-
-        /*********** Not Sure to what extent this is needed *******************/
-
         // Set the items for the Navigation View
         Menu menu = navigationView.getMenu();
         menu.findItem(R.id.nav_admin).setVisible(false);

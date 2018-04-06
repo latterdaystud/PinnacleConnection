@@ -35,14 +35,14 @@ public class ViewMaintenanceRequestsListFragment extends Fragment {
     private ListView maintenanceRequests;
     private ArrayList<MaintenanceRequest> maintenanceRequestArrayList;
 
-    static public DataSenderInterface MRL;
+    static public DataSenderInterface dataSender;
 
     // For reference when trying to load from Firebase Storage
     final long ONE_MEGABYTE = 1024 * 1024;
     final long THREE_MEGABYTES = ONE_MEGABYTE * 3;
 
     public static void setListener(DataSenderInterface ml) {
-        MRL = ml;
+        dataSender = ml;
     }
 
     @Override
@@ -144,13 +144,13 @@ public class ViewMaintenanceRequestsListFragment extends Fragment {
                 MaintenanceRequest temp = arrayAdapter.getRequest(i);
 
                 // Notify the listener
-                if (MRL != null ) {
-                    MRL.sendMaintenceRequestData(temp.getTitle(), temp.getTimeSent(), temp.getAuthor(),
-                            temp.getDescription());
+                if (dataSender != null ) {
+                    dataSender.sendMaintenceRequestData(temp.getTitle(), temp.getTimeSent(), temp.getAuthor(),
+                            temp.getDescription(), temp.getPath());
 
                 } else {
-                    // MRL is equal to null
-                    Log.wtf(TAG, "MRL equals null. Make sure to sert the listener");
+                    // dataSender is equal to null
+                    Log.wtf(TAG, "dataSender equals null. Make sure to sert the listener");
                 }
                 Log.d(TAG, "Transaction should be over");
 
@@ -213,7 +213,7 @@ public class ViewMaintenanceRequestsListFragment extends Fragment {
 
     public interface DataSenderInterface {
         public void sendMaintenceRequestData(String Title, String Date, String Author,
-                                             String Description);
+                                             String Description, String Path);
     }
 
 }
