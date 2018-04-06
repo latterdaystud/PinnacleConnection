@@ -133,7 +133,7 @@ public class MessagingActivity extends AppCompatActivity {
 
         // Create the arrayAdapter with the existing ArrayList with the messages preloaded
         arrayAdapter = new CustomMessagingAdapter(this, messageFromJsonList);
-        setUpMessages();
+
         listView = (ListView) findViewById(R.id.messageListView);
         listView.setAdapter(arrayAdapter);
 
@@ -144,6 +144,17 @@ public class MessagingActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        setUpMessages();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        databaseRef.removeEventListener(messagingListener);
+    }
     public void onSendTemp(View view) {
         // For log messages
         String TAG = "onSendTemp";

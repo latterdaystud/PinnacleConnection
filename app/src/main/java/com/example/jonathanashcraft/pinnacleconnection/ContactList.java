@@ -193,13 +193,18 @@ public class ContactList extends AppCompatActivity
             }
         });
 
-        setUpConversations();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         myDialog.cancel();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setUpConversations();
     }
 
 
@@ -461,7 +466,7 @@ public class ContactList extends AppCompatActivity
                 if (fileExist(path)) {
                     // If already in the phone then just edit.
                     int index = contactAdapter.getItemIndex(tempUserWithID);
-                    contactAdapter.getItem(index+1).setNewMessage(true);
+                    contactAdapter.getItem(index + 1).setNewMessage(true);
                 } else {
                     // Otherwise add new.
                     tempUserWithID.setNewMessage(true);
