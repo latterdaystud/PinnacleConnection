@@ -31,6 +31,16 @@ public class MaintenanceRequest extends Request {
         this.path = path;
     }
 
+    public MaintenanceRequest(String title, String description, String author, String date, boolean urgent,
+                              String path) {
+        super(title, description, new User());
+        this.urgent = urgent;
+        this.image = null;
+        this.author = author;
+        this.path = path;
+        this.setTimeSent(date);
+    }
+
     public MaintenanceRequest() {
         super("no_title", "no_description", new User());
         this.urgent = false;

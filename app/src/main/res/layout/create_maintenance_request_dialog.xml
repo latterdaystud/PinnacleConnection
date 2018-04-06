@@ -15,13 +15,15 @@
         android:hint="What's the Issue?"
         android:inputType="textMultiLine" />
 /;
+
     <CheckBox
         android:id="@+id/checkBoxIsUrgent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/editTextTopicProblem"
         android:layout_alignBottom="@+id/editTextTopicProblem"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="47dp"
+        android:layout_marginEnd="44dp"
         android:text="Urgent" />
 
     <EditText
