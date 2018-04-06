@@ -134,8 +134,8 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
                         openGallery(getCurrentFocus());
                         }
                     });
-                };
-            });
+                }
+        });
 
         // What happens if you push the create request button
         bCreateRequest.setOnClickListener(new View.OnClickListener() {
@@ -158,6 +158,7 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
 
         boolean isUrgent = cbUrgent.isChecked();
 
+        //TODO: Handle if there is no photo to be uploaded
         // Make a temporary request to hold the data that has been inputted
         MaintenanceRequest tempMaintenanceRequest = new MaintenanceRequest(topic, description,
                 CurrentUser.getFirstName() + " " + CurrentUser.getLastName(), isUrgent,

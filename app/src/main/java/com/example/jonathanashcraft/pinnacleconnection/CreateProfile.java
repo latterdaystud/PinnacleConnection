@@ -20,6 +20,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Objects;
 
@@ -32,6 +34,7 @@ public class CreateProfile extends AppCompatActivity {
     private EditText mFirstName;
     private EditText mAptNumber;
     private EditText mEmail;
+    private Button bVerifyManager;
     private String managerPassword;
     private Boolean isUserManager;
     FirebaseUser currentUser;
@@ -54,7 +57,7 @@ public class CreateProfile extends AppCompatActivity {
 
         setContentView(R.layout.activity_create_profile);
 
-        // Get the current instance of the Firebase database
+        // Get the current instance of the firebase database
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
 
@@ -64,11 +67,12 @@ public class CreateProfile extends AppCompatActivity {
         mFirstName = findViewById(R.id.editTextFirstName);
         mAptNumber = findViewById(R.id.editTextAptNumber);
         mEmail = findViewById(R.id.editTextEmail);
-        Button bVerifyManager = findViewById(R.id.buttonVerifyManager);
+        bVerifyManager = findViewById(R.id.buttonVerifyManager);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(CreateProfile.this);
 
         // Create a view so that the dialog box has an input
+
         final EditText input = new EditText(this);
 
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -113,6 +117,7 @@ public class CreateProfile extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        String TAG = "onStart";
         FirebaseUser currentUser = mAuth.getCurrentUser();
     }
 
@@ -147,6 +152,8 @@ public class CreateProfile extends AppCompatActivity {
         final String LastName = mLastName.getText().toString();
         final String apartmentNumber = mAptNumber.getText().toString();
 
+        Log.d(TAG, "************************************************************************");
+        Log.d(TAG, "Is this running?");
         // Create Profile
         mAuth.createUserWithEmailAndPassword(Email, Password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -159,24 +166,15 @@ public class CreateProfile extends AppCompatActivity {
                             // Get the current device token
                             String Token = FirebaseInstanceId.getInstance().getToken();
 
+                            final String deviceToken = FirebaseInstanceId.getInstance().getToken();
+
                             // Create a temp user to slap into the database
-                            User tempUser = new User();
-                            tempUser.setFirstName(FirstName);
-                            tempUser.setLastName(LastName);
-                            tempUser.setApartmentNumber(apartmentNumber);
-                            tempUser.setManager(isUserManager);
-                            tempUser.setDeviceToken(Token);
+                            User tempUser = new User(FirstName, LastName, apartmentNumber, deviceToken, isUserManager);
 
                             // Slap into the database
                             mUserRef.child(currentUser.getUid()).setValue(tempUser);
+                            mUserRef.child(currentUser.getUid()).child("device_token").setValue(deviceToken);
 
-                            // If the user is a tenant (not a manager) put them in the tenants area
-                            if (!isUserManager) {
-                                mTenantsRef.child(currentUser.getUid()).setValue(tempUser);
-                            } else {
-                                // This means the user is a manager
-                                mManagerRef.child(currentUser.getUid()).setValue(tempUser);
-                            }
 
                             Toast.makeText(CreateProfile.this, "Created Profile",
                                     Toast.LENGTH_SHORT).show();

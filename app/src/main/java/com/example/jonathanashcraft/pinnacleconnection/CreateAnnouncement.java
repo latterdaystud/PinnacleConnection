@@ -2,7 +2,17 @@ package com.example.jonathanashcraft.pinnacleconnection;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -11,15 +21,25 @@ import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
+import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class CreateAnnouncement extends AppCompatActivity implements DatePickerDialog.OnDateSetListener,
 TimePickerDialog.OnTimeSetListener {
@@ -28,6 +48,14 @@ TimePickerDialog.OnTimeSetListener {
     private EditText time_of_announcement;
     private EditText date_of_announcement;
     private EditText description_of_announcement;
+    private Announcement editAnnouncement;
+    private static int RESULT_LOAD_IMG = 1;
+    private String imgDecodableString;
+    private ImageView imageButton;
+    private Uri selectedImage;
+    private Bitmap image;
+    private String pathToImage;
+    private byte[] imageAsBytes;
 
     FirebaseUser currentUser;
 
@@ -41,19 +69,22 @@ TimePickerDialog.OnTimeSetListener {
         final String TAG = "onCreate";
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_announcement);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        //imageButton = findViewById(R.id.AnnouncementImage);
+        //image = BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_menu_gallery);
 
         // Get the current user
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (currentUser == null) {
-            Log.d(TAG, "CurrentUser is equal to null");
+            Log.d(TAG, "currentUser is equal to null");
         } else {
-            Log.d(TAG, "CurrentUser equals something!!");
+            Log.d(TAG, "currentUser equals something!!");
         }
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -67,6 +98,19 @@ TimePickerDialog.OnTimeSetListener {
         time_of_announcement = findViewById(R.id.announcement_time);
         date_of_announcement = findViewById(R.id.announcement_date);
         description_of_announcement = findViewById(R.id.announcement_description);
+
+        if (getIntent().hasExtra("announcement"))
+        {
+            String announcement = getIntent().getExtras().getString("announcement");
+
+            editAnnouncement = new Gson().fromJson(announcement, Announcement.class);
+
+            title_of_announcement.setText(editAnnouncement.getTitle());
+            time_of_announcement.setText(editAnnouncement.getTimeOfAnnouncement());
+            date_of_announcement.setText(editAnnouncement.getDate());
+            description_of_announcement.setText(editAnnouncement.getBody());
+           // imageButton.setImageBitmap(new Gson().fromJson(editAnnouncement.getJsonImage(), Bitmap.class));
+        }
 
 
         // Create a dialog box
@@ -105,9 +149,9 @@ TimePickerDialog.OnTimeSetListener {
 //        */
 //        // Get a reference and the name of the first name and last name of the user
 //        DatabaseReference mFirstNameRef = FirebaseDatabase.getInstance().getReference("Users")
-//                .child(CurrentUser.getUid());
+//                .child(currentUser.getUid());
 //
-//        Log.d(TAG, "Currentuser is " + CurrentUser.getUid());
+//        Log.d(TAG, "Currentuser is " + currentUser.getUid());
 //
 //        // Database access
 //        mFirstNameRef.addValueEventListener(new ValueEventListener() {
@@ -130,32 +174,108 @@ TimePickerDialog.OnTimeSetListener {
 
     }
 
+    public void openGallery(View view) {
+        // Create intent to Open Image applications like Gallery, Google Photos
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        // Start the Intent
+        startActivityForResult(galleryIntent, RESULT_LOAD_IMG);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("Testing for exception", "Before the try catch block");
+        try {
+            // When an Image is picked
+            if (requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK
+                    && null != data) {
+                // Get the Image from data
+
+                selectedImage = data.getData();
+
+                //FirebaseStorage storage = Firebase
+               /* String[] filePathColumn = { MediaStore.Images.Media.DATA };
+
+                // Get the cursor
+                Cursor cursor = getContentResolver().query(selectedImage,
+                        filePathColumn, null, null, null);
+                // Move to first message_right
+                cursor.moveToFirst();
+
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                imgDecodableString = cursor.getString(columnIndex);
+                cursor.close();
+
+                //Set the image
+                imageButton.setImageBitmap(BitmapFactory
+                        .decodeFile(imgDecodableString));
+
+                */
+
+            } else {
+                Toast.makeText(this, "You haven't picked Image",
+                        Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG)
+                    .show();
+            e.printStackTrace();
+        }
+
+    }
+
     public void onSubmitAnnouncement(View view) {
         String TAG = "onSubmitAnnouncement";
 
         Log.d(TAG, "The users name is " + CurrentUser.getFirstName());
 
-        final Announcement tempAnnouncement = new Announcement(
-                title_of_announcement.getText().toString(),
-                description_of_announcement.getText().toString(),
-                date_of_announcement.getText().toString(),
-                time_of_announcement.getText().toString(),
-                (CurrentUser.getFirstName() + " " + CurrentUser.getLastName())
-        );
+        Announcement tempAnnouncement;
+
+        //BitmapDrawable drawable = (BitmapDrawable) imageButton.getDrawable();
+
+        /*
+        if (drawable != null) {
+            image = drawable.getBitmap();
+        }
+        else {
+            image = BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_menu_gallery);
+        }
+
+        */
+
+        if (getIntent().hasExtra("announcement")) {
+            editAnnouncement.setTitle(title_of_announcement.getText().toString());
+            editAnnouncement.setTimeOfAnnouncement(time_of_announcement.getText().toString());
+            editAnnouncement.setDate(date_of_announcement.getText().toString());
+            editAnnouncement.setBody(description_of_announcement.getText().toString());
+           // editAnnouncement.setJsonImage(jsonImage);
+            tempAnnouncement = editAnnouncement;
+        }
+        else {
+            tempAnnouncement = new Announcement(
+                    title_of_announcement.getText().toString(),
+                    description_of_announcement.getText().toString(),
+                    date_of_announcement.getText().toString(),
+                    time_of_announcement.getText().toString(),
+                    (CurrentUser.getFirstName() + " " + CurrentUser.getLastName()),
+                    pathToImage
+            );
+        }
+
+        tempAnnouncement.setIndexInArray(getIntent().getExtras().getInt("index"));
 
         // Get the database and the reference
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference AnnouncementsRef = database.getReference("Announcements");
 
-//       DatabaseReference nameRef = database.getReference("contacts");
 
         AnnouncementsRef.child(tempAnnouncement.getID()).setValue(tempAnnouncement);
-
 
         Log.d(TAG, "Added announcement to database");
 
         // Make a toast for user feedback
-        Toast.makeText(CreateAnnouncement.this, "Created Announcement",
+        Toast.makeText(CreateAnnouncement.this, "Announcement Created",
                 Toast.LENGTH_SHORT).show();
 
         finish();
@@ -176,9 +296,9 @@ TimePickerDialog.OnTimeSetListener {
     public void onTimeSet(TimePicker timePicker, int i, int i1) {
         Log.d("onTimeSet", "onTimeSet got called son");
 
+        // TODO: Implent logic for 24 hour to 12 hour conversion
         String time = i + ":" + i1;
 
-        // TODO: Implent logic for 24 hour to 12 hour conversion
         time_of_announcement.setText(time);
     }
 }

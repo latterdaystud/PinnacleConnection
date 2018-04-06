@@ -33,7 +33,7 @@ public class TokenAccess extends FirebaseInstanceIdService {
     }
 
 
-    public void loadToken() {
+    public static void loadToken() {
         if (tokenRefreshed) {
             Log.d(TAG, "Token needs to be refreshed");
 
@@ -44,7 +44,7 @@ public class TokenAccess extends FirebaseInstanceIdService {
             Log.d(TAG, "Token does not need to be refresged");
         }
     }
-    private void sendRegistrationToServer(String refreshedToken) {
+    private static void sendRegistrationToServer(String refreshedToken) {
         // Make the changes to Firebase so that the token is updated
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();

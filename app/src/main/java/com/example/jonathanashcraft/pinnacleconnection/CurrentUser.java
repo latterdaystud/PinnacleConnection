@@ -9,6 +9,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.EventListener;
+
 
 /**
  * Stores the current user from Google Firebase in a singleton pattern so that it is available
@@ -19,6 +21,12 @@ public class CurrentUser {
 
     // To know whether it is loaded or not
     public static Boolean userLoaded;
+
+    public static userLoadedListener userListener = null;
+
+    public static void setListener(userLoadedListener ul) {
+        userListener = ul;
+    }
 
     // To store the user
     private static final User user = new User();
@@ -65,16 +73,6 @@ public class CurrentUser {
      */
     public static Boolean isManager() { return user.isManager(); }
 
-    // TODO: Handle the case where the user logs out and switches to a new user
-    // current bug and crash in LoginActivity
-
-    /**
-     * lol current bug here
-     * @param mTempUser A user that you want the CurrentUser to be. Changes the instance of User
-     *                  inside the Android user class.
-     */
-    public static void updateUser(User mTempUser) { user.setUser(mTempUser);}
-
     public static void reloadUser() { loadUser(); }
 
     // The private constructor (gets called once)
@@ -85,8 +83,8 @@ public class CurrentUser {
         loadUser();
     }
 
+    // Handles everything to do with refreshing the CurrentUser to be the actual current user
     private static void loadUser() {
-
         String userPath;
 
         // If there is a current user (or an authenticated user)
@@ -122,6 +120,11 @@ public class CurrentUser {
                     Log.d(TAG, "User successfully and  completely loaded");
 
                     userLoaded = true;
+
+                    // Make sure there is a listener, we don't wanna crash
+                    if (userListener != null) {
+                        userListener.onSuccess();
+                    }
                 }
 
                 @Override
@@ -132,10 +135,16 @@ public class CurrentUser {
         } else {
             // There is not a current user
             Log.d(TAG, "There is not a current user");
-            user.setUser(new User());
+            //user.setUser(new User());
         }
 
         Log.d(TAG, "Leaving loadUser()");
-        Log.d(TAG, "Hopefully this runs before the loaded user thing");
     }
+}
+
+/**
+ * An interface to assist in seeing if a user has loaded or not
+ */
+interface userLoadedListener extends EventListener {
+    void onSuccess();
 }

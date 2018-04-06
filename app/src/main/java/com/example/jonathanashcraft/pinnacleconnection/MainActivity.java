@@ -1,5 +1,6 @@
 package com.example.jonathanashcraft.pinnacleconnection;
 
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,7 +20,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,10 +35,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 
 /**
  * This activity is the main activty that holds the announcements. When a user first logs in or the
@@ -54,6 +61,7 @@ public class MainActivity extends AppCompatActivity
 
 
     private Announcement tempAnnouncement;
+    private Announcement empty;
 
     // Firebase database stuff
     private FirebaseDatabase database;
@@ -70,14 +78,20 @@ public class MainActivity extends AppCompatActivity
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        //Create an empty/default announcement
+        empty = new Announcement();
+        empty.setTitle("Welcome to Pinnacle!");
+        empty.setBody("This is the default announcement.");
+        empty.setDefault(true);
 
         // Firebase
         database = FirebaseDatabase.getInstance();
         databaseRef = database.getReference();
         AnnouncementRef = database.getReference().child("Announcements");
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -89,13 +103,13 @@ public class MainActivity extends AppCompatActivity
         });
 
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
 
 
         /*********** Not Sure to what extent this is needed *******************/
@@ -110,9 +124,11 @@ public class MainActivity extends AppCompatActivity
         if(CurrentUser.isManager()) {
             menu.findItem(R.id.nav_admin).setVisible(true);
             menu.findItem(R.id.nav_maintenance).setTitle("View Maintenance Requests");
+            menu.findItem(R.id.nav_message).setTitle("Messages");
         }
 
         Log.d(TAG, "The current device ID is: " + FirebaseInstanceId.getInstance().getToken().toString());
+
         /*
         MenuItem nav_camera = menu.findItem(R.id.nav_manage);
         nav_camera.setTitle("Maintenance Request");
@@ -153,8 +169,34 @@ public class MainActivity extends AppCompatActivity
 
         // Instantiation for the list view.
         arrayAdapter = new CustomAnnouncementsAdapter(this, MessagesFromJsonList);
-        listView = (ListView) findViewById(R.id.announcementsListView);
+        listView = findViewById(R.id.announcementsListView);
         listView.setAdapter(arrayAdapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if(CurrentUser.isManager()) {
+                    createAnnouncement(MainActivity.this.listView, true,  arrayAdapter.getCount() - 1 - i);
+                }
+            }
+        });
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view,
+                                           int position, long arg3) {
+
+                if(CurrentUser.isManager()) {
+                    DeleteAnnouncementFragment deleteAnnouncementFragment = new DeleteAnnouncementFragment();
+                    tempAnnouncement = MessagesFromJsonList.get(arrayAdapter.getCount() - 1 - position);
+                    deleteAnnouncementFragment.setAnnouncement(tempAnnouncement);
+                    deleteAnnouncementFragment.show(getSupportFragmentManager(), "DeleteAnnouncementFragment");
+                }
+                return true;
+            }
+
+        });
 
         // Value event listener to listen for the real time datachanges
         announcementListener = new ChildEventListener() {
@@ -165,7 +207,7 @@ public class MainActivity extends AppCompatActivity
                 tempAnnouncement = dataSnapshot.getValue(Announcement.class);
                 if (tempAnnouncement != null) {
                     Log.d(TAG, "TempAnnouncements is not equal to null");
-                    arrayAdapter.add(tempAnnouncement);
+                    arrayAdapter.add(tempAnnouncement.getIndexInArray(), tempAnnouncement);
                     arrayAdapter.notifyDataSetChanged();
                 } else {
                     Log.d(TAG, "TempAnnouncements is equal to null");
@@ -176,12 +218,26 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                // What is going to happen if the child changes
+                tempAnnouncement = dataSnapshot.getValue(Announcement.class);
+
+                arrayAdapter.remove(tempAnnouncement.getIndexInArray());
+                arrayAdapter.add(tempAnnouncement.getIndexInArray(), tempAnnouncement);
+                arrayAdapter.notifyDataSetChanged();
+
+                Log.d(TAG, "Announcement was edited and changed in the arrayAdapter");
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                // What are we going to do if the child is removed
+
+               if (arrayAdapter.getCount() == 1) {
+                    arrayAdapter.add(0, empty);
+                    arrayAdapter.remove(tempAnnouncement.getIndexInArray() - 1);
+                }
+                else {
+                    arrayAdapter.remove(tempAnnouncement.getIndexInArray());
+                }
+                arrayAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -198,37 +254,41 @@ public class MainActivity extends AppCompatActivity
         // Attach the childEventListener
         AnnouncementRef.addChildEventListener(announcementListener);
 
-        CurrentUser.reloadUser();
-        // TODO: This will show null when called, not sure if its because the class is still initalizing
-//        Toast.makeText(MainActivity.this, "Welcome " + CurrentUser.getFirstName(),
-//                Toast.LENGTH_SHORT).show();
+        // Let's greet the user because we are nice
+        Toast.makeText(MainActivity.this, "Welcome " + CurrentUser.getFirstName(),
+                Toast.LENGTH_SHORT).show();
 
         // Creating a new Token access
         TokenAccess token = new TokenAccess();
 
         // Let's reload it
         token.loadToken();
+        //Adds the default announcement if there is none
+        if (arrayAdapter.getCount() == 0) {
+            arrayAdapter.add(0, empty);
+        }
+        // Static method is static
+        // Let's check to see if we need to reload the device token
+        TokenAccess.loadToken();
     }
 
     protected void onStart() {
         super.onStart();
         final String TAG = "onStart";
 
-        CurrentUser.reloadUser();
-        // TODO: This will show null when called at the very start of the app
-        Toast.makeText(MainActivity.this, "Welcome back " + CurrentUser.getFirstName(),
-                Toast.LENGTH_SHORT).show();
+//        CurrentUser.reloadUser();
     }
 
-    public void createAnnouncement(View view) {
-//        Announcement new1 = new Announcement();
-//        arrayAdapter.add(new1);
-//        arrayAdapter.notifyDataSetChanged();
-//        Announcement new2 = new Announcement("Second title", "Always and forever", "today buddy", "Weellllll lets hope this works out.");
-//        arrayAdapter.add(new2);
-//        arrayAdapter.notifyDataSetChanged();
+    public void createAnnouncement(View view, boolean edit, int id) {
+        Intent intent = new Intent(this, CreateAnnouncement.class);
+        if (edit) {
+            String announcement = gson.toJson(this.arrayAdapter.getItem(arrayAdapter.getCount() - 1 - id));
+            intent.putExtra("announcement", announcement);
+            //intent.putExtra("index", arrayAdapter.getCount() - 1 - id);
+        }
 
-       Intent intent = new Intent(this, CreateAnnouncement.class);
+        intent.putExtra("index", arrayAdapter.getCount() - 1 - id);
+
         startActivityForResult(intent, 1);
     }
 
@@ -240,7 +300,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -273,6 +333,8 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+        String TAG = "onNavigationItem";
+
         // Handle navigation view item clicks here.
 
         Log.d("onNavigationItem", "Method Opened!");
@@ -280,7 +342,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_announcements) {
-            FirebaseAuth.getInstance().signOut();
+            // What happens when you tap the announcements tab
 
         } else if (id == R.id.nav_theater) {
             Intent intent = new Intent(this, TheaterRequestActivity.class);
@@ -296,17 +358,26 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
             }
         } else if (id == R.id.nav_admin) {
-            createAnnouncement(this.listView);
+
+            createAnnouncement(this.listView, false, -1);
+
         } else if (id == R.id.nav_login) {
+
+            Log.d(TAG, "You pressed sign out, let's sign you out");
             // Sign out
             FirebaseAuth.getInstance().signOut();
-            loginPressed(getCurrentFocus());
+
+            Log.d(TAG, "Let's start the loginActivity");
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+
+
         } else if (id == R.id.nav_message) {
             Intent intent = new Intent(this, ContactList.class);
             startActivity(intent);
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -316,6 +387,10 @@ public class MainActivity extends AppCompatActivity
         ArrayList<Announcement> myList = new ArrayList();
         LayoutInflater inflater;
         Context context;
+
+        public void remove(int index) {
+            myList.remove(index);
+        }
 
 
         public CustomAnnouncementsAdapter(Context context, ArrayList<Announcement> myList) {
@@ -357,8 +432,8 @@ public class MainActivity extends AppCompatActivity
             return view;
         }
 
-        public void add(Announcement newAnnouncement) {
-            myList.add(newAnnouncement);
+        public void add(int index, Announcement newAnnouncement) {
+            myList.add(index, newAnnouncement);
 
         }
     }

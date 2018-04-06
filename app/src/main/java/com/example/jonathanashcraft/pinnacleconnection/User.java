@@ -9,39 +9,36 @@ public class User {
     private String firstName;
     private String lastName;
     private String apartmentNumber;
-    private boolean manager;
-    private String device_token;
+    private String deviceToken;
+    private boolean isManager;
 
-    User(String firstName, String lastName, String apt, boolean manager, String device_token) {
+    User(String firstName, String lastName, String apt, String deviceToken, boolean isManager) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.apartmentNumber = apt;
-        this.manager = manager;
-        this.device_token = device_token;
+        this.deviceToken = deviceToken;
+        this.isManager = isManager;
     }
 
     User() {
         this.firstName = "";
         this.lastName = "";
         this.apartmentNumber = "";
-        this.manager = false;
-        this.device_token = "";
+        this.isManager = false;
     }
 
     User(User user) {
         this.firstName = user.firstName;
         this.lastName = user.lastName;
         this.apartmentNumber = user.apartmentNumber;
-        this.manager = user.manager;
-        this.device_token = user.device_token;
+        this.isManager = user.isManager;
     }
 
     public void setUser(User user) {
         this.firstName = user.firstName;
         this.lastName = user.lastName;
         this.apartmentNumber = user.apartmentNumber;
-        this.manager = user.manager;
-        this.device_token = user.device_token;
+        this.isManager = user.isManager;
     }
 
 
@@ -70,18 +67,18 @@ public class User {
     }
 
     public boolean isManager() {
-        return manager;
+        return isManager;
     }
 
     public void setManager(boolean manager) {
-        this.manager = manager;
+        isManager = manager;
     }
 
     public String getDeviceToken() {
-        return device_token;
+        return deviceToken;
     }
 
-    public void setDeviceToken(String device_token) {
-        this.device_token = device_token;
+    public void setDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
     }
 }

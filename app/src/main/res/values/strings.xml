@@ -20,6 +20,7 @@
     <string name="send_maintenance_request_title">Send Maintenance Request</string>
     <string name="enter_issue_plaintext">Description of Issue</string>
     <string name="urgent_checkbox">Urgent</string>
+    <string name="image_loading">Image is Loading</string>
 
     <!-- Theater Request -->
     <string name="scheduled_times">Scheduled Times</string>
@@ -51,6 +52,7 @@
     <string name="date_of_event">Date of Event</string>
     <string name="create_annoucements_body_of_annoucement">Enter the body of the annoucement</string>
 
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_create_announcement">CreateAnnouncement</string>
@@ -60,4 +62,8 @@
     <string name="admin_title">Create Announcement</string>
     <string name="login_title">Sign Out</string>
     <string name="message_title">Message Manager</string>
+    <string name="dialog_delete_announcement">Delete Announcement?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="add_image">Add Image</string>
 </resources>
