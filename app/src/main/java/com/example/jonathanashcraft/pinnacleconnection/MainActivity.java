@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity
         empty.setTitle("Welcome to Pinnacle!");
         empty.setBody("This is the default announcement.");
         empty.setDefault(true);
+        empty.setAuthor("Management");
 
         // Firebase
         database = FirebaseDatabase.getInstance();
