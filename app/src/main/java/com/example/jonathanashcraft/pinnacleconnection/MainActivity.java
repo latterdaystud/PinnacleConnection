@@ -114,9 +114,6 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
 
-
-        /*********** Not Sure to what extent this is needed *******************/
-
         // Set the items for the Navigation View
         Menu menu = navigationView.getMenu();
         menu.findItem(R.id.nav_admin).setVisible(false);
@@ -177,9 +174,11 @@ public class MainActivity extends AppCompatActivity
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if(CurrentUser.isManager()) {
-                    createAnnouncement(MainActivity.this.listView, true,  arrayAdapter.getCount() - 1 - i);
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+
+                //Make sure that the user is a manager and that the item they are trying to edit is not the default announcement
+                if(CurrentUser.isManager() && position != arrayAdapter.getCount() - 1) {
+                    createAnnouncement(MainActivity.this.listView, true, position);
                 }
             }
         });
@@ -190,9 +189,10 @@ public class MainActivity extends AppCompatActivity
             public boolean onItemLongClick(AdapterView<?> parent, View view,
                                            int position, long arg3) {
 
-                if(CurrentUser.isManager()) {
+                //Make sure that the user is a manager and that the item they are trying to delete is not the default announcement
+                if(CurrentUser.isManager() && position != arrayAdapter.getCount() - 1) {
                     DeleteAnnouncementFragment deleteAnnouncementFragment = new DeleteAnnouncementFragment();
-                    tempAnnouncement = MessagesFromJsonList.get(arrayAdapter.getCount() - 1 - position);
+                    tempAnnouncement = MessagesFromJsonList.get(position);
                     deleteAnnouncementFragment.setAnnouncement(tempAnnouncement);
                     deleteAnnouncementFragment.show(getSupportFragmentManager(), "DeleteAnnouncementFragment");
                 }
@@ -210,10 +210,20 @@ public class MainActivity extends AppCompatActivity
                 tempAnnouncement = dataSnapshot.getValue(Announcement.class);
                 if (tempAnnouncement != null) {
                     Log.d(TAG, "TempAnnouncements is not equal to null");
-                    arrayAdapter.add(tempAnnouncement.getIndexInArray(), tempAnnouncement);
+                    arrayAdapter.add(0, tempAnnouncement);
                     arrayAdapter.notifyDataSetChanged();
                 } else {
                     Log.d(TAG, "TempAnnouncements is equal to null");
+                }
+
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference AnnouncementsRef = database.getReference("Announcements");
+
+                //Update the index variable of all the announcements in the list and on firebase
+                for (int i = 0; i < arrayAdapter.getCount() - 1; i++)
+                {
+                    arrayAdapter.getItem(i).setIndexInArray(i);
+                    AnnouncementsRef.child(arrayAdapter.getItem(i).getID()).setValue(arrayAdapter.getItem(i));
                 }
 
                 Log.d(TAG, "temp Announcement was created and added to the arrayAdapter");
@@ -233,14 +243,19 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
 
-               if (arrayAdapter.getCount() == 1) {
-                    arrayAdapter.add(0, empty);
-                    arrayAdapter.remove(tempAnnouncement.getIndexInArray() - 1);
-                }
-                else {
-                    arrayAdapter.remove(tempAnnouncement.getIndexInArray());
-                }
+                tempAnnouncement = dataSnapshot.getValue(Announcement.class);
+                arrayAdapter.remove(tempAnnouncement.getIndexInArray());
                 arrayAdapter.notifyDataSetChanged();
+
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference AnnouncementsRef = database.getReference("Announcements");
+
+                //Update the index variable of all the announcements in the list and on firebase
+                for (int i = 0; i < arrayAdapter.getCount() - 1; i++)
+                {
+                    arrayAdapter.getItem(i).setIndexInArray(i);
+                    AnnouncementsRef.child(arrayAdapter.getItem(i).getID()).setValue(arrayAdapter.getItem(i));
+                }
             }
 
             @Override
@@ -285,12 +300,11 @@ public class MainActivity extends AppCompatActivity
     public void createAnnouncement(View view, boolean edit, int id) {
         Intent intent = new Intent(this, CreateAnnouncement.class);
         if (edit) {
-            String announcement = gson.toJson(this.arrayAdapter.getItem(arrayAdapter.getCount() - 1 - id));
+            String announcement = gson.toJson(this.arrayAdapter.getItem(id));
             intent.putExtra("announcement", announcement);
-            //intent.putExtra("index", arrayAdapter.getCount() - 1 - id);
         }
 
-        intent.putExtra("index", arrayAdapter.getCount() - 1 - id);
+        intent.putExtra("index", id);
 
         startActivityForResult(intent, 1);
     }
@@ -362,7 +376,7 @@ public class MainActivity extends AppCompatActivity
             }
         } else if (id == R.id.nav_admin) {
 
-            createAnnouncement(this.listView, false, -1);
+            createAnnouncement(this.listView, false, 0);
 
         } else if (id == R.id.nav_login) {
 
@@ -409,8 +423,8 @@ public class MainActivity extends AppCompatActivity
         }
 
         @Override
-        public Announcement getItem(int i) {
-            return myList.get(getCount() - (i + 1));
+        public Announcement getItem(int index) {
+            return myList.get(index);
         }
 
         @Override

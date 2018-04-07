@@ -29,7 +29,7 @@ public class ViewMaintenanceRequests extends AppCompatActivity {
                 (new ViewMaintenanceRequestsListFragment.DataSenderInterface() {
 
                     @Override
-                    public void sendMaintenceRequestData(String Title, String Date, String Author, String Description) {
+                    public void sendMaintenceRequestData(String Title, String Date, String Author, String Description, String Path) {
 
                         Log.d(TAG, "The listener got called");
 
@@ -38,6 +38,7 @@ public class ViewMaintenanceRequests extends AppCompatActivity {
                         data.putString("_Date", Date);
                         data.putString("_Author", Author);
                         data.putString("_Description", Description);
+                        data.putString("_Path", Path);
 
                         ViewMaintenanceRequestFragment newFrag = new ViewMaintenanceRequestFragment();
 
