@@ -28,8 +28,8 @@ import static android.content.ContentValues.TAG;
 
 /**
  * Created by Joseph on 4/5/2018.
+ * Fragment handling the viewing of maintenance requests in a list
  */
-
 public class ViewMaintenanceRequestsListFragment extends Fragment {
 
     private MaintenanceRequestsArrayAdapter arrayAdapter;
@@ -160,6 +160,9 @@ public class ViewMaintenanceRequestsListFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Custom Array Adapter to display the maintenance requests in a special manner
+     */
     private class MaintenanceRequestsArrayAdapter extends BaseAdapter {
 
         ArrayList<MaintenanceRequest> requests = new ArrayList();
@@ -217,6 +220,9 @@ public class ViewMaintenanceRequestsListFragment extends Fragment {
         }
     }
 
+    /**
+     * An interface to handle sending data between fragments
+     */
     public interface DataSenderInterface {
         public void sendMaintenceRequestData(String Title, String Date, String Author,
                                              String Description, String Path);

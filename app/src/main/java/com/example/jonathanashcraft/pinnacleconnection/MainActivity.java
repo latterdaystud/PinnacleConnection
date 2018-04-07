@@ -373,6 +373,7 @@ public class MainActivity extends AppCompatActivity
             } else {
                 // If the user is a manager
                 Intent intent = new Intent(this, ViewMaintenanceRequests.class);
+                intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(intent);
             }
         } else if (id == R.id.nav_admin) {

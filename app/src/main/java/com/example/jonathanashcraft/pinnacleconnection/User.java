@@ -1,9 +1,9 @@
 package com.example.jonathanashcraft.pinnacleconnection;
 
 /**
+ * An identity for a user
  * Created by Joseph on 3/2/2018.
  */
-
 public class User {
 
     private String firstName;
@@ -12,6 +12,14 @@ public class User {
     private String deviceToken;
     private boolean isManager;
 
+    /**
+     * Non-default constructor
+     * @param firstName First name of the user
+     * @param lastName Last name of the user
+     * @param apt Apartment number of the user
+     * @param deviceToken The device token (for notifications)
+     * @param isManager To see if the user is a manager
+     */
     User(String firstName, String lastName, String apt, String deviceToken, boolean isManager) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -20,6 +28,9 @@ public class User {
         this.isManager = isManager;
     }
 
+    /**
+     * Default constructor
+     */
     User() {
         this.firstName = "";
         this.lastName = "";
@@ -27,6 +38,10 @@ public class User {
         this.isManager = false;
     }
 
+    /**
+     * Copy constructor
+     * @param user The user to set the user to
+     */
     User(User user) {
         this.firstName = user.firstName;
         this.lastName = user.lastName;

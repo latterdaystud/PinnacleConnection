@@ -14,6 +14,14 @@ public class MaintenanceRequest extends Request {
     private String path;
     private byte[] bytes;
 
+    /**
+     *
+     * @param title The title of the maintenance request
+     * @param description The description of the maintenance request
+     * @param author The author of the maintenance request
+     * @param urgent Whether the maintenance request is urgent or not
+     * @param image The image of the request
+     */
     public MaintenanceRequest(String title, String description, String author, boolean urgent, Bitmap image) {
         super(title, description, new User());
         this.urgent = urgent;
@@ -22,6 +30,13 @@ public class MaintenanceRequest extends Request {
 
     }
 
+    /**
+     * @param title The title of the maintenance request
+     * @param description The description of the maintenance request
+     * @param author The author of the maintenance request
+     * @param urgent Whether the maintenance request is urgent or not
+     * @param path The path to the image
+     */
     public MaintenanceRequest(String title, String description, String author, boolean urgent,
                               String path) {
         super(title, description, new User());
@@ -31,6 +46,15 @@ public class MaintenanceRequest extends Request {
         this.path = path;
     }
 
+    /**
+     * @param title The title of the maintenance request
+     * @param description The description of the maintenance request
+     * @param author The author of the maintenance request
+     * @param urgent Whether the maintenance request is urgent or not
+     * @param date The date the maintenance request was sent
+     * @param urgent Weather the maintenance request is urgent or not
+     * @param path The path to the image
+     */
     public MaintenanceRequest(String title, String description, String author, String date, boolean urgent,
                               String path) {
         super(title, description, new User());
@@ -41,6 +65,9 @@ public class MaintenanceRequest extends Request {
         this.setTimeSent(date);
     }
 
+    /**
+     * Default constructor for MaintenanceRequest
+     */
     public MaintenanceRequest() {
         super("no_title", "no_description", new User());
         this.urgent = false;

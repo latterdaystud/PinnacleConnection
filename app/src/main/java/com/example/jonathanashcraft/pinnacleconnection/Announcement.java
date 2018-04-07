@@ -18,7 +18,6 @@ import java.util.Date;
  * @version 2018.01
  * @since 2018.01
  */
-
 public class Announcement {
     private String body;
     // For use in the database when an announcement is created
@@ -56,6 +55,15 @@ public class Announcement {
 
     }
 
+    /**
+     * Non-default constructor for announcement class
+     * @param Title Title of the announcement
+     * @param Body The body of the Announcement
+     * @param Date The date of the activity
+     * @param time The time of the activity
+     * @param Author The author of the activity
+     * @param pathToImage The path to the image that will be posted with the announcement
+     */
     public Announcement(String Title, String Body, String Date, String time, String Author, String pathToImage) {
         this.body = Body;
         this.ID = Calendar.getInstance().getTime().toString();
