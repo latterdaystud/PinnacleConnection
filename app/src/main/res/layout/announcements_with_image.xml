@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
+        android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:text="Title"
         android:textAlignment="center"
         android:textAllCaps="true"
@@ -23,8 +24,10 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/title"
         android:layout_centerHorizontal="true"
+        android:paddingEnd="10sp"
         android:paddingStart="10sp"
-        android:text="Body" />
+        android:text="Body"
+        android:textAlignment="center" />
 
     <TextView
         android:id="@+id/time"

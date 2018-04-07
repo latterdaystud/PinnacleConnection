@@ -5,6 +5,7 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.text.Editable;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -46,20 +47,29 @@ public class Announcement {
         this.title = "";
         this.date = "";
         this.pathToImage = "no_path";
+
+
+        SimpleDateFormat df = new SimpleDateFormat("h:mma, EEE, MMM d");
+        String date = df.format(Calendar.getInstance().getTime());
+
+        this.timeOfAnnouncement = date;
+
     }
 
     public Announcement(String Title, String Body, String Date, String time, String Author, String pathToImage) {
         this.body = Body;
+        this.ID = Calendar.getInstance().getTime().toString();
         this.author = Author;
         this.title = Title;
-        this.timeOfAnnouncement = time;
         this.date = Date;
         this.pathToImage = pathToImage;
 
-        // The ID will be the date and time of the announcement being created
-        this.ID = Calendar.getInstance().getTime().toString();
 
-        int year = Calendar.getInstance().get(Calendar.YEAR);
+        SimpleDateFormat df = new SimpleDateFormat("h:mma, EEE, MMM d");
+        String date = df.format(Calendar.getInstance().getTime());
+
+        this.timeOfAnnouncement = date;
+
 
     }
 

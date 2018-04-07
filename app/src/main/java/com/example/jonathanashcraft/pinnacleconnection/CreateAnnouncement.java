@@ -251,6 +251,8 @@ TimePickerDialog.OnTimeSetListener {
             editAnnouncement.setBody(description_of_announcement.getText().toString());
            // editAnnouncement.setJsonImage(jsonImage);
             tempAnnouncement = editAnnouncement;
+            tempAnnouncement.setIndexInArray(getIntent().getExtras().getInt("index"));
+
         }
         else {
             tempAnnouncement = new Announcement(
@@ -268,9 +270,12 @@ TimePickerDialog.OnTimeSetListener {
         // Get the database and the reference
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference AnnouncementsRef = database.getReference("Announcements");
-
-
         AnnouncementsRef.child(tempAnnouncement.getID()).setValue(tempAnnouncement);
+
+
+
+
+
 
         Log.d(TAG, "Added announcement to database");
 
