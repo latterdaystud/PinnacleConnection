@@ -12,8 +12,8 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:icon="@drawable/pinnacle_logo"
+        android:label="Pinnacle Connection"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:minSdkVersion="8"
@@ -22,7 +22,7 @@
         <!-- I believe this is the activity that the app starts with -->
         <activity
             android:name=".LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -39,14 +39,14 @@
 
         <activity
             android:name=".MainActivity"
-            android:label="Announcements"
+            android:label=" Announcements"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
             android:name=".MessagingActivity"
             android:screenOrientation="portrait"
             android:label="Messages"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
 
         <activity
@@ -63,7 +63,7 @@
 
         <activity
             android:name=".ViewMaintenanceRequests"
-            android:screenOrientation="portrait" />
+            />
 
         <service
             android:name=".TokenAccess">

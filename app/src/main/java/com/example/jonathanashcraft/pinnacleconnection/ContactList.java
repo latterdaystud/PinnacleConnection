@@ -5,13 +5,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -22,6 +25,7 @@ import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,6 +42,8 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EventListener;
+import java.util.Iterator;
 import java.util.Objects;
 
 public class ContactList extends AppCompatActivity
@@ -77,6 +83,10 @@ public class ContactList extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_list);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setIcon(R.mipmap.pinnacle_logo);
+        setTitle(" Conversations");
         //setting up the dialog
         myDialog = new Dialog(this);
 
@@ -126,6 +136,7 @@ public class ContactList extends AppCompatActivity
                 Bundle bundle = new Bundle();
                 bundle.putString("ID", passedInfo);
                 Log.d("Given ID", passedInfo);
+                bundle.putString("Name", contactAdapter.getItem(i).getFirstName() + " " + contactAdapter.getItem(i).getLastName());
                 intent.putExtra("Contact Name", bundle);
                 startActivity(intent);
             }
@@ -146,7 +157,11 @@ public class ContactList extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 contactListAdapter.clear();
-                myDialog.setTitle("Search Contacts");
+                if(CurrentUser.isManager()) {
+                    myDialog.setTitle("Search for Tenant");
+                } else {
+                    myDialog.setTitle("Search for Manager");
+                }
                 myDialog.show();
 
                 // For the back arrow, cancel the
@@ -186,20 +201,38 @@ public class ContactList extends AppCompatActivity
                         Bundle bundle = new Bundle();
                         bundle.putString("ID", passedInfo);
                         Log.d("Given ID", passedInfo);
+                        bundle.putString("Name", contactListAdapter.getItem(i).getFirstName() + " " + contactListAdapter.getItem(i).getLastName());
                         intent.putExtra("Contact Name", bundle);
                         startActivity(intent);
                     }
                 });
             }
         });
-
-        setUpConversations();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         myDialog.cancel();
+        contactAdapter.clear();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setUpConversations();
+        // Load any new conversation created since paused plus the rest of them.
+        for (int i = 0; i < ContactsFromJsonList.size(); i++) {
+            UserWithID tempUser = ContactsFromJsonList.get(i);
+            String tempId = tempUser.getID();
+            String path = tempId + userId;
+
+            if (fileExist(path)) {
+                contactAdapter.add(tempUser);
+            }
+        }
+        // for potential change.
+        contactAdapter.notifyDataSetChanged();
     }
 
 
@@ -302,8 +335,17 @@ public class ContactList extends AppCompatActivity
             return myList.contains(tempUser);
         }
 
-        public int getItemIndex(UserWithID tempUser) {
-            return myList.indexOf(tempUser);
+        public int getItemIndex(String tempUserID) {
+            int index = 0;
+            Iterator<UserWithID> itr = myList.iterator();
+            while (itr.hasNext()) {
+                UserWithID element = itr.next();
+                if (Objects.equals(element.getID(), tempUserID)) {
+                    return index;
+                }
+                index++;
+            }
+            return -1;
         }
 
         @Override
@@ -358,6 +400,13 @@ public class ContactList extends AppCompatActivity
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d("Contact", "The size of the ContactsFromJsonList is " + ContactsFromJsonList.size());
                 User tempUser = dataSnapshot.getValue(User.class);
+                // If tenant then only display managers.
+                if (!CurrentUser.isManager()) {
+                    if(!tempUser.isManager()) {
+                        return;
+                    }
+
+                }
                 UserWithID tempUserWithID = new UserWithID(tempUser, dataSnapshot.getKey());
                 Log.d("Saving key!!!", dataSnapshot.getKey());
                 Log.d("About to search", "The size is" + ContactsFromJsonList.size());
@@ -449,27 +498,33 @@ public class ContactList extends AppCompatActivity
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d("Contact for messaging", "The size of the ContactsFromJsonList is " + ContactsFromJsonList.size());
                 String id = dataSnapshot.getKey();
-                UserWithID tempUserWithID = new UserWithID();
-                for(int i = 0; i < ContactsFromJsonList.size(); i++) {
-                    if (Objects.equals(ContactsFromJsonList.get(i).getID(), id)) {
-                        tempUserWithID = new UserWithID(ContactsFromJsonList.get(i));
-                        break;
-                    }
-                }
-                String path = tempUserWithID.getID() + userId;
+                String path = id + userId;
 
                 // Edit the existing conversation or add one.
                 if (fileExist(path)) {
                     // If already in the phone then just edit.
-                    int index = contactAdapter.getItemIndex(tempUserWithID);
-                    contactAdapter.getItem(index+1).setNewMessage(true);
+                    int index = contactAdapter.getItemIndex(id);
+                    Log.d("Index of object", "The index is: " + index);
+                    if (index != -1) {
+                        contactAdapter.getItem(index).setNewMessage(true);
+                        contactAdapter.notifyDataSetChanged();
+                    } else {
+                       Log.d("ERROR: Missing object", "Though file path is found, contact is not");
+                    }
                 } else {
+                    // only make a new user when not already found.
+                    UserWithID tempUserWithID = new UserWithID();
+                    for(int i = 0; i < ContactsFromJsonList.size(); i++) {
+                        if (Objects.equals(ContactsFromJsonList.get(i).getID(), id)) {
+                            tempUserWithID = new UserWithID(ContactsFromJsonList.get(i));
+                            break;
+                        }
+                    }
                     // Otherwise add new.
                     tempUserWithID.setNewMessage(true);
                     contactAdapter.add(tempUserWithID);
                     contactAdapter.notifyDataSetChanged();
                 }
-                Log.d("Testing for firebase", tempUserWithID.getFirstName());
             }
 
             @Override
@@ -496,3 +551,5 @@ public class ContactList extends AppCompatActivity
         databaseRef.keepSynced(true);
     }
 }
+
+

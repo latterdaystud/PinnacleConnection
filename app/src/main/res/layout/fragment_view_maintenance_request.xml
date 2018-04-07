@@ -1,157 +1,170 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:id="@+id/scrollView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true"
+    android:overScrollMode="never">
 
-    <TextView
-        android:id="@+id/textViewMaintenanceRequestTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="Title"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        android:textColor="@color/colorPrimary"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.043"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/textViewMaintenanceViewDate"
-        android:layout_width="wrap_content"
-        android:layout_height="22dp"
-        android:layout_alignBaseline="@+id/textView11"
-        android:layout_alignBottom="@+id/textView11"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp"
-        android:layout_toEndOf="@+id/textView11"
-        android:text="Date"
-        android:textColor="@color/colorAccent"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView11"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/textViewMaintenanceRequestPerson"
-        app:layout_constraintTop_toBottomOf="@+id/textViewMaintenanceRequestPerson"
-        app:layout_constraintVertical_bias="0.8" />
 
-    <TextView
-        android:id="@+id/textViewMaintenanceRequestDescrip"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/textViewDescription"
-        android:layout_below="@+id/textViewDescription"
-        android:layout_marginTop="8dp"
-        android:text="Issue"
-        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-        android:textSize="15sp"
-        app:layout_constraintStart_toStartOf="@+id/textViewDescription"
-        app:layout_constraintTop_toBottomOf="@+id/textViewDescription" />
+        <TextView
+            android:id="@+id/textViewMaintenanceRequestTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="16dp"
+            android:text="Title"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            android:textColor="@color/colorPrimary"
+            android:textSize="30sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.043"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
 
-    <TextView
-        android:id="@+id/textViewDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/textView12"
-        android:layout_below="@+id/textView12"
-        android:layout_marginTop="60dp"
-        android:text="Description of Issue:"
-        android:textColor="@color/colorPrimaryDark"
-        android:textSize="15sp"
-        app:layout_constraintStart_toStartOf="@+id/textViewMaintenanceRequestTitle"
-        app:layout_constraintTop_toBottomOf="@+id/textViewMaintenanceRequestTitle" />
+        <TextView
+            android:id="@+id/textViewMaintenanceViewDate"
+            android:layout_width="wrap_content"
+            android:layout_height="22dp"
+            android:layout_alignBaseline="@+id/textView11"
+            android:layout_alignBottom="@+id/textView11"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="12dp"
+            android:layout_toEndOf="@+id/textView11"
+            android:text="Date"
+            android:textColor="@color/colorAccent"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="@+id/textView11"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/textViewMaintenanceRequestPerson"
+            app:layout_constraintTop_toBottomOf="@+id/textViewMaintenanceRequestPerson"
+            app:layout_constraintVertical_bias="0.8" />
 
-    <TextView
-        android:id="@+id/textView11"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/textViewMaintenanceRequestTitle"
-        android:layout_below="@+id/textViewMaintenanceRequestTitle"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Date Sent:"
-        android:textColor="@color/colorAccent"
-        android:textSize="15sp"
-        app:layout_constraintEnd_toStartOf="@+id/textViewMaintenanceViewDate"
-        app:layout_constraintTop_toBottomOf="@+id/textView12" />
+        <TextView
+            android:id="@+id/textViewMaintenanceRequestDescrip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/textViewDescription"
+            android:layout_below="@+id/textViewDescription"
+            android:layout_marginTop="8dp"
+            android:text="Issue"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:textSize="15sp"
+            app:layout_constraintStart_toStartOf="@+id/textViewDescription"
+            app:layout_constraintTop_toBottomOf="@+id/textViewDescription" />
 
-    <TextView
-        android:id="@+id/textView12"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/textView11"
-        android:layout_below="@+id/textView11"
-        android:layout_marginEnd="12dp"
-        android:text="Sent By:"
-        android:textColor="@color/colorAccent"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="@+id/textViewMaintenanceRequestPerson"
-        app:layout_constraintEnd_toStartOf="@+id/textViewMaintenanceRequestPerson" />
+        <TextView
+            android:id="@+id/textViewDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/textView12"
+            android:layout_below="@+id/textView12"
+            android:layout_marginTop="60dp"
+            android:text="Description of Issue:"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="15sp"
+            app:layout_constraintStart_toStartOf="@+id/textViewMaintenanceRequestTitle"
+            app:layout_constraintTop_toBottomOf="@+id/textViewMaintenanceRequestTitle" />
 
-    <TextView
-        android:id="@+id/textViewMaintenanceRequestPerson"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/textView12"
-        android:layout_alignEnd="@+id/textViewMaintenanceViewDate"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="4dp"
-        android:text="person"
-        android:textColor="@color/colorAccent"
-        android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewMaintenanceRequestTitle" />
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/textViewMaintenanceRequestTitle"
+            android:layout_below="@+id/textViewMaintenanceRequestTitle"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:text="Date Sent:"
+            android:textColor="@color/colorAccent"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toStartOf="@+id/textViewMaintenanceViewDate"
+            app:layout_constraintTop_toBottomOf="@+id/textView12" />
 
-    <ImageView
-        android:id="@+id/imageViewMaintenanceRequestPhoto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/textViewMaintenanceRequestTitle"
-        android:layout_below="@+id/textViewMaintenanceRequestDescrip"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewMaintenanceRequestDescrip"
-        app:srcCompat="@drawable/common_full_open_on_phone" />
+        <TextView
+            android:id="@+id/textView12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/textView11"
+            android:layout_below="@+id/textView11"
+            android:layout_marginEnd="12dp"
+            android:text="Sent By:"
+            android:textColor="@color/colorAccent"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="@+id/textViewMaintenanceRequestPerson"
+            app:layout_constraintEnd_toStartOf="@+id/textViewMaintenanceRequestPerson" />
 
-    <ProgressBar
-        android:id="@+id/progressBarImageLoading"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/imageViewMaintenanceRequestPhoto"
-        android:layout_centerHorizontal="true"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewMaintenanceRequestDescrip" />
+        <TextView
+            android:id="@+id/textViewMaintenanceRequestPerson"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/textView12"
+            android:layout_alignEnd="@+id/textViewMaintenanceViewDate"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="4dp"
+            android:text="person"
+            android:textColor="@color/colorAccent"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewMaintenanceRequestTitle" />
 
-    <TextView
-        android:id="@+id/textViewImageLoading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/progressBarImageLoading"
-        android:layout_centerHorizontal="true"
-        android:layout_marginEnd="8dp"
-        android:text="@string/image_loading"
-        android:textColor="@color/colorAccent"
-        app:layout_constraintEnd_toEndOf="@+id/progressBarImageLoading"
-        app:layout_constraintStart_toStartOf="@+id/progressBarImageLoading"
-        app:layout_constraintTop_toBottomOf="@+id/progressBarImageLoading" />
+        <ImageView
+            android:id="@+id/imageViewMaintenanceRequestPhoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/textViewMaintenanceRequestTitle"
+            android:layout_below="@+id/textViewMaintenanceRequestDescrip"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="24dp"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewMaintenanceRequestDescrip"
+            app:srcCompat="@drawable/common_full_open_on_phone" />
 
-</android.support.constraint.ConstraintLayout>
+        <ProgressBar
+            android:id="@+id/progressBarImageLoading"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/imageViewMaintenanceRequestPhoto"
+            android:layout_centerHorizontal="true"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewMaintenanceRequestDescrip" />
+
+        <TextView
+            android:id="@+id/textViewImageLoading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/progressBarImageLoading"
+            android:layout_centerHorizontal="true"
+            android:layout_marginEnd="8dp"
+            android:text="@string/image_loading"
+            android:textColor="@color/colorAccent"
+            app:layout_constraintEnd_toEndOf="@+id/progressBarImageLoading"
+            app:layout_constraintStart_toStartOf="@+id/progressBarImageLoading"
+            app:layout_constraintTop_toBottomOf="@+id/progressBarImageLoading" />
+
+
+    </android.support.constraint.ConstraintLayout>
+
+</ScrollView>

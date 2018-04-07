@@ -1,6 +1,8 @@
 package com.example.jonathanashcraft.pinnacleconnection;
 
 
+import java.util.EventListener;
+
 /**
  * Created by Jonathan Ashcraft on 4/4/2018.
  */
@@ -8,6 +10,7 @@ package com.example.jonathanashcraft.pinnacleconnection;
 public class UserWithID extends User {
     private String ID;
     private Boolean newMessage;
+
     UserWithID() {
         super();
         ID = "";

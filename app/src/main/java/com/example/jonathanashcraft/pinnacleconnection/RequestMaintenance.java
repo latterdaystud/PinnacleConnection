@@ -38,10 +38,17 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.gson.Gson;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
@@ -66,6 +73,8 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
     private Boolean addedPhoto;
     private Uri currImageURI;
 
+    private Gson gson = new Gson();
+
     private static int RESULT_LOAD_IMG = 1;
 
     @Override
@@ -77,7 +86,36 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request_maintenance);
 
-        maintenanceList = new ArrayList<>();
+        // open the files containing the sent requests and load them into the maintenance list.
+        String jsonRequestsLoadedFromFiles = "";
+        FileInputStream inputStream;
+        try {
+            // Read in the file.
+            inputStream = openFileInput("Requests");
+            InputStreamReader reader = new InputStreamReader(inputStream);
+            BufferedReader br = new BufferedReader(reader);
+            StringBuilder sb = new StringBuilder();
+            String tempString;
+            while ((tempString = br.readLine()) != null) {
+                sb.append(tempString);
+            }
+            // Save to the json string.
+            jsonRequestsLoadedFromFiles = sb.toString();
+            inputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Now take from json if not empty.
+        if(!jsonRequestsLoadedFromFiles.isEmpty()) {
+            //requests =
+            maintenanceList = new ArrayList<>(Arrays.asList(gson.fromJson(jsonRequestsLoadedFromFiles, MaintenanceRequest[].class)));
+        } else {
+            maintenanceList = new ArrayList<>();
+        }
+
+
+        // Set up the views.
         maintenanceListView = findViewById(R.id.listView);
         maintenanceAdapter = new CustomMaintenanceAdapter(this, maintenanceList);
         maintenanceListView.setAdapter(maintenanceAdapter);
@@ -87,9 +125,11 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
         cbUrgent = findViewById(R.id.checkBoxIsUrgent);
         addedPhoto = false;
 
+
         // Build the dialog box that will appear for creating a maintenance request
         AlertDialog.Builder builder = new AlertDialog.Builder(RequestMaintenance.this);
 
+        // This is the diallog for the maintenance request.
         builder.setTitle("Maintenance Request")
                 .setView(R.layout.create_maintenance_request_dialog)
                 .setPositiveButton("Submit", new DialogInterface.OnClickListener() {
@@ -145,7 +185,6 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
     }
 
     public void makeRequest() {
-
         // Get the input from the dialog box that the user inputted
         String description = etIssueInput.getText().toString();
         String topic = etSubjectOfIssue.getText().toString();
@@ -159,12 +198,19 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
         boolean isUrgent = cbUrgent.isChecked();
 
         //TODO: Handle if there is no photo to be uploaded
+        MaintenanceRequest tempMaintenanceRequest;
         // Make a temporary request to hold the data that has been inputted
-        MaintenanceRequest tempMaintenanceRequest = new MaintenanceRequest(topic, description,
-                CurrentUser.getFirstName() + " " + CurrentUser.getLastName(), isUrgent,
-                fileToUpload.getLastPathSegment());
+        if(fileToUpload != null) {
+            tempMaintenanceRequest = new MaintenanceRequest(topic, description,
+                    CurrentUser.getFirstName() + " " + CurrentUser.getLastName(), isUrgent,
+                    fileToUpload.getLastPathSegment());
+        } else {
+            tempMaintenanceRequest = new MaintenanceRequest(topic, description,
+                    CurrentUser.getFirstName() + " " + CurrentUser.getLastName(), isUrgent,
+                    "");
+        }
 
-        Log.d("makeReqguest", "fileToUpload: " + fileToUpload.getLastPathSegment());
+
         Log.d("makeRequest", "fileLocation is: " + tempMaintenanceRequest.getPath());
 
         DatabaseReference maintenanceRequestRef = FirebaseDatabase.getInstance()
@@ -176,8 +222,22 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
 
         maintenanceAdapter.add(tempMaintenanceRequest);
         maintenanceAdapter.notifyDataSetChanged();
+        // Save to the phone's memory.
+        String jsonRequests = gson.toJson(maintenanceList);
+        FileOutputStream outputStream;
+        try {
+            outputStream = openFileOutput("Requests", Context.MODE_PRIVATE);
+            outputStream.write(jsonRequests.getBytes());
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    /**
+     * Open gallery on the phone.
+     * @param view view given from activity
+     */
     public void openGallery(View view) {
 
         // Before we do anything, let's make sure we have permissions to do it
@@ -265,6 +325,10 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
 
     }
 
+    /**
+     * This is the custom maintenance adapter for the requests sent.
+     * The purpose of this class is to display correctly.
+     */
     public class CustomMaintenanceAdapter extends BaseAdapter {
 
         ArrayList<MaintenanceRequest> myList = new ArrayList();
@@ -295,6 +359,7 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
         @Override
         public View getView(int position, View convertView, ViewGroup viewGroup) {
             View view = getLayoutInflater().inflate(R.layout.maintenance_layout, null);
+            // Get custom view and set variables to edit.
             MaintenanceRequest request = myList.get(position);
             TextView urgent = view.findViewById(R.id.urgentBar);
             TextView urgent2 = view.findViewById(R.id.urgentBar2);
@@ -302,13 +367,16 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
             TextView Time = view.findViewById(R.id.timeSent);
             ImageView imageView = view.findViewById(R.id.attatchedImage);
 
+            //Display red bars if is urgent.
             if(request.isUrgent()) {
                 urgent.setBackgroundColor(Color.RED);
                 urgent2.setBackgroundColor(Color.RED);
             }
             Log.d("Testing decode", "Decode occurs way before this message and after");
+            // Bitmap to compare.
             Bitmap icon = BitmapFactory.decodeResource(context.getResources(),
                       R.drawable.ic_menu_gallery);
+            // If not the icon then an image was sent.
             if(request.getImage() != null && request.getImage() != icon)
                 imageView.setImageBitmap(request.getImage());
             Log.d("Testing decode", "image was supposed to just set the bitmap" + request.getImage());
@@ -320,6 +388,7 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
         }
 
         public void add(MaintenanceRequest request) {
+            // Saves the time while adding.
             SimpleDateFormat df = new SimpleDateFormat("h:mma, EEE, MMM d");
             String date = df.format(Calendar.getInstance().getTime());
             request.setTimeSent("Sent at " + date);
