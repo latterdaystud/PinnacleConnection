@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -90,14 +91,20 @@ public class MessagingActivity extends AppCompatActivity {
 
 
         setContentView(R.layout.activity_messaging);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setIcon(R.mipmap.pinnacle_logo);
+        setTitle("Conversation");
+
         message = findViewById(R.id.editText);
 
         // Load the existing messages from files on phone
         String jsonMessagesLoadedFromMyStorage = "";
         if (extraBundles != null && !extraBundles.isEmpty()) {
             name = extraBundles.getString("ID");
+            String userName = extraBundles.getString("Name");
+            Log.d("Name of person", userName);
+            setTitle(" " + userName);
             // declare the path
             messagingRef = databaseRef.child("Messaging").child(userId).child("Conversations").child(name).child("Messages");
             FileInputStream inputStream;

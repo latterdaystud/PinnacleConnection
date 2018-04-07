@@ -21,7 +21,7 @@
             android:layout_height="33dp"
             android:layout_weight="1"
             android:text="Messaging"
-            android:textAppearance="@android:style/TextAppearance.Material.Large"
+            android:textAppearance="@style/TextAppearance.AppCompat.Light.Widget.PopupMenu.Large"
             android:visibility="invisible" />
 
         <android.support.v7.widget.Toolbar

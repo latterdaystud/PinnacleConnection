@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,7 +57,6 @@ public class MainActivity extends AppCompatActivity
     private ListView listView;
     ArrayList<Announcement> MessagesFromJsonList;
     private Gson gson = new Gson();
-    private String jsonMessages;
     private Announcement[] an;
 
 
@@ -80,6 +80,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setLogo(R.mipmap.pinnacle_logo);
+
+
 
         //Create an empty/default announcement
         empty = new Announcement();
