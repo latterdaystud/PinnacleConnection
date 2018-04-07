@@ -21,6 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static android.content.ContentValues.TAG;
 
@@ -199,6 +200,11 @@ public class ViewMaintenanceRequestsListFragment extends Fragment {
             TextView Description = view.findViewById(R.id.textViewMaintenanceViewDescription);
             TextView Date = view.findViewById(R.id.textViewMaintenanceViewDate);
             TextView Author = view.findViewById(R.id.textViewMaintenanceViewName);
+            TextView image = view.findViewById(R.id.textViewMaintenanceViewImageAttached);
+
+            if(Objects.equals(tempMaintenanceRequest.getPath(), "")) {
+                image.setText("No Image");
+            }
 
             // Set the references with our available information
             Topic.setText(tempMaintenanceRequest.getTitle());

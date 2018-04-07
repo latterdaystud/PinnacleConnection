@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -85,6 +86,10 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request_maintenance);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setIcon(R.mipmap.pinnacle_logo);
+        setTitle(" Request Maintenance");
 
         // open the files containing the sent requests and load them into the maintenance list.
         String jsonRequestsLoadedFromFiles = "";

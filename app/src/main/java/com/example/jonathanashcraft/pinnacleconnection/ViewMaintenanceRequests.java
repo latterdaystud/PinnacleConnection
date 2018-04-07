@@ -1,5 +1,6 @@
 package com.example.jonathanashcraft.pinnacleconnection;
 
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +15,10 @@ public class ViewMaintenanceRequests extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_view_maintenance_requests);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setIcon(R.mipmap.pinnacle_logo);
+        setTitle(" Requests Received");
 
         final String TAG = "onCreate";
 

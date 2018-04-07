@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -67,6 +68,10 @@ public class TheaterRequestActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_theater_request);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setIcon(R.mipmap.pinnacle_logo);
+        setTitle(" Reserve Theater");
         Calendar cal = Calendar.getInstance();
         // Create the start time picker for later reference in reservations.
         final TimePickerDialog startTime = new TimePickerDialog(TheaterRequestActivity.this, new TimePickerDialog.OnTimeSetListener() {

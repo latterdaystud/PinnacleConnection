@@ -20,6 +20,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.Objects;
+
 import static android.content.ContentValues.TAG;
 
 /**
@@ -82,6 +84,7 @@ public class ViewMaintenanceRequestFragment extends Fragment {
         TextView Description = view.findViewById(R.id.textViewMaintenanceRequestDescrip);
         TextView Date = view.findViewById(R.id.textViewMaintenanceViewDate);
 
+
         currentView = view;
 
         Title.setText(this.Title);
@@ -89,8 +92,15 @@ public class ViewMaintenanceRequestFragment extends Fragment {
         Description.setText(this.Description);
         Date.setText(this.Date);
 
-        // Here we load the image
-         loadImage(Path);
+        // Here we load the image or not if there is no image.
+        if (!Objects.equals(Path, "")) {
+            loadImage(Path);
+        } else {
+            ProgressBar progressBar = currentView.findViewById(R.id.progressBarImageLoading);
+            TextView textViewImageLoading = currentView.findViewById(R.id.textViewImageLoading);
+            progressBar.setVisibility(View.GONE);
+            textViewImageLoading.setText("No Image Sent");
+        }
 
         return view;
     }
