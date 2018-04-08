@@ -441,7 +441,6 @@ public class MainActivity extends AppCompatActivity
         public View getView(int position, View convertView, ViewGroup viewGroup) {
             // The desired layout of the view.
             View view = getLayoutInflater().inflate(R.layout.announcements_with_image, null);
-            Announcement newAnnouncement = getItem(position);
             // Get the values to be set in the layout.
             final Announcement newAnnouncement = getItem(position);
             TextView Title = view.findViewById(R.id.title);
