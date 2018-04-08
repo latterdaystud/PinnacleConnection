@@ -4,8 +4,10 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
@@ -26,9 +28,12 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -37,6 +42,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
@@ -67,6 +74,13 @@ public class MainActivity extends AppCompatActivity
     private FirebaseDatabase database;
     private DatabaseReference databaseRef;
 
+    // Firebase storage stuff
+    private FirebaseStorage storage;
+    private StorageReference imageRef;
+    // For reference when trying to load from Firebase Storage
+    final long ONE_MEGABYTE = 1024 * 1024;
+    final long THREE_MEGABYTES = ONE_MEGABYTE * 3;
+
     private ChildEventListener announcementListener;
     private DatabaseReference AnnouncementRef;
 
@@ -87,7 +101,7 @@ public class MainActivity extends AppCompatActivity
         //Create an empty/default announcement
         empty = new Announcement();
         empty.setTitle("Welcome to Pinnacle!");
-        empty.setBody("This is the default announcement.");
+        empty.setBody("Winter Semester 2018!");
         empty.setDefault(true);
         empty.setAuthor("Management");
 
@@ -427,17 +441,62 @@ public class MainActivity extends AppCompatActivity
         public View getView(int position, View convertView, ViewGroup viewGroup) {
             // The desired layout of the view.
             View view = getLayoutInflater().inflate(R.layout.announcements_with_image, null);
-            Announcement newAnnouncement = getItem(position);
             // Get the values to be set in the layout.
+            final Announcement newAnnouncement = getItem(position);
             TextView Title = view.findViewById(R.id.title);
             TextView Body = view.findViewById(R.id.body);
             TextView Time = view.findViewById(R.id.time);
             TextView Manager = view.findViewById(R.id.manager);
+            final ImageView imageView = view.findViewById(R.id.imageView);
+            ProgressBar progressBar = view.findViewById(R.id.progressBar3);
+
+            // No image view and no progress bar by default
+            imageView.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
+
+            if (!newAnnouncement.getPathToImage().equals("no_path")) {
+
+                progressBar.setVisibility(View.VISIBLE);
+
+                imageRef = FirebaseStorage.getInstance().getReference().child("images")
+                        .child(newAnnouncement.getPathToImage());
+
+                imageRef.getBytes(THREE_MEGABYTES).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        Log.d("onSuccess", "We loaded image: " + newAnnouncement.getPathToImage());
+                        Log.d("onSuccess", "Length of byte array " + bytes.length);
+                        newAnnouncement.setImageAsBytes(bytes);
+
+                        imageView.setImageBitmap( BitmapFactory.decodeByteArray(newAnnouncement.getImageAsBytes(), 0,
+                                newAnnouncement.getImageAsBytes().length));
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.wtf("onFailure", "Unable to load image: " +
+                                newAnnouncement.getPathToImage());
+                        e.printStackTrace();
+                    }
+                });
+
+                progressBar.setVisibility(View.GONE);
+                imageView.setVisibility(View.VISIBLE);
+            }
+
+
+            if (position == arrayAdapter.getCount() - 1) {
+               imageView.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.pinnacle_default));
+               imageView.setVisibility(View.VISIBLE);
+            }
+
+
             Title.setText(newAnnouncement.getTitle());
             Body.setText(newAnnouncement.getBody());
             Time.setText(newAnnouncement.getTimeOfAnnouncement());
             Manager.setText(newAnnouncement.getAuthor());
             Log.i("View set", "Values should be set");
+
             return view;
         }
         public void add(int index, Announcement newAnnouncement) {

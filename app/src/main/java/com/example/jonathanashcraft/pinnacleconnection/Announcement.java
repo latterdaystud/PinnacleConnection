@@ -18,14 +18,14 @@ import java.util.Date;
  * @version 2018.01
  * @since 2018.01
  */
+
 public class Announcement {
     private String body;
     // For use in the database when an announcement is created
     private String ID;
     private String author;
-    private String timeOfAnnouncement;
     private String title;
-    private String date;
+    private String timeOfAnnouncement;
     private int indexInArray;
     private boolean isDefault;
     private String pathToImage;
@@ -42,9 +42,7 @@ public class Announcement {
         this.body = "";
         this.ID = Calendar.getInstance().getTime().toString();
         this.author = "";
-        this.timeOfAnnouncement = "";
         this.title = "";
-        this.date = "";
         this.pathToImage = "no_path";
 
 
@@ -54,21 +52,11 @@ public class Announcement {
         this.timeOfAnnouncement = date;
     }
 
-    /**
-     * Non-default constructor for announcement class
-     * @param Title Title of the announcement
-     * @param Body The body of the Announcement
-     * @param Date The date of the activity
-     * @param time The time of the activity
-     * @param Author The author of the activity
-     * @param pathToImage The path to the image that will be posted with the announcement
-     */
-    public Announcement(String Title, String Body, String Date, String time, String Author, String pathToImage) {
+    public Announcement(String Title, String Body, String Author, String pathToImage) {
         this.body = Body;
         this.ID = Calendar.getInstance().getTime().toString();
         this.author = Author;
         this.title = Title;
-        this.date = Date;
         this.pathToImage = pathToImage;
 
 
@@ -120,13 +108,6 @@ public class Announcement {
         this.title = title;
     }
 
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
 
     public boolean isDefault() {
         return isDefault;
@@ -150,5 +131,13 @@ public class Announcement {
 
     public void setIndexInArray(int indexInArray) {
         this.indexInArray = indexInArray;
+    }
+
+    public String getPathToImage() {
+        return pathToImage;
+    }
+
+    public void setPathToImage(String pathToImage) {
+        this.pathToImage = pathToImage;
     }
 }

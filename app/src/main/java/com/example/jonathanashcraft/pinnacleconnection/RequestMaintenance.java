@@ -317,6 +317,8 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
 
         path = getRealPathFromURI(currImageURI);
 
+        Log.d("WWWWWWWWWWWWW", "Path inside of ActivityResult: " + path);
+
         fileToUpload = Uri.fromFile(new File(path));
 
         Log.d("RequestMaintenance", "The path is " + path);
