@@ -264,6 +264,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         return password.length() > 4;
     }
 
+    /**
+     * Launches the activity that will assist a user in creating an account
+     * @param view The current view
+     */
     public void onCreateAccount(View view) {
         Intent intent = new Intent(getApplicationContext(), CreateProfile.class);
         startActivityForResult(intent, 1);

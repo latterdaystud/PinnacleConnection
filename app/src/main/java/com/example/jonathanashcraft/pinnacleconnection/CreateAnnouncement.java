@@ -41,6 +41,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * This class handles creating an announcement. It handles all UI elements and the logic to upload
+ * the announcements to Firebase
+ */
 public class CreateAnnouncement extends AppCompatActivity implements DatePickerDialog.OnDateSetListener,
 TimePickerDialog.OnTimeSetListener {
 
@@ -58,8 +62,6 @@ TimePickerDialog.OnTimeSetListener {
     private byte[] imageAsBytes;
 
     FirebaseUser currentUser;
-
-    // TODO: Create dialog fragments for the user and time input so that the user can have visual feedback on what to choose.
 
     User TempUser;
     DatePickerDialog datePicker5000;
@@ -138,42 +140,12 @@ TimePickerDialog.OnTimeSetListener {
                 timePicker5000.show();
             }
         });
-//        // Variable to hold the information that we get back from the database.
-//        TempUser = new User();
-//
-//        Log.d(TAG, "**************************************************************************");
-//        /*
-//        Cannot get this running right now, For some reason the database isn't returning the user
-//        class at all.
-//
-//        */
-//        // Get a reference and the name of the first name and last name of the user
-//        DatabaseReference mFirstNameRef = FirebaseDatabase.getInstance().getReference("Users")
-//                .child(currentUser.getUid());
-//
-//        Log.d(TAG, "Currentuser is " + currentUser.getUid());
-//
-//        // Database access
-//        mFirstNameRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//
-//                // The user class isn't even getting the information from the database
-//                User user = dataSnapshot.getValue(User.class);
-//
-//                Log.d(TAG, "User first name = " + user.getFirstName());
-//
-//                TempUser.setUser(user);
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                Log.d(TAG, "The database access was cancelled" + databaseError.toException());
-//            }
-//        });
-
     }
 
+    /**
+     * Method opens up the gallery for a result
+     * @param view The current view
+     */
     public void openGallery(View view) {
         // Create intent to Open Image applications like Gallery, Google Photos
         Intent galleryIntent = new Intent(Intent.ACTION_PICK,
@@ -194,25 +166,6 @@ TimePickerDialog.OnTimeSetListener {
 
                 selectedImage = data.getData();
 
-                //FirebaseStorage storage = Firebase
-               /* String[] filePathColumn = { MediaStore.Images.Media.DATA };
-
-                // Get the cursor
-                Cursor cursor = getContentResolver().query(selectedImage,
-                        filePathColumn, null, null, null);
-                // Move to first message_right
-                cursor.moveToFirst();
-
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                imgDecodableString = cursor.getString(columnIndex);
-                cursor.close();
-
-                //Set the image
-                imageButton.setImageBitmap(BitmapFactory
-                        .decodeFile(imgDecodableString));
-
-                */
-
             } else {
                 Toast.makeText(this, "You haven't picked Image",
                         Toast.LENGTH_LONG).show();
@@ -225,24 +178,12 @@ TimePickerDialog.OnTimeSetListener {
 
     }
 
-    public void onSubmitAnnouncement(View view) {
+    private void onSubmitAnnouncement(View view) {
         String TAG = "onSubmitAnnouncement";
 
         Log.d(TAG, "The users name is " + CurrentUser.getFirstName());
 
         Announcement tempAnnouncement;
-
-        //BitmapDrawable drawable = (BitmapDrawable) imageButton.getDrawable();
-
-        /*
-        if (drawable != null) {
-            image = drawable.getBitmap();
-        }
-        else {
-            image = BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_menu_gallery);
-        }
-
-        */
 
         if (getIntent().hasExtra("announcement")) {
             editAnnouncement.setTitle(title_of_announcement.getText().toString());

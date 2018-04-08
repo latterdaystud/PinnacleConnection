@@ -26,8 +26,8 @@ import static android.content.ContentValues.TAG;
 
 /**
  * Created by Joseph on 4/5/2018.
+ * A fragment to view an individual maintenance request
  */
-
 public class ViewMaintenanceRequestFragment extends Fragment {
     // For reference when trying to load from Firebase Storage
     final long ONE_MEGABYTE = 1024 * 1024;
@@ -46,7 +46,6 @@ public class ViewMaintenanceRequestFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final String TAG = "RequestFragment";
-
         Bundle dataRecieved = getArguments();
 
         if (dataRecieved != null) {
