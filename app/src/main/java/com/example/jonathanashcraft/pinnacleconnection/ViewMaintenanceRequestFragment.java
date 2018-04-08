@@ -96,7 +96,7 @@ public class ViewMaintenanceRequestFragment extends Fragment {
     }
 
     // This class loads an image from Firebase Storage with a passed in path
-    private void loadImage(String pathToImage) {
+    private void loadImage(final String pathToImage) {
         final String TAG = "loadImage";
 
         StorageReference imageRef = FirebaseStorage.getInstance().getReference().child("images")
@@ -106,7 +106,8 @@ public class ViewMaintenanceRequestFragment extends Fragment {
                 .addOnSuccessListener(new OnSuccessListener<byte[]>() {
                     @Override
                     public void onSuccess(byte[] bytes) {
-                        Log.d(TAG, "We successfully loaded the bytes!");
+                        Log.d("onSuccess", "We loaded image: " + pathToImage);
+                        Log.d("onSuccess", "Length of byte array " + bytes.length);
 
                         Bitmap bipy = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
 

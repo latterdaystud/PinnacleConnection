@@ -276,6 +276,8 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
 
         path = getRealPathFromURI(currImageURI);
 
+        Log.d("WWWWWWWWWWWWW", "Path inside of ActivityResult: " + path);
+
         fileToUpload = Uri.fromFile(new File(path));
 
         // TODO: When uploading images it displays photo failed to upload and photo uploaded at the same time

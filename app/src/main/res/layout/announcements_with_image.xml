@@ -10,51 +10,68 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
+        android:fontFamily="serif"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:text="Title"
         android:textAlignment="center"
         android:textAllCaps="true"
-        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:textSize="24sp"
         android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="260dp"
+        android:layout_height="320dp"
+        android:layout_below="@+id/title"
+        android:layout_centerHorizontal="true"
+        app:srcCompat="@android:drawable/ic_menu_report_image" />
 
     <TextView
 
         android:id="@+id/body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/title"
-        android:layout_centerHorizontal="true"
+        android:layout_alignEnd="@+id/manager"
+        android:layout_below="@+id/imageView"
+
+        android:fontFamily="serif"
+        android:paddingBottom="16dp"
         android:paddingEnd="10sp"
         android:paddingStart="10sp"
         android:text="Body"
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxWidth="150sp"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/body"
+        android:maxWidth="150sp"
         android:paddingStart="10sp"
-        android:text="TimePeriod" />
+        android:text="TimePeriod"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/manager"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxWidth="150sp"
         android:layout_alignBottom="@+id/time"
         android:layout_alignParentEnd="true"
+        android:maxWidth="150sp"
         android:paddingEnd="10sp"
-        android:text="Manager" />
+        android:text="Manager"
+        android:textColorHighlight="@android:color/holo_green_light" />
 
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/manager"
-        android:layout_below="@+id/time"
-        android:paddingEnd="10sp"
-        android:paddingStart="10sp" />
+    <ProgressBar
+        android:id="@+id/progressBar3"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="200dp"
+        android:layout_height="260dp"
+        android:layout_below="@+id/title"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>
