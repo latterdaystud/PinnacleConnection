@@ -42,12 +42,12 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EventListener;
 import java.util.Iterator;
 import java.util.Objects;
 
-public class ContactList extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener{
+public class ContactList extends AppCompatActivity {
 
     private ListView conversationListView;
     private ArrayList<UserWithID> userList;
@@ -77,15 +77,17 @@ public class ContactList extends AppCompatActivity
      * Creates an instance of the Contact list activity which has recorded conversations and
      * a link to the contact list.
      * @author Jonathan Ashcraft
-     * @param savedInstanceState
+     * @param savedInstanceState The bundle passed. In this case it has nothing we use.
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_list);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowHomeEnabled(true);
-        actionBar.setIcon(R.mipmap.pinnacle_logo);
+        if (actionBar != null) {
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setIcon(R.mipmap.pinnacle_logo);
+        }
         setTitle(" Conversations");
         //setting up the dialog
         myDialog = new Dialog(this);
@@ -211,12 +213,19 @@ public class ContactList extends AppCompatActivity
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        contactAdapter.clear();
+    }
+    @Override
     protected void onStop() {
         super.onStop();
         myDialog.cancel();
-        contactAdapter.clear();
     }
 
+    /**
+     * When activity is resumed, reload the entire list of conversations.
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -235,19 +244,13 @@ public class ContactList extends AppCompatActivity
         contactAdapter.notifyDataSetChanged();
     }
 
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        return false;
-    }
-
     /**
      * Defines the adapter for the list of contacts
      * @author Jonathan Ashcraft
      */
     public class CustomContactListAdapter extends BaseAdapter {
 
-        ArrayList<UserWithID> myList = new ArrayList();
+        ArrayList<UserWithID> myList = new ArrayList<>();
         LayoutInflater inflater;
         Context context;
 
@@ -303,7 +306,6 @@ public class ContactList extends AppCompatActivity
          */
         public void add(UserWithID user) {
             myList.add(user);
-
         }
     }
 
@@ -312,14 +314,14 @@ public class ContactList extends AppCompatActivity
      */
     public class CustomContactAdapter extends BaseAdapter {
 
-        ArrayList<UserWithID> myList = new ArrayList();
+        ArrayList<UserWithID> myList = new ArrayList<>();
         LayoutInflater inflater;
         Context context;
 
         public CustomContactAdapter(Context context, ArrayList<UserWithID> myList) {
             this.myList = myList;
             this.context = context;
-            inflater = LayoutInflater.from(this.context);
+            inflater = LayoutInflater.from(context);
         }
 
         @Override
@@ -335,6 +337,11 @@ public class ContactList extends AppCompatActivity
             return myList.contains(tempUser);
         }
 
+        /**
+         * This returns the index of the object in the list.
+         * @param tempUserID The user to be found.
+         * @return Returns the index, -1 if not found.
+         */
         public int getItemIndex(String tempUserID) {
             int index = 0;
             Iterator<UserWithID> itr = myList.iterator();
@@ -382,6 +389,7 @@ public class ContactList extends AppCompatActivity
             return view;
         }
 
+        //Add to the beginning of the list.
         public void add(UserWithID user) {
             myList.add(0, user);
         }
@@ -413,6 +421,7 @@ public class ContactList extends AppCompatActivity
                 String path = tempUserWithID.getID() + userId;
 
                 if (fileExist(path)) {
+                    // If file exists then add to contact adapter for conversation display
                     Log.d("Finding conversations", "File exists");
                     contactAdapter.add(tempUserWithID);
                     contactAdapter.notifyDataSetChanged();

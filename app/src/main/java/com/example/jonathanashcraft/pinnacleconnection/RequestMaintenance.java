@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -85,6 +86,10 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request_maintenance);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setIcon(R.mipmap.pinnacle_logo);
+        setTitle(" Request Maintenance");
 
         // open the files containing the sent requests and load them into the maintenance list.
         String jsonRequestsLoadedFromFiles = "";
@@ -129,7 +134,7 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
         // Build the dialog box that will appear for creating a maintenance request
         AlertDialog.Builder builder = new AlertDialog.Builder(RequestMaintenance.this);
 
-        // This is the diallog for the maintenance request.
+        // This is the dialog for the maintenance request.
         builder.setTitle("Maintenance Request")
                 .setView(R.layout.create_maintenance_request_dialog)
                 .setPositiveButton("Submit", new DialogInterface.OnClickListener() {
@@ -152,7 +157,7 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
 
                     }
                 })
-                .setNeutralButton("Attach Photo", null)
+                .setNeutralButton("Photo", null)
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -171,7 +176,16 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        openGallery(getCurrentFocus());
+                        AlertDialog.Builder builder = new AlertDialog.Builder(RequestMaintenance.this);
+
+                        builder.setTitle("Attach a Photo")
+                                .setNeutralButton("Camera", null)
+                                .setNeutralButton("Gallery", null);
+
+                        // Build it and show it.
+                        builder.create().show();
+
+                        //openGallery(getCurrentFocus());
                         }
                     });
                 }
@@ -184,12 +198,10 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
                 });
     }
 
-    public void makeRequest() {
+    private void makeRequest() {
         // Get the input from the dialog box that the user inputted
         String description = etIssueInput.getText().toString();
         String topic = etSubjectOfIssue.getText().toString();
-
-        //TODO: Make sure the topic is filled out
 
         // Checks to see if the user inputted useful data
         if(Objects.equals(description, "") || Objects.equals(description, " "))
@@ -197,7 +209,6 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
 
         boolean isUrgent = cbUrgent.isChecked();
 
-        //TODO: Handle if there is no photo to be uploaded
         MaintenanceRequest tempMaintenanceRequest;
         // Make a temporary request to hold the data that has been inputted
         if(fileToUpload != null) {
@@ -306,7 +317,7 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
         Log.d("RequestMaintenance", "The path is " + path);
     }
 
-    public String getRealPathFromURI(Uri contentUri) {
+    private String getRealPathFromURI(Uri contentUri) {
 
         // can post image
         String [] proj={MediaStore.Images.Media.DATA};

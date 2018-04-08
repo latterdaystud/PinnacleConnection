@@ -20,12 +20,14 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.Objects;
+
 import static android.content.ContentValues.TAG;
 
 /**
  * Created by Joseph on 4/5/2018.
+ * A fragment to view an individual maintenance request
  */
-
 public class ViewMaintenanceRequestFragment extends Fragment {
     // For reference when trying to load from Firebase Storage
     final long ONE_MEGABYTE = 1024 * 1024;
@@ -44,7 +46,6 @@ public class ViewMaintenanceRequestFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final String TAG = "RequestFragment";
-
         Bundle dataRecieved = getArguments();
 
         if (dataRecieved != null) {
@@ -82,6 +83,7 @@ public class ViewMaintenanceRequestFragment extends Fragment {
         TextView Description = view.findViewById(R.id.textViewMaintenanceRequestDescrip);
         TextView Date = view.findViewById(R.id.textViewMaintenanceViewDate);
 
+
         currentView = view;
 
         Title.setText(this.Title);
@@ -89,8 +91,15 @@ public class ViewMaintenanceRequestFragment extends Fragment {
         Description.setText(this.Description);
         Date.setText(this.Date);
 
-        // Here we load the image
-         loadImage(Path);
+        // Here we load the image or not if there is no image.
+        if (!Objects.equals(Path, "")) {
+            loadImage(Path);
+        } else {
+            ProgressBar progressBar = currentView.findViewById(R.id.progressBarImageLoading);
+            TextView textViewImageLoading = currentView.findViewById(R.id.textViewImageLoading);
+            progressBar.setVisibility(View.GONE);
+            textViewImageLoading.setText("No Image Sent");
+        }
 
         return view;
     }

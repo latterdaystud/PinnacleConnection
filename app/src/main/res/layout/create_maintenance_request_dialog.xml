@@ -24,7 +24,7 @@
         android:layout_alignBaseline="@+id/editTextTopicProblem"
         android:layout_alignBottom="@+id/editTextTopicProblem"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="44dp"
+        android:layout_marginEnd="11dp"
         android:text="Urgent" />
 
     <EditText
