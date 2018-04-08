@@ -47,6 +47,7 @@ public class User {
         this.lastName = user.lastName;
         this.apartmentNumber = user.apartmentNumber;
         this.isManager = user.isManager;
+        this.deviceToken = user.deviceToken;
     }
 
     public void setUser(User user) {
@@ -54,6 +55,7 @@ public class User {
         this.lastName = user.lastName;
         this.apartmentNumber = user.apartmentNumber;
         this.isManager = user.isManager;
+        this.deviceToken = user.deviceToken;
     }
 
 

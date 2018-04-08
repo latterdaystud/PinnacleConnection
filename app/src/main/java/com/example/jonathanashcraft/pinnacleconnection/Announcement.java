@@ -52,7 +52,6 @@ public class Announcement {
         String date = df.format(Calendar.getInstance().getTime());
 
         this.timeOfAnnouncement = date;
-
     }
 
     /**
@@ -76,7 +75,7 @@ public class Announcement {
         SimpleDateFormat df = new SimpleDateFormat("h:mma, EEE, MMM d");
         String date = df.format(Calendar.getInstance().getTime());
 
-        this.timeOfAnnouncement = date;
+        this.timeOfAnnouncement = time;
 
 
     }

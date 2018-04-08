@@ -1,5 +1,8 @@
 package com.example.jonathanashcraft.pinnacleconnection;
 
+import android.content.Context;
+
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -15,6 +18,8 @@ import org.junit.Test;
 public class FirebaseTest {
     @Test
     public void test1() {
+        // All this code does not work due to errors with android interface and context.
+/*
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
         DatabaseReference managersPassword = database.getReference().child("ManagersPassword");
@@ -47,6 +52,6 @@ public class FirebaseTest {
 
             }
         });
-
+    */
     }
 }

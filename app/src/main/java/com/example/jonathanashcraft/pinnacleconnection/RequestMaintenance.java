@@ -150,11 +150,15 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
 
                         String text = etIssueInput.getText().toString();
 
-                        // TODO: don't know wtf is happening here
                         Log.d("MaintenanceRequest", text);
 
                         makeRequest();
 
+                        // emtpy the texts
+                        etIssueInput.setText("");
+                        cbUrgent.setChecked(false);
+                        etSubjectOfIssue.setText("");
+                        dialogInterface.cancel();
                     }
                 })
                 .setNeutralButton("Photo", null)
@@ -180,12 +184,15 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
 
                         builder.setTitle("Attach a Photo")
                                 .setNeutralButton("Camera", null)
-                                .setNeutralButton("Gallery", null);
+                                .setNeutralButton("Gallery", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        openGallery(getCurrentFocus());
+                                    }
+                                });
 
                         // Build it and show it.
                         builder.create().show();
-
-                        //openGallery(getCurrentFocus());
                         }
                     });
                 }
@@ -199,6 +206,32 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
     }
 
     private void makeRequest() {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+
+        StorageReference storageRef = storage.getReference();
+
+        StorageReference imageRef = storageRef.child("images/"+ fileToUpload.getLastPathSegment());
+
+        UploadTask uploadTask = imageRef.putFile(fileToUpload);
+
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                // aw it didn't work
+                Toast.makeText(RequestMaintenance.this, "Photo Failed to Upload",
+                        Toast.LENGTH_SHORT).show();
+
+                Log.d("onFailure", "The uploadTask failed");
+                e.printStackTrace();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Toast.makeText(RequestMaintenance.this, "Photo Uploaded",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+
         // Get the input from the dialog box that the user inputted
         String description = etIssueInput.getText().toString();
         String topic = etSubjectOfIssue.getText().toString();
@@ -215,6 +248,7 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
             tempMaintenanceRequest = new MaintenanceRequest(topic, description,
                     CurrentUser.getFirstName() + " " + CurrentUser.getLastName(), isUrgent,
                     fileToUpload.getLastPathSegment());
+            fileToUpload = null;
         } else {
             tempMaintenanceRequest = new MaintenanceRequest(topic, description,
                     CurrentUser.getFirstName() + " " + CurrentUser.getLastName(), isUrgent,
@@ -281,36 +315,9 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
 
         String path;
 
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-
-        StorageReference storageRef = storage.getReference();
-
         path = getRealPathFromURI(currImageURI);
 
         fileToUpload = Uri.fromFile(new File(path));
-
-        // TODO: When uploading images it displays photo failed to upload and photo uploaded at the same time
-        StorageReference imageRef = storageRef.child("images/"+ fileToUpload.getLastPathSegment());
-
-        UploadTask uploadTask = imageRef.putFile(fileToUpload);
-
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                // aw it didn't work
-                Toast.makeText(RequestMaintenance.this, "Photo Failed to Upload",
-                        Toast.LENGTH_SHORT).show();
-
-                Log.d("onFailure", "The uploadTask failed");
-                e.printStackTrace();
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(RequestMaintenance.this, "Photo Uploaded",
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
 
         Log.d("RequestMaintenance", "The path is " + path);
     }
