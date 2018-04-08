@@ -69,8 +69,10 @@ public class TheaterRequestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_theater_request);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowHomeEnabled(true);
-        actionBar.setIcon(R.mipmap.pinnacle_logo);
+        if (actionBar != null) {
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setIcon(R.mipmap.pinnacle_logo);
+        }
         setTitle(" Reserve Theater");
         Calendar cal = Calendar.getInstance();
         // Create the start time picker for later reference in reservations.

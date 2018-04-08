@@ -202,7 +202,7 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
 
         boolean isUrgent = cbUrgent.isChecked();
 
-        //TODO: Handle if there is no photo to be uploaded
+
         MaintenanceRequest tempMaintenanceRequest;
         // Make a temporary request to hold the data that has been inputted
         if(fileToUpload != null) {

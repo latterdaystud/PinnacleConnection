@@ -3,11 +3,9 @@ package com.example.jonathanashcraft.pinnacleconnection;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -92,8 +90,10 @@ public class MessagingActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_messaging);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowHomeEnabled(true);
-        actionBar.setIcon(R.mipmap.pinnacle_logo);
+        if (actionBar != null) {
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setIcon(R.mipmap.pinnacle_logo);
+        }
         setTitle("Conversation");
 
         message = findViewById(R.id.editText);
@@ -238,7 +238,7 @@ public class MessagingActivity extends AppCompatActivity {
      */
     public class CustomMessagingAdapter extends BaseAdapter {
 
-        ArrayList<Message> myList = new ArrayList();
+        ArrayList<Message> myList = new ArrayList<>();
         LayoutInflater inflater;
         Context context;
 
@@ -313,8 +313,6 @@ public class MessagingActivity extends AppCompatActivity {
             myList.add(message);
             arrayAdapter.notifyDataSetChanged();
         }
-
-
     }
 
     /**

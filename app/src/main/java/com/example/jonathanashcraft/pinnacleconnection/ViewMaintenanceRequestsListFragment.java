@@ -29,7 +29,6 @@ import static android.content.ContentValues.TAG;
 /**
  * Created by Joseph on 4/5/2018.
  */
-
 public class ViewMaintenanceRequestsListFragment extends Fragment {
 
     private MaintenanceRequestsArrayAdapter arrayAdapter;

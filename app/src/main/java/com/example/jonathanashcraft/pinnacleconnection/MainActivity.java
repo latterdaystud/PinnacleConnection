@@ -130,24 +130,6 @@ public class MainActivity extends AppCompatActivity
 
         Log.d(TAG, "The current device ID is: " + FirebaseInstanceId.getInstance().getToken().toString());
 
-        /*
-        MenuItem nav_camera = menu.findItem(R.id.nav_manage);
-        nav_camera.setTitle("Maintenance Request");
-
-        MenuItem nav_send = menu.findItem(R.id.nav_send);
-        nav_send.setTitle("Message Manager");
-
-        MenuItem nav_share = menu.findItem(R.id.nav_share);
-        nav_share.setTitle("Request Theater");
-
-        MenuItem nav_gallery = menu.findItem(R.id.nav_gallery);
-        nav_gallery.setTitle("Request Theater");
-        MenuItem nav_manage = menu.findItem(R.id.nav_manage);
-        nav_share.setTitle("Log in");
-
-        // Things to ignore in the navigation bar
-        menu.findItem(R.id.nav_slideshow).setVisible(false);*/
-
         navigationView.setNavigationItemSelectedListener(this);
 
         //This displays the AnnouncementFragment as soon as the app is opened
@@ -433,10 +415,19 @@ public class MainActivity extends AppCompatActivity
             return 0;
         }
 
+        /**
+         * Displays the announcements.
+         * @param position Position of the announcements
+         * @param convertView not used
+         * @param viewGroup not used
+         * @return The created display
+         */
         @Override
         public View getView(int position, View convertView, ViewGroup viewGroup) {
+            // The desired layout of the view.
             View view = getLayoutInflater().inflate(R.layout.announcements_with_image, null);
             Announcement newAnnouncement = getItem(position);
+            // Get the values to be set in the layout.
             TextView Title = view.findViewById(R.id.title);
             TextView Body = view.findViewById(R.id.body);
             TextView Time = view.findViewById(R.id.time);
@@ -446,10 +437,8 @@ public class MainActivity extends AppCompatActivity
             Time.setText(newAnnouncement.getTimeOfAnnouncement());
             Manager.setText(newAnnouncement.getAuthor());
             Log.i("View set", "Values should be set");
-
             return view;
         }
-
         public void add(int index, Announcement newAnnouncement) {
             myList.add(index, newAnnouncement);
 
