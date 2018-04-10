@@ -4,6 +4,10 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
@@ -28,10 +32,16 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.Gson;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
@@ -59,6 +69,9 @@ public class TheaterRequestActivity extends AppCompatActivity {
     private ArrayList <TheaterReservation> reservedList;
     private Dialog myDialog;
 
+    private Gson gson = new Gson();
+    private TheaterReservation[] reserves;
+
     /**
      * Contains the class and layout of the theater request activity.
      * @author Jonathan Ashcraft
@@ -84,7 +97,7 @@ public class TheaterRequestActivity extends AppCompatActivity {
                             .setAction("Action", null).show();
                     return;
                 }
-                String time = i + ":" + i1;
+                String time = i + ":" + (i1 < 10 ? "0" : "") + i1;
                 start.setText(time);
             }
         },
@@ -106,7 +119,7 @@ public class TheaterRequestActivity extends AppCompatActivity {
                             .setAction("Action", null).show();
                     return;
                 }
-                String time = i + ":" + i1;
+                String time = i + ":" + (i1 < 10 ? "0" : "") + i1;
                 end.setText(time);
             }
         },
@@ -130,16 +143,46 @@ public class TheaterRequestActivity extends AppCompatActivity {
         calendarRef = database.getReference().child("Reservations");
 
         // Set the private variables to the view boxes.
-        calendarList = new ArrayList<TheaterReservation>();
+        calendarList = new ArrayList<>();
         reservedList = new ArrayList<>();
         unavailableAdapter = new CustomCalendarAdapter(this, calendarList, false);
         userReservedAdapter = new CustomCalendarAdapter(this, reservedList, true);
+
+        // shared preferences of saved reservations.
+        String jsonReservationsLoadedFromFiles = "";
+        FileInputStream inputStream;
+        try {
+            // Read in the file.
+            inputStream = openFileInput("Reservations");
+            InputStreamReader reader = new InputStreamReader(inputStream);
+            BufferedReader br = new BufferedReader(reader);
+            StringBuilder sb = new StringBuilder();
+            String tempString;
+            while ((tempString = br.readLine()) != null) {
+                sb.append(tempString);
+                Log.d("Saving string", tempString);
+            }
+            // Save to the json string.
+            jsonReservationsLoadedFromFiles = sb.toString();
+            inputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Now take from json if not empty.
+        if(!jsonReservationsLoadedFromFiles.isEmpty()) {
+            //requests =
+            userReservedAdapter.myList = new ArrayList<>(Arrays.asList(gson.fromJson(jsonReservationsLoadedFromFiles, TheaterReservation[].class)));
+            Log.d("Saved from files", jsonReservationsLoadedFromFiles);
+            userReservedAdapter.notifyDataSetChanged();
+        }
 
         // Set the variables for the activity layout.
         unavialableListView = myDialog.findViewById(R.id.unavailable_list);
         userReservedListView = findViewById(R.id.userReserved);
         unavialableListView.setAdapter(unavailableAdapter);
         userReservedListView.setAdapter(userReservedAdapter);
+
         calendar = findViewById(R.id.calendarView);
         selectedDate = findViewById(R.id.date_selected);
         savedTime = myDialog.findViewById(R.id.saved_time);
@@ -264,8 +307,19 @@ public class TheaterRequestActivity extends AppCompatActivity {
                             // Add to the user list.
                             userReservedAdapter.add(res);
                             userReservedAdapter.notifyDataSetChanged();
-                            res = null;
+                            String jsonReservations = gson.toJson(userReservedAdapter.myList);
+                            Log.d("All Messages", jsonReservations);
+                            Log.d("Size of List", "Reserve List is: " + userReservedAdapter.getCount());
+                            FileOutputStream outputStream;
+                            try {
+                                outputStream = openFileOutput("Reservations", Context.MODE_PRIVATE);
+                                outputStream.write(jsonReservations.getBytes());
+                                outputStream.close();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
 
+                            res = null;
                             // Clear the input values.
                             savedTime.setText("");
                             start.setText("Start Time");
@@ -413,6 +467,10 @@ public class TheaterRequestActivity extends AppCompatActivity {
         public View getView(int position, View convertView, ViewGroup viewGroup) {
             View view = getLayoutInflater().inflate(R.layout.reserved_time, null);
             TheaterReservation theRes = myList.get(position);
+            // set texviews to be edited.
+            TextView start = view.findViewById(R.id.start_res);
+            TextView end = view.findViewById(R.id.end_res);
+            TextView dash = view.findViewById(R.id.textViewDash);
             SimpleDateFormat str;
             if (displayDate) {
                 str = new SimpleDateFormat("hh:mma MM/dd/yyyy");
@@ -422,13 +480,14 @@ public class TheaterRequestActivity extends AppCompatActivity {
             String startTime = str.format(theRes.getStartTime());
             String endTime = str.format(theRes.getEndTime());
 
-            // set texviews to be edited.
-            TextView start = view.findViewById(R.id.start_res);
-            TextView end = view.findViewById(R.id.end_res);
-
             // Set the text.
             start.setText(startTime);
             end.setText(endTime);
+            if(displayDate) {
+                start.setTextColor(Color.BLACK);
+                end.setTextColor(Color.BLACK);
+                dash.setTextColor(Color.BLACK);
+            }
 
             return view;
         }

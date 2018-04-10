@@ -14,8 +14,8 @@ public class AnnouncementTest {
     public void testAnnouncementClass() {
         // All of these should different.
         Announcement testAnn = new Announcement();
-        Announcement testAnn2 = new Announcement("Title", "Body", "Date", "Time", "Author", "Path to Image");
-        Announcement testAnn3 = new Announcement("", "", "", "Time", "", "Path to Image");
+        Announcement testAnn2 = new Announcement("Title", "Body", "Author", "Path to Image");
+        Announcement testAnn3 = new Announcement("", "", "", "Path to Image");
 
         assertNotEquals(testAnn2, testAnn3);
         assertNotEquals(testAnn,testAnn2);

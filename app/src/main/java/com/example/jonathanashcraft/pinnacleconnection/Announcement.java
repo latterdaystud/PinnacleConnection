@@ -63,7 +63,7 @@ public class Announcement {
         SimpleDateFormat df = new SimpleDateFormat("h:mma, EEE, MMM d");
         String date = df.format(Calendar.getInstance().getTime());
 
-        this.timeOfAnnouncement = time;
+        this.timeOfAnnouncement = date;
 
 
     }
