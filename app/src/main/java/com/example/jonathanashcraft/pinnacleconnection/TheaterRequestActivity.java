@@ -133,7 +133,7 @@ public class TheaterRequestActivity extends AppCompatActivity {
 
         Window window = myDialog.getWindow();
         if (window != null) {
-            window.setLayout(400, 500);
+            //window.setLayout(400, 500);
             window.setBackgroundDrawableResource(android.R.color.darker_gray);
         }
 

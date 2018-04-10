@@ -206,31 +206,29 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
     }
 
     private void makeRequest() {
-        FirebaseStorage storage = FirebaseStorage.getInstance();
+        if (fileToUpload != null) {
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageRef = storage.getReference();
+            StorageReference imageRef = storageRef.child("images/" + fileToUpload.getLastPathSegment());
+            UploadTask uploadTask = imageRef.putFile(fileToUpload);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    // aw it didn't work
+                    Toast.makeText(RequestMaintenance.this, "Photo Failed to Upload",
+                            Toast.LENGTH_SHORT).show();
 
-        StorageReference storageRef = storage.getReference();
-
-        StorageReference imageRef = storageRef.child("images/"+ fileToUpload.getLastPathSegment());
-
-        UploadTask uploadTask = imageRef.putFile(fileToUpload);
-
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                // aw it didn't work
-                Toast.makeText(RequestMaintenance.this, "Photo Failed to Upload",
-                        Toast.LENGTH_SHORT).show();
-
-                Log.d("onFailure", "The uploadTask failed");
-                e.printStackTrace();
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(RequestMaintenance.this, "Photo Uploaded",
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
+                    Log.d("onFailure", "The uploadTask failed");
+                    e.printStackTrace();
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Toast.makeText(RequestMaintenance.this, "Photo Uploaded",
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
 
         // Get the input from the dialog box that the user inputted
         String description = etIssueInput.getText().toString();
@@ -239,7 +237,6 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
         // Checks to see if the user inputted useful data
         if(Objects.equals(description, "") || Objects.equals(description, " "))
             return;
-
         boolean isUrgent = cbUrgent.isChecked();
 
         MaintenanceRequest tempMaintenanceRequest;
