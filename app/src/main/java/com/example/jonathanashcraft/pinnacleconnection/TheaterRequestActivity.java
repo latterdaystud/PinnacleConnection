@@ -133,7 +133,6 @@ public class TheaterRequestActivity extends AppCompatActivity {
 
         Window window = myDialog.getWindow();
         if (window != null) {
-            //window.setLayout(400, 500);
             window.setBackgroundDrawableResource(android.R.color.darker_gray);
         }
 
@@ -153,7 +152,7 @@ public class TheaterRequestActivity extends AppCompatActivity {
         FileInputStream inputStream;
         try {
             // Read in the file.
-            inputStream = openFileInput("Reservations");
+            inputStream = openFileInput("Reservations" + CurrentUser.getLastName());
             InputStreamReader reader = new InputStreamReader(inputStream);
             BufferedReader br = new BufferedReader(reader);
             StringBuilder sb = new StringBuilder();
@@ -174,6 +173,16 @@ public class TheaterRequestActivity extends AppCompatActivity {
             //requests =
             userReservedAdapter.myList = new ArrayList<>(Arrays.asList(gson.fromJson(jsonReservationsLoadedFromFiles, TheaterReservation[].class)));
             Log.d("Saved from files", jsonReservationsLoadedFromFiles);
+            ArrayList<TheaterReservation> copy = new ArrayList<>(userReservedAdapter.myList);
+            Calendar tomorrowDate = (Calendar.getInstance());
+            tomorrowDate.add(Calendar.MINUTE, 60);
+            Date currentDate = tomorrowDate.getTime();
+            // Remove any reservations that have passed.
+            for(int i = 0; i < copy.size(); i++) {
+                if(currentDate.getTime() > copy.get(i).getEndTime().getTime()) {
+                    userReservedAdapter.myList.remove(copy.get(i));
+                }
+            }
             userReservedAdapter.notifyDataSetChanged();
         }
 
@@ -265,7 +274,7 @@ public class TheaterRequestActivity extends AppCompatActivity {
                                 + " " + selectedDate.getText().toString();
                         String timeStart = start.getText().toString() + " " + selectedDate.getText().toString();
                         String timeEnd = end.getText().toString() + " " + selectedDate.getText().toString();
-                        SimpleDateFormat str = new SimpleDateFormat("h:m MM/dd/yyyy");
+                        SimpleDateFormat str = new SimpleDateFormat("K:mm MM/dd/yyyy");
                         Date strDate = null;
                         Date endDate = null;
                         Calendar tomorrowDate = (Calendar.getInstance());
@@ -282,7 +291,7 @@ public class TheaterRequestActivity extends AppCompatActivity {
 
                         // If date is before current date then display error message.
                         if (currentDate.getTime() > strDate.getTime()) {
-                            Snackbar.make(view, "You can only reserve for future times", Snackbar.LENGTH_LONG)
+                            Snackbar.make(view, "The earliest you can reserve is an hour from now", Snackbar.LENGTH_LONG)
                                     .setAction("Action", null).show();
                         }
                         else if (timeUnavailable(strDate, endDate)) { // Check if time is unavailable using the function timeUnavailable.
@@ -312,7 +321,7 @@ public class TheaterRequestActivity extends AppCompatActivity {
                             Log.d("Size of List", "Reserve List is: " + userReservedAdapter.getCount());
                             FileOutputStream outputStream;
                             try {
-                                outputStream = openFileOutput("Reservations", Context.MODE_PRIVATE);
+                                outputStream = openFileOutput("Reservations" + CurrentUser.getLastName(), Context.MODE_PRIVATE);
                                 outputStream.write(jsonReservations.getBytes());
                                 outputStream.close();
                             } catch (Exception e) {
@@ -360,7 +369,7 @@ public class TheaterRequestActivity extends AppCompatActivity {
             TheaterReservation tempRes = unavailableAdapter.getItem(i);
 
             // Check if the times overlap.
-            if ((start.before(tempRes.getStartTime()) && end.after(tempRes.getStartTime()))
+            if ((start.getTime() == tempRes.getStartTime().getTime()) || (start.before(tempRes.getStartTime()) && end.after(tempRes.getStartTime()))
                     || (start.after(tempRes.getStartTime()) && start.before(tempRes.getEndTime()))) {
                 return true;
             }

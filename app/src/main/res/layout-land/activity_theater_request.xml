@@ -9,29 +9,16 @@
 
     <CalendarView
         android:id="@+id/calendarView"
-        android:layout_width="0dp"
-        android:layout_height="300dp"
+        android:layout_width="300sp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
         android:background="@android:color/darker_gray"
         android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
-    <TextView
-        android:id="@+id/textView_Scheduled"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:text="Your Upcoming Reservations"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@+id/userReserved"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
 
     <Button
         android:id="@+id/button_reserve"
@@ -39,39 +26,60 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
         android:onClick="onReserve"
         android:text="@string/reserve"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/calendarView"
+        app:layout_constraintTop_toBottomOf="@+id/date_selected" />
 
     <TextView
         android:id="@+id/date_selected"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:text="Date Selected"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        app:layout_constraintBottom_toTopOf="@+id/textView_Scheduled"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/calendarView"
+        app:layout_constraintTop_toBottomOf="@+id/userReserved"
+        app:layout_constraintBottom_toTopOf="@+id/button_reserve"/>
+
+    <TextView
+        android:id="@+id/textView_Scheduled"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="8dp"
+        android:text="Your Upcoming Reservations"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
+        app:layout_constraintStart_toEndOf="@+id/calendarView"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
         android:id="@+id/userReserved"
-        android:layout_width="351dp"
-        android:layout_height="114dp"
+        android:layout_width="305dp"
+        android:layout_height="0dp"
         android:layout_above="@+id/button_reserve"
         android:layout_alignParentEnd="false"
         android:layout_below="@+id/textView_Scheduled"
         android:layout_centerHorizontal="true"
-        app:layout_constraintBottom_toTopOf="@+id/button_reserve"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.515"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/date_selected"
+        app:layout_constraintStart_toEndOf="@+id/calendarView"
+        app:layout_constraintTop_toBottomOf="@+id/textView_Scheduled" />
 
 
 </android.support.constraint.ConstraintLayout>

@@ -96,7 +96,7 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
         FileInputStream inputStream;
         try {
             // Read in the file.
-            inputStream = openFileInput("Requests");
+            inputStream = openFileInput("Requests" + CurrentUser.getApartmentNumber());
             InputStreamReader reader = new InputStreamReader(inputStream);
             BufferedReader br = new BufferedReader(reader);
             StringBuilder sb = new StringBuilder();
@@ -268,7 +268,7 @@ public class RequestMaintenance extends AppCompatActivity implements EasyPermiss
         String jsonRequests = gson.toJson(maintenanceList);
         FileOutputStream outputStream;
         try {
-            outputStream = openFileOutput("Requests", Context.MODE_PRIVATE);
+            outputStream = openFileOutput("Requests" + CurrentUser.getApartmentNumber(), Context.MODE_PRIVATE);
             outputStream.write(jsonRequests.getBytes());
             outputStream.close();
         } catch (Exception e) {
